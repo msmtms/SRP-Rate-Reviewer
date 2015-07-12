@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TabPane layoutY="36.0" prefHeight="766.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="30.0" tabMinHeight="30.0">
+        <tabs>
+          <Tab closable="false" styleClass="tabs" text="Notes">
+               <content>
+                  <AnchorPane prefHeight="323.0" prefWidth="603.0">
+                     <children>
+                        <Label layoutX="48.0" layoutY="76.0" text="Author:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField layoutX="124.0" layoutY="77.0" />
+                        <TextArea layoutX="61.0" layoutY="158.0" prefHeight="469.0" prefWidth="984.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+          </Tab>
+          <Tab closable="false" styleClass="tabs" text="Solar">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="329.0" prefWidth="600.0">
+                     <children>
+                        <Pane layoutX="26.0" layoutY="14.0" prefHeight="692.0" prefWidth="478.0" styleClass="solarbg">
+                           <children>
+                              <TableView layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
+                                <columns>
+                                    <TableColumn text="Month" />
+                                  <TableColumn prefWidth="125.0" text="GHI (kWh/m2/d)" />
+                                    <TableColumn prefWidth="125.0" text="DNI (kWh/m2/d)" />
+                                  <TableColumn prefWidth="120.0" text="Clearness Index" />
+                                </columns>
+                              </TableView>
+                              <RadioButton layoutX="79.0" layoutY="69.0" mnemonicParsing="false" selected="true" text="Enter Monthly Averages">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="solarone" />
+                                 </toggleGroup>
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </RadioButton>
+                              <RadioButton layoutX="79.0" layoutY="96.0" mnemonicParsing="false" text="Import Hourly Data" toggleGroup="$solarone" />
+                              <TextField layoutX="163.0" layoutY="130.0" />
+                              <Button layoutX="79.0" layoutY="130.0" mnemonicParsing="false" text="Browse..." />
+                              <Label layoutX="34.0" layoutY="16.0" styleClass="panesubs" text="Solar Radiation Data">
+                                 <font>
+                                    <Font name="System Bold" size="22.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="550.0" layoutY="15.0" prefHeight="235.0" prefWidth="673.0" styleClass="solarbg">
+                           <children>
+                              <Label layoutX="35.0" layoutY="14.0" styleClass="panesubs" text="Locational Data">
+                                 <font>
+                                    <Font name="System Bold" size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="35.0" layoutY="66.0" text="Latitude:" />
+                              <Label layoutX="31.0" layoutY="101.0" text="Longitude" />
+                              <RadioButton layoutX="230.0" layoutY="66.0" mnemonicParsing="false" selected="true" text="North">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="solartwo" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton layoutX="291.0" layoutY="66.0" mnemonicParsing="false" text="South" toggleGroup="$solartwo" />
+                              <RadioButton layoutX="230.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="East">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="solarthree" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton layoutX="291.0" layoutY="101.0" mnemonicParsing="false" text="West" toggleGroup="$solarthree" />
+                              <TextField layoutX="93.0" layoutY="62.0" prefHeight="25.0" prefWidth="115.0" />
+                              <TextField layoutX="93.0" layoutY="97.0" prefHeight="25.0" prefWidth="115.0" />
+                              <ComboBox layoutX="58.0" layoutY="150.0" prefWidth="150.0" promptText="GMT-7:00" />
+                              <CheckBox layoutX="236.0" layoutY="154.0" mnemonicParsing="false" text="Enable Daylight Savings Time" />
+                              <DatePicker layoutX="218.0" layoutY="190.0" prefHeight="25.0" prefWidth="112.0" />
+                              <DatePicker layoutX="413.0" layoutY="190.0" prefHeight="25.0" prefWidth="109.0" />
+                              <Label layoutX="180.0" layoutY="194.0" text="Start:" />
+                              <Label layoutX="380.0" layoutY="194.0" text="End:" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="550.0" layoutY="288.0" prefHeight="418.0" prefWidth="674.0" styleClass="solarbg">
+                           <children>
+                              <Label layoutX="29.0" layoutY="22.0" styleClass="panesubs" text="Solar Radiation Summary">
+                                 <font>
+                                    <Font name="System Bold" size="22.0" />
+                                 </font>
+                              </Label>
+                              <LineChart layoutX="29.0" layoutY="64.0" prefHeight="335.0" prefWidth="623.0">
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </LineChart>
+                           </children>
+                        </Pane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab closable="false" styleClass="tabs" text="Rates">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            <Tab closable="false" styleClass="tabs" text="Rate Payers">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Pane layoutX="65.0" layoutY="39.0" prefHeight="147.0" prefWidth="477.0" styleClass="solarbg">
+                           <children>
+                              <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" />
+                              <TextField layoutX="308.0" layoutY="50.0" />
+                              <TextField layoutX="344.0" layoutY="91.0" prefHeight="25.0" prefWidth="113.0" />
+                              <Label layoutX="239.0" layoutY="54.0" text="Name:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font></Label>
+                              <Label layoutX="239.0" layoutY="95.0" text="No. of Customers">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font></Label>
+                              <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Rate Payer Groups" />
+                              <Button layoutX="33.0" layoutY="100.0" mnemonicParsing="false" text="New" />
+                              <Button layoutX="86.0" layoutY="100.0" mnemonicParsing="false" text="Copy" />
+                              <Button layoutX="142.0" layoutY="100.0" mnemonicParsing="false" text="Delete" />
+                           </children>
+                        </Pane>
+                      <TitledPane animated="false" layoutX="-6775.0" layoutY="90.0" text="untitled 2" />
+                        <ScrollPane hbarPolicy="NEVER" layoutX="114.0" layoutY="209.0" prefHeight="486.0" prefWidth="1053.0">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="718.0" prefWidth="1041.0" styleClass="solarbg">
+                                 <children>
+                                    <Pane layoutX="521.0" layoutY="72.0" prefHeight="300.0" prefWidth="498.0" styleClass="subpanes">
+                                       <children>
+                                          <Label layoutX="23.0" layoutY="14.0" styleClass="subsubs" text="Solar PV" />
+                                          <CheckBox layoutX="110.0" layoutY="16.0" mnemonicParsing="false" selected="true" />
+                                          <Label layoutX="384.0" layoutY="155.0" text="kW">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="370.0" layoutY="121.0" text="Degrees">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="370.0" layoutY="86.0" text="Degrees">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="384.0" layoutY="51.0" text="kW">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="213.0" layoutY="150.0" />
+                                          <TextField layoutX="213.0" layoutY="116.0" />
+                                          <TextField layoutX="213.0" layoutY="81.0" />
+                                          <TextField layoutX="213.0" layoutY="46.0" />
+                                          <Label layoutX="99.0" layoutY="155.0" text="Energy Out:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="114.0" layoutY="121.0" text="Slope:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="108.0" layoutY="86.0" text="Azimuth:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="106.0" layoutY="51.0" text="Capacity:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="83.0" layoutY="191.0" text="Energy Out (Day):">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="27.0" layoutY="259.0" text="Capacity Factor:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="121.0" layoutY="254.0" prefHeight="25.0" prefWidth="87.0" />
+                                          <Label layoutX="222.0" layoutY="259.0" text="\%">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="444.0" layoutY="259.0" text="\%">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="343.0" layoutY="254.0" prefHeight="25.0" prefWidth="87.0" />
+                                          <Label layoutX="249.0" layoutY="259.0" text="PV Penetration:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="81.0" layoutY="226.0" text="Energy Out (Year):">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="375.0" layoutY="191.0" text="kWh/d">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="376.0" layoutY="226.0" text="kWh/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="799.0" layoutY="448.0" prefHeight="89.0" prefWidth="166.0" styleClass="subpanes">
+                                       <children>
+                                          <Button layoutX="-2.0" layoutY="-2.0" mnemonicParsing="false" prefHeight="97.0" prefWidth="170.0" text="View Graph">
+                                             <font>
+                                                <Font name="Arial" size="21.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </Pane>
+                                    <Label layoutX="25.0" layoutY="21.0" styleClass="panesubs" text="Rate Payer:" />
+                                    <Pane layoutX="25.0" layoutY="72.0" prefHeight="300.0" prefWidth="470.0" styleClass="subpanes">
+                                       <children>
+                                          <Label layoutX="23.0" layoutY="14.0" styleClass="subsubs" text="Load Data" />
+                                          <Button layoutX="144.0" layoutY="44.0" mnemonicParsing="false" text="Browse..." />
+                                          <Label layoutX="165.0" layoutY="17.0" text="Import Time Series From File:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="228.0" layoutY="44.0" />
+                                          <Separator layoutX="10.0" layoutY="92.0" prefHeight="11.0" prefWidth="443.0" styleClass="separators" />
+                                          <Label layoutX="41.0" layoutY="119.0" text="Peak Load:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="32.0" layoutY="154.0" text="Average Load:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="22.0" layoutY="189.0" text="Energy Use (Day):">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="38.0" layoutY="258.0" text="Load Factor:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="20.0" layoutY="223.0" text="Energy Use (Year):">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="175.0" layoutY="114.0" />
+                                          <TextField layoutX="175.0" layoutY="149.0" />
+                                          <TextField layoutX="175.0" layoutY="184.0" />
+                                          <TextField layoutX="175.0" layoutY="218.0" />
+                                          <TextField layoutX="175.0" layoutY="253.0" />
+                                          <Label layoutX="346.0" layoutY="119.0" text="kW">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="346.0" layoutY="154.0" text="kW">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="338.0" layoutY="189.0" text="kWh/d">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="338.0" layoutY="223.0" text="kWh/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <TextField layoutX="733.0" layoutY="293.0" />
+                                    <TextField layoutX="733.0" layoutY="258.0" />
+                                    <Pane layoutX="397.0" layoutY="390.0" prefHeight="205.0" prefWidth="336.0" styleClass="subpanes">
+                                       <children>
+                                          <Label layoutX="14.0" layoutY="14.0" styleClass="subsubs" text="Financial Summary" />
+                                          <Label layoutX="287.0" layoutY="125.0" text="\$/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="287.0" layoutY="90.0" text="\$/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="287.0" layoutY="55.0" text="\$/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="132.0" layoutY="120.0" />
+                                          <TextField layoutX="132.0" layoutY="85.0" />
+                                          <TextField layoutX="132.0" layoutY="50.0" />
+                                          <Label layoutX="25.0" layoutY="125.0" text="Demand Charges:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="29.0" layoutY="90.0" text="Energy Charges:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="30.0" layoutY="43.0" prefHeight="39.0" prefWidth="88.0" text="Interconnection Charges:" wrapText="true">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="34.0" layoutY="161.0" text="Total Charges:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="133.0" layoutY="156.0" />
+                                          <Label layoutX="288.0" layoutY="161.0" text="\$/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="25.0" layoutY="390.0" prefHeight="205.0" prefWidth="336.0" styleClass="subpanes">
+                                       <children>
+                                          <Label layoutX="14.0" layoutY="14.0" styleClass="subsubs" text="Grid Interconnection" />
+                                          <Label layoutX="284.0" layoutY="158.0" text="kWh/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="283.0" layoutY="109.0" text="kWh/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="285.0" layoutY="57.0" text="kWh/y">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField layoutX="129.0" layoutY="153.0" />
+                                          <TextField layoutX="128.0" layoutY="104.0" />
+                                          <TextField layoutX="130.0" layoutY="52.0" />
+                                          <Label layoutX="19.0" layoutY="158.0" text="Net Purchases:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="25.0" layoutY="109.0" text="Energy Sold:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="12.0" layoutY="57.0" text="EnergyPurchased:">
+                                             <font>
+                                                <Font name="Arial" size="12.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </ScrollPane>
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+            <Tab closable="false" styleClass="tabs" text="Grid">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Pane layoutX="69.0" layoutY="55.0" prefHeight="147.0" prefWidth="281.0" styleClass="solarbg">
+                           <children>
+                              <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Simulate" />
+                              <Button layoutX="38.0" layoutY="54.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="207.0" text="Run Simulation">
+                                 <font>
+                                    <Font name="Arial" size="22.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="376.0" layoutY="55.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
+                           <children>
+                              <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" />
+                              <TextField layoutX="323.0" layoutY="38.0" />
+                              <TextField layoutX="323.0" layoutY="84.0" />
+                              <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="232.0" layoutY="89.0" text="Average Load:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Summary" />
+                              <Label layoutX="161.0" layoutY="102.0" text="15000" textAlignment="RIGHT">
+                                 <font>
+                                    <Font name="Arial Bold" size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="241.0" layoutY="43.0" text="Peak Load:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="525.0" layoutY="25.0" text="Energy Use (Day):">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="523.0" layoutY="67.0" text="Energy Use (Year):">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <TextField layoutX="626.0" layoutY="62.0" />
+                              <TextField layoutX="626.0" layoutY="20.0" />
+                              <TextField layoutX="626.0" layoutY="104.0" />
+                              <Label layoutX="540.0" layoutY="109.0" text="Load Factor:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="780.0" layoutY="66.0" text="kWh/y">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="780.0" layoutY="24.0" text="kWh/d">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="481.0" layoutY="43.0" text="kW">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="481.0" layoutY="89.0" text="kW">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="69.0" layoutY="239.0" prefHeight="463.0" prefWidth="1137.0" styleClass="solarbg">
+                           <children>
+                              <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Time Series" />
+                              <LineChart layoutX="22.0" layoutY="49.0" prefHeight="400.0" prefWidth="942.0">
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </LineChart>
+                              <CheckBox layoutX="972.0" layoutY="79.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="79.0" mnemonicParsing="false" text="Global Solar" />
+                              <CheckBox layoutX="992.0" layoutY="102.0" mnemonicParsing="false" text="Incident Solar" />
+                              <CheckBox layoutX="972.0" layoutY="102.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="125.0" mnemonicParsing="false" text="AC Primary Load" />
+                              <CheckBox layoutX="972.0" layoutY="125.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="972.0" layoutY="196.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="196.0" mnemonicParsing="false" text="PV Power" />
+                              <CheckBox layoutX="972.0" layoutY="173.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="173.0" mnemonicParsing="false" text="Grid Sellback Rate" />
+                              <CheckBox layoutX="992.0" layoutY="150.0" mnemonicParsing="false" text="Grid Power Price" />
+                              <CheckBox layoutX="972.0" layoutY="150.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="972.0" layoutY="264.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="264.0" mnemonicParsing="false" text="Inverter Input Power" />
+                              <CheckBox layoutX="972.0" layoutY="241.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="241.0" mnemonicParsing="false" text="Grid Sales" />
+                              <CheckBox layoutX="992.0" layoutY="218.0" mnemonicParsing="false" text="Grid Purchases" />
+                              <CheckBox layoutX="972.0" layoutY="218.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="288.0" mnemonicParsing="false" text="Inverter Output Power" />
+                              <CheckBox layoutX="972.0" layoutY="288.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="311.0" mnemonicParsing="false" text="Rectifier Input Power" />
+                              <CheckBox layoutX="972.0" layoutY="311.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="972.0" layoutY="337.0" mnemonicParsing="false" />
+                              <CheckBox layoutX="992.0" layoutY="337.0" mnemonicParsing="false" text="Rectifier Output Power" />
+                              <Button layoutX="970.0" layoutY="380.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="154.0" text="Export">
+                                 <font>
+                                    <Font name="Arial" size="22.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </Pane>
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <MenuBar layoutY="-1.0" prefHeight="37.0" prefWidth="1280.0">
+        <menus>
+          <Menu mnemonicParsing="false" style="-fx-font-size: 18;" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="New" />
+                  <MenuItem mnemonicParsing="false" text="Open" />
+                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem mnemonicParsing="false" text="Save As" />
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" style="-fx-font-size: 18;" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>

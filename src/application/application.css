@@ -1,0 +1,25 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.tabs{
+	-fx-font-size:20;
+}
+
+.solarbg{
+	-fx-background-color:rgba(180,180,180,180);
+	
+}
+.panesubs{
+	-fx-font-size:22;
+	-fx-font-family:arial;
+}
+
+.subpanes{
+	-fx-background-color:rgba(245,245,245,245);
+	-fx-effect:dropshadow(gaussian, black,10,.1,2,2);
+}
+.subsubs{
+	-fx-font-size:18;
+	-fx-font-family:arial;
+}
+.separators{
+	-fx-background-color:rgba(245,245,245,180);
+}
