@@ -31,7 +31,7 @@
                      <children>
                         <Pane layoutX="26.0" layoutY="14.0" prefHeight="692.0" prefWidth="478.0" styleClass="solarbg">
                            <children>
-                              <TableView layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
+                              <TableView fx:id="solarTable" layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
                                 <columns>
                                     <TableColumn text="Month" />
                                   <TableColumn prefWidth="125.0" text="GHI (kWh/m2/d)" />
@@ -39,7 +39,7 @@
                                   <TableColumn prefWidth="120.0" text="Clearness Index" />
                                 </columns>
                               </TableView>
-                              <RadioButton layoutX="79.0" layoutY="69.0" mnemonicParsing="false" selected="true" text="Enter Monthly Averages">
+                              <RadioButton layoutX="79.0" layoutY="69.0" mnemonicParsing="false" text="Enter Monthly Averages">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="solarone" />
                                  </toggleGroup>
@@ -77,11 +77,11 @@
                                     <ToggleGroup fx:id="solarthree" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton layoutX="291.0" layoutY="101.0" mnemonicParsing="false" text="West" toggleGroup="$solarthree" />
-                              <TextField layoutX="93.0" layoutY="62.0" prefHeight="25.0" prefWidth="115.0" />
-                              <TextField layoutX="93.0" layoutY="97.0" prefHeight="25.0" prefWidth="115.0" />
+                              <RadioButton layoutX="291.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="West" toggleGroup="$solarthree" />
+                              <TextField alignment="CENTER_RIGHT" layoutX="93.0" layoutY="62.0" prefHeight="25.0" prefWidth="115.0" text="33.45" />
+                              <TextField alignment="CENTER_RIGHT" layoutX="93.0" layoutY="97.0" prefHeight="25.0" prefWidth="115.0" text="112.07" />
                               <ComboBox layoutX="58.0" layoutY="150.0" prefWidth="150.0" promptText="GMT-7:00" />
-                              <CheckBox layoutX="236.0" layoutY="154.0" mnemonicParsing="false" text="Enable Daylight Savings Time" />
+                              <CheckBox layoutX="236.0" layoutY="154.0" mnemonicParsing="false" selected="true" text="Enable Daylight Savings Time" />
                               <DatePicker layoutX="218.0" layoutY="190.0" prefHeight="25.0" prefWidth="112.0" />
                               <DatePicker layoutX="413.0" layoutY="190.0" prefHeight="25.0" prefWidth="109.0" />
                               <Label layoutX="180.0" layoutY="194.0" text="Start:" />
@@ -95,7 +95,7 @@
                                     <Font name="System Bold" size="22.0" />
                                  </font>
                               </Label>
-                              <LineChart layoutX="29.0" layoutY="64.0" prefHeight="335.0" prefWidth="623.0">
+                              <LineChart fx:id="solarGraph" layoutX="29.0" layoutY="64.0" prefHeight="335.0" prefWidth="623.0">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
@@ -115,7 +115,7 @@
                      <children>
                         <Pane layoutX="46.0" layoutY="33.0" prefHeight="147.0" prefWidth="477.0" styleClass="solarbg">
                            <children>
-                              <ComboBox layoutX="28.0" layoutY="50.0" prefHeight="25.0" prefWidth="175.0" />
+                              <ComboBox layoutX="28.0" layoutY="50.0" prefHeight="25.0" prefWidth="175.0" promptText="TOU 3-6" />
                               <TextField layoutX="308.0" layoutY="50.0" text="TOU 3-6" />
                               <Label layoutX="256.0" layoutY="55.0" text="Name:">
                                  <font>
@@ -147,7 +147,7 @@
                                     <RadioButton layoutX="23.0" layoutY="69.0" mnemonicParsing="false" text="Monthly Net Metering" toggleGroup="$netmetering" />
                                     <RadioButton layoutX="23.0" layoutY="94.0" mnemonicParsing="false" text="Annual Net Metering" toggleGroup="$netmetering" />
                                     <Label layoutX="23.0" layoutY="136.0" text="Overproduction Credit:" />
-                                    <TextField layoutX="160.0" layoutY="132.0" prefHeight="25.0" prefWidth="113.0" />
+                                    <TextField alignment="CENTER" layoutX="160.0" layoutY="132.0" prefHeight="25.0" prefWidth="113.0" text="0.03" />
                                     <Label layoutX="293.0" layoutY="136.0" text="\$/kWh" />
                                  </children>
                               </Pane>
@@ -227,7 +227,7 @@
                                  <children>
                                     <Label layoutX="14.0" layoutY="4.0" styleClass="subsubs" text="Additional Charges or Fees" />
                                     <Label layoutX="324.0" layoutY="41.0" text="\$/mo" />
-                                    <TextField layoutX="200.0" layoutY="37.0" prefHeight="25.0" prefWidth="113.0" />
+                                    <TextField alignment="CENTER" layoutX="200.0" layoutY="37.0" prefHeight="25.0" prefWidth="113.0" text="15.00" />
                                     <Label layoutX="63.0" layoutY="41.0" text="Interconnection Charge:" />
                                  </children>
                               </Pane>
@@ -285,9 +285,9 @@
                      <children>
                         <Pane layoutX="65.0" layoutY="39.0" prefHeight="147.0" prefWidth="477.0" styleClass="solarbg">
                            <children>
-                              <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" />
-                              <TextField layoutX="308.0" layoutY="50.0" />
-                              <TextField layoutX="344.0" layoutY="91.0" prefHeight="25.0" prefWidth="113.0" />
+                              <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" promptText="Strata 1" />
+                              <TextField alignment="CENTER_RIGHT" layoutX="308.0" layoutY="50.0" text="Strata 1" />
+                              <TextField alignment="CENTER_RIGHT" layoutX="344.0" layoutY="91.0" prefHeight="25.0" prefWidth="113.0" text="15000" />
                               <Label layoutX="239.0" layoutY="54.0" text="Name:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -304,7 +304,7 @@
                         </Pane>
                       <TitledPane animated="false" layoutX="-6775.0" layoutY="90.0" text="untitled 2" />
                         <ScrollPane hbarPolicy="NEVER" layoutX="37.0" layoutY="212.0" prefHeight="495.0" prefWidth="1207.0">
-                          <content>
+                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1337.0" prefWidth="1192.0" styleClass="solarbg">
                                  <children>
                                     <Pane layoutX="516.0" layoutY="72.0" prefHeight="300.0" prefWidth="655.0" styleClass="subpanes">
@@ -331,10 +331,10 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="433.0" layoutY="68.0" styleClass="textoutput" />
-                                          <TextField layoutX="89.0" layoutY="176.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="141.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="106.0" prefHeight="25.0" prefWidth="100.0" />
+                                          <TextField editable="false" layoutX="433.0" layoutY="68.0" styleClass="textoutput" text="1.4" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="176.0" prefWidth="100.0" text="33.45" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="141.0" prefWidth="100.0" text="0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="106.0" prefHeight="25.0" prefWidth="100.0" text="5.5" />
                                           <Label layoutX="319.0" layoutY="73.0" text="Energy Out:">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -365,7 +365,7 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="433.0" layoutY="178.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="433.0" layoutY="178.0" styleClass="textoutput" text="20.5" />
                                           <Label layoutX="607.0" layoutY="183.0" text="\%">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -376,7 +376,7 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="433.0" layoutY="214.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="433.0" layoutY="214.0" styleClass="textoutput" text="68.6" />
                                           <Label layoutX="312.0" layoutY="219.0" text="PV Penetration:">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -397,14 +397,14 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="433.0" layoutY="139.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="433.0" layoutY="104.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="433.0" layoutY="139.0" styleClass="textoutput" text="12264" />
+                                          <TextField editable="false" layoutX="433.0" layoutY="104.0" styleClass="textoutput" text="33.6" />
                                           <Separator layoutX="279.0" layoutY="19.0" orientation="VERTICAL" prefHeight="262.0" prefWidth="6.0" />
                                        </children>
                                     </Pane>
                                     <Pane layoutX="852.0" layoutY="1162.0" prefHeight="89.0" prefWidth="166.0" styleClass="subpanes">
                                        <children>
-                                          <Button layoutX="-2.0" layoutY="-2.0" mnemonicParsing="false" prefHeight="97.0" prefWidth="170.0" text="View Graph">
+                                          <Button layoutX="-2.0" layoutY="-2.0" mnemonicParsing="false" onMouseReleased="#showRatepayersGraph" prefHeight="97.0" prefWidth="170.0" text="View Graph">
                                              <font>
                                                 <Font name="Arial" size="21.0" />
                                              </font>
@@ -448,11 +448,11 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="210.0" layoutY="111.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="210.0" layoutY="146.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="210.0" layoutY="181.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="210.0" layoutY="215.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="210.0" layoutY="250.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="210.0" layoutY="111.0" styleClass="textoutput" text="6.8" />
+                                          <TextField editable="false" layoutX="210.0" layoutY="146.0" styleClass="textoutput" text="2.04" />
+                                          <TextField editable="false" layoutX="210.0" layoutY="181.0" styleClass="textoutput" text="49.0" />
+                                          <TextField editable="false" layoutX="210.0" layoutY="215.0" styleClass="textoutput" text="17870" />
+                                          <TextField editable="false" layoutX="210.0" layoutY="250.0" styleClass="textoutput" text="0.3" />
                                           <Label layoutX="381.0" layoutY="116.0" text="kW">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -493,9 +493,9 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="132.0" layoutY="120.0" styleClass="textoutput" />
-                                          <TextField layoutX="132.0" layoutY="85.0" styleClass="textoutput" />
-                                          <TextField layoutX="132.0" layoutY="50.0" styleClass="textoutput" />
+                                          <TextField layoutX="132.0" layoutY="120.0" styleClass="textoutput" text="0.00" />
+                                          <TextField layoutX="132.0" layoutY="85.0" styleClass="textoutput" text="202.50" />
+                                          <TextField layoutX="132.0" layoutY="50.0" styleClass="textoutput" text="420.00" />
                                           <Label layoutX="25.0" layoutY="125.0" text="Demand Charges:">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -516,7 +516,7 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="133.0" layoutY="156.0" styleClass="textoutput" />
+                                          <TextField layoutX="133.0" layoutY="156.0" styleClass="textoutput" text="622.50" />
                                           <Label layoutX="288.0" layoutY="161.0" text="\$/y">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -542,9 +542,9 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="129.0" layoutY="153.0" styleClass="textoutput" />
-                                          <TextField layoutX="128.0" layoutY="104.0" styleClass="textoutput" />
-                                          <TextField layoutX="130.0" layoutY="52.0" styleClass="textoutput" />
+                                          <TextField layoutX="129.0" layoutY="153.0" styleClass="textoutput" text="1500" />
+                                          <TextField layoutX="128.0" layoutY="104.0" styleClass="textoutput" text="12000" />
+                                          <TextField layoutX="130.0" layoutY="52.0" styleClass="textoutput" text="13500" />
                                           <Label layoutX="19.0" layoutY="158.0" text="Net Purchases:">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -585,10 +585,10 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="353.0" layoutY="91.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="126.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="161.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="195.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="91.0" styleClass="textoutput" text="12264" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="126.0" styleClass="textoutput" text="11650" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="161.0" styleClass="textoutput" text="614" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="195.0" styleClass="textoutput" text="18.6" />
                                           <Label layoutX="516.0" layoutY="96.0" text="kWh/y">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -619,8 +619,8 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="89.0" layoutY="130.0" prefHeight="25.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="165.0" prefWidth="100.0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="130.0" prefHeight="25.0" prefWidth="100.0" text="5" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="165.0" prefWidth="100.0" styleClass="ratesinput" text="50" />
                                           <Label layoutX="206.0" layoutY="135.0" text="kW">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -658,10 +658,10 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="353.0" layoutY="95.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="131.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="167.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="203.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="95.0" styleClass="textoutput" text="2453" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="131.0" styleClass="textoutput" text="2208" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="167.0" styleClass="textoutput" text="245" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="203.0" styleClass="textoutput" text="4.9" />
                                           <Label layoutX="516.0" layoutY="100.0" text="kWh/y">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -692,8 +692,8 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="89.0" layoutY="95.0" prefHeight="25.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="130.0" prefWidth="100.0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="95.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="10" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="130.0" prefWidth="100.0" styleClass="ratesinput" text="90" />
                                           <Label layoutX="206.0" layoutY="100.0" text="kW">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -716,8 +716,8 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="89.0" layoutY="203.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="168.0" prefHeight="25.0" prefWidth="100.0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="203.0" prefWidth="100.0" styleClass="ratesinput" text="1" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="168.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="20" />
                                           <Label layoutX="15.0" layoutY="208.0" text="Max C-rate:">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -743,8 +743,8 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="353.0" layoutY="137.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="173.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="137.0" styleClass="textoutput" text="625" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="173.0" styleClass="textoutput" text="35" />
                                           <Label layoutX="516.0" layoutY="142.0" text="kWh/y">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -765,7 +765,7 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="89.0" layoutY="138.0" prefHeight="25.0" prefWidth="100.0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="138.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="10" />
                                           <Label layoutX="206.0" layoutY="143.0" text="\%">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -773,7 +773,7 @@
                                           </Label>
                                           <CheckBox layoutX="179.0" layoutY="17.0" mnemonicParsing="false" selected="true" />
                                           <Separator layoutX="242.0" layoutY="19.0" orientation="VERTICAL" prefHeight="308.0" prefWidth="4.0" />
-                                          <CheckBox layoutX="129.0" layoutY="179.0" mnemonicParsing="false" selected="true" />
+                                          <CheckBox layoutX="129.0" layoutY="179.0" mnemonicParsing="false" />
                                        </children>
                                     </Pane>
                                     <Pane layoutX="25.0" layoutY="732.0" prefHeight="340.0" prefWidth="564.0" styleClass="subpanes">
@@ -799,10 +799,10 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField editable="false" layoutX="353.0" layoutY="91.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="126.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="161.0" styleClass="textoutput" />
-                                          <TextField editable="false" layoutX="353.0" layoutY="195.0" styleClass="textoutput" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="91.0" styleClass="textoutput" text="12.6" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="126.0" styleClass="textoutput" text="4611" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="161.0" styleClass="textoutput" text="231" />
+                                          <TextField editable="false" layoutX="353.0" layoutY="195.0" styleClass="textoutput" text="20.5" />
                                           <Label layoutX="516.0" layoutY="96.0" text="kWh/d">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -833,8 +833,7 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="89.0" layoutY="51.0" prefHeight="25.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="86.0" prefWidth="100.0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="51.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="24" />
                                           <Label layoutX="206.0" layoutY="56.0" text="kW">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -852,8 +851,8 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
-                                          <TextField layoutX="89.0" layoutY="156.0" prefWidth="100.0" />
-                                          <TextField layoutX="89.0" layoutY="121.0" prefHeight="25.0" prefWidth="100.0" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="156.0" prefWidth="100.0" styleClass="ratesinput" text="50" />
+                                          <TextField alignment="CENTER" layoutX="89.0" layoutY="121.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="95" />
                                           <Label layoutX="14.0" layoutY="151.0" prefHeight="39.0" prefWidth="54.0" text="Starting SOC:" wrapText="true">
                                              <font>
                                                 <Font name="Arial" size="12.0" />
@@ -889,6 +888,7 @@
                                                 <Font name="Arial" size="12.0" />
                                              </font>
                                           </Label>
+                                          <ComboBox layoutX="89.0" layoutY="86.0" prefHeight="25.0" prefWidth="100.0" promptText="Level 1" />
                                        </children>
                                     </Pane>
                                     <Label layoutX="40.0" layoutY="997.0" text="End Time:">
@@ -896,10 +896,10 @@
                                           <Font name="Arial" size="12.0" />
                                        </font>
                                     </Label>
-                                    <TextField layoutX="115.0" layoutY="992.0" prefHeight="25.0" prefWidth="100.0" />
-                                    <TextField layoutX="115.0" layoutY="1027.0" prefWidth="100.0" />
-                                    <TextField layoutX="115.0" layoutY="957.0" prefWidth="100.0" />
-                                    <TextField layoutX="115.0" layoutY="922.0" prefHeight="25.0" prefWidth="100.0" />
+                                    <TextField alignment="CENTER" layoutX="115.0" layoutY="992.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="4:00" />
+                                    <TextField alignment="CENTER" layoutX="115.0" layoutY="1027.0" prefWidth="100.0" styleClass="ratesinput" text="2" />
+                                    <TextField alignment="CENTER" layoutX="115.0" layoutY="957.0" prefWidth="100.0" styleClass="ratesinput" text="20:00" />
+                                    <TextField alignment="CENTER" layoutX="115.0" layoutY="922.0" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="100" />
                                     <Label layoutX="40.0" layoutY="962.0" text="Start Time:">
                                        <font>
                                           <Font name="Arial" size="12.0" />
@@ -907,8 +907,7 @@
                                     </Label>
                                  </children>
                               </AnchorPane>
-                          </content>
-                        </ScrollPane>
+                           </content></ScrollPane>
                      </children></AnchorPane>
               </content>
             </Tab>
@@ -928,9 +927,9 @@
                         </Pane>
                         <Pane layoutX="376.0" layoutY="55.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
                            <children>
-                              <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" />
-                              <TextField layoutX="323.0" layoutY="38.0" />
-                              <TextField layoutX="323.0" layoutY="84.0" />
+                              <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" promptText="Strata 1" />
+                              <TextField layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="102,000" />
+                              <TextField layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="30,600" />
                               <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -962,9 +961,9 @@
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField layoutX="626.0" layoutY="62.0" />
-                              <TextField layoutX="626.0" layoutY="20.0" />
-                              <TextField layoutX="626.0" layoutY="104.0" />
+                              <TextField layoutX="626.0" layoutY="62.0" styleClass="textoutput" text="268,056,000" />
+                              <TextField layoutX="626.0" layoutY="20.0" styleClass="textoutput" text="734,400" />
+                              <TextField layoutX="626.0" layoutY="104.0" styleClass="textoutput" text="0.3" />
                               <Label layoutX="540.0" layoutY="109.0" text="Load Factor:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
