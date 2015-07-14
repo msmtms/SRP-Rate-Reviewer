@@ -23,3 +23,9 @@
 .separators{
 	-fx-background-color:rgba(245,245,245,180);
 }
+.columnheaders{
+	-fx-font-size:10;
+}
+.textoutput{
+	-fx-background-color:rgb(230,230,230);
+}

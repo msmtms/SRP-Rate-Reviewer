@@ -37,7 +37,8 @@ public class Main extends Application {
 
                 }
             });
-			SceneController ctr = (SceneController) replaceSceneContent("scene.fxml", null);
+			SceneController cont = (SceneController) replaceSceneContent("scene.fxml", null);
+			cont.init();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -49,6 +50,7 @@ public class Main extends Application {
 	
 	public Node replaceSceneContent(String fxml, Class<? extends AnchorPane> cls) throws Exception {
         FXMLLoader loader = new FXMLLoader();
+        Node cont;
         if (cls == null) {
             //System.out.println("controller was set by FXML");
         } else {
@@ -60,8 +62,9 @@ public class Main extends Application {
         AnchorPane page;
         try {
             page = (AnchorPane) loader.load(in);
-        } finally {
-            in.close();
+            cont = (Node) loader.getController();
+        }finally{
+        	in.close();
         }
 
         // Store the stage width and height in case the user has resized the window
@@ -85,6 +88,7 @@ public class Main extends Application {
 
         stage.setScene(scene);
         stage.sizeToScene();
-        return (Node) loader.getController();
+        
+        return cont;
     }
 }
