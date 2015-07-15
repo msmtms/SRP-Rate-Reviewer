@@ -1,17 +1,25 @@
 package application;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import javafx.event.ActionEvent;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
@@ -36,12 +44,15 @@ public class SceneController extends AnchorPane{
 	private ToggleGroup ratesweek;
 	@FXML
 	private GridPane rateGrid;
+	@FXML
+	private LineChart gridGraph;
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
-	private static boolean gridToggle;
-	private static int gridIndex;
+	private boolean gridToggle;
+	private int gridIndex;
 	private Pane[] panes;
+	private String[][] series;
 	
 	public void init(){
 		gridIndex = 0;
@@ -65,26 +76,95 @@ public class SceneController extends AnchorPane{
 				count++;
 			}
 		}
+		InputStream is;
+		try {
+			is = this.getClass().getResourceAsStream("/srpweek.xlsx");
+			XSSFWorkbook wb = new XSSFWorkbook(is);
+			
+			XSSFSheet sheet = wb.getSheetAt(0);
+			series = new String[sheet.getPhysicalNumberOfRows()][sheet.getRow(0).getPhysicalNumberOfCells()];
+			
+			for(int x = 1; x < sheet.getPhysicalNumberOfRows(); x++){
+				XSSFRow row = sheet.getRow(x);
+				
+				for(int y = 0; y < row.getPhysicalNumberOfCells(); y++){
+					if(row.getCell(y).getCellType() == XSSFCell.CELL_TYPE_FORMULA){
+						series[x][y] = Double.toString(row.getCell(y).getNumericCellValue());
+					}else{
+						Date date = row.getCell(0).getDateCellValue();
+						if(date!= null){
+							SimpleDateFormat df = new SimpleDateFormat("MM/dd kk:mm");
+							series[x][y] = df.format(date);
+						}
+					}
+				}
+			}
+
+			gridGraph.getData().clear();
+			final NumberAxis xAxis = new NumberAxis();
+			final NumberAxis yAxis = new NumberAxis();
+			yAxis.setLabel("Load (kW)");
+
+			for(int x = 1; x < 6; x++){
+				XYChart.Series s = new XYChart.Series();
+				switch(x){
+					case 1:{
+						s.setName("Tiered Rate");
+						break;
+					}
+					case 2:{
+						s.setName("Time-of-Use");
+						break;
+					}
+					case 3:{
+						s.setName("Critical Peak");
+						break;
+					}
+					case 4:{
+						s.setName("Net Grid (with solar)");
+						break;
+					}
+					case 5:{
+						s.setName("Net Grid (without solar)");
+						break;
+					}
+				}
+				String oldDate = "";
+				for(int y = 1; y < series.length; y++){
+					if(series[y][x] != null){
+						String date = series[y][0];
+						s.getData().add(new XYChart.Data(date,Double.parseDouble(series[y][x])));
+					}else{
+						break;
+					}
+				}
+				gridGraph.getData().add(s);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@FXML
     public void showRatepayersGraph() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-	        Node cont;
+	        RatepayersController cont;
 	        InputStream in = Main.class.getResourceAsStream("ratepayers.fxml");
 	        loader.setBuilderFactory(new JavaFXBuilderFactory());
 	        loader.setLocation(Main.class.getResource("ratepayers.fxml"));
 	        AnchorPane page;
 	        try {
 	            page = (AnchorPane) loader.load(in);
-	            cont = (Node) loader.getController();
+	            cont = (RatepayersController) loader.getController();
+	            
 	        }finally{
 	        	in.close();
 	        }
             Stage stage = new Stage();
             stage.setTitle("Ratepayers");
             stage.setScene(new Scene(page, 1280, 720));
+            cont.init(series);
             stage.show();
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override

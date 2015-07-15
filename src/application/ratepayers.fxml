@@ -4,10 +4,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.RatepayersController">
    <children>
-      <LineChart layoutX="26.0" layoutY="14.0" prefHeight="689.0" prefWidth="1226.0">
+      <LineChart fx:id="ratepayersGraph" createSymbols="false" layoutX="26.0" layoutY="14.0" prefHeight="689.0" prefWidth="1226.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>

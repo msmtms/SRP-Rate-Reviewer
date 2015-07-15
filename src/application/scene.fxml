@@ -994,7 +994,7 @@
                         <Pane layoutX="69.0" layoutY="239.0" prefHeight="463.0" prefWidth="1137.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Time Series" />
-                              <LineChart layoutX="22.0" layoutY="49.0" prefHeight="400.0" prefWidth="942.0">
+                              <LineChart fx:id="gridGraph" createSymbols="false" layoutX="22.0" layoutY="49.0" prefHeight="400.0" prefWidth="942.0">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
