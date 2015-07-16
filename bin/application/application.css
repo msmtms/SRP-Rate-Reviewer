@@ -28,5 +28,8 @@
 }
 .textoutput{
 	-fx-background-color:rgb(230,230,230);
-	-fx-alignment:center;
+	-fx-alignment:center-right;
+	-fx-font-family:arial;
+	-fx-font-size:12;
+	-fx-max-width:150px;
 }

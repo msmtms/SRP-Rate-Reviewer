@@ -95,7 +95,7 @@
                                     <Font name="System Bold" size="22.0" />
                                  </font>
                               </Label>
-                              <LineChart fx:id="solarGraph" layoutX="29.0" layoutY="64.0" prefHeight="335.0" prefWidth="623.0">
+                              <LineChart fx:id="solarGraph" createSymbols="false" layoutX="29.0" layoutY="64.0" prefHeight="335.0" prefWidth="623.0">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
@@ -928,8 +928,8 @@
                         <Pane layoutX="376.0" layoutY="55.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
                            <children>
                               <ComboBox layoutX="38.0" layoutY="50.0" prefWidth="150.0" promptText="Strata 1" />
-                              <TextField layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="102,000" />
-                              <TextField layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="30,600" />
+                              <TextField editable="false" layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="102,000" />
+                              <TextField editable="false" layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="30,600" />
                               <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -961,9 +961,9 @@
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField layoutX="626.0" layoutY="62.0" styleClass="textoutput" text="268,056,000" />
-                              <TextField layoutX="626.0" layoutY="20.0" styleClass="textoutput" text="734,400" />
-                              <TextField layoutX="626.0" layoutY="104.0" styleClass="textoutput" text="0.3" />
+                              <TextField editable="false" layoutX="626.0" layoutY="62.0" styleClass="textoutput" text="268,056,000" />
+                              <TextField editable="false" layoutX="626.0" layoutY="20.0" styleClass="textoutput" text="734,400" />
+                              <TextField editable="false" layoutX="626.0" layoutY="104.0" styleClass="textoutput" text="0.3" />
                               <Label layoutX="540.0" layoutY="109.0" text="Load Factor:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -994,31 +994,60 @@
                         <Pane layoutX="69.0" layoutY="239.0" prefHeight="463.0" prefWidth="1137.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Time Series" />
-                              <LineChart fx:id="gridGraph" createSymbols="false" layoutX="22.0" layoutY="49.0" prefHeight="400.0" prefWidth="942.0">
-                                <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </LineChart>
-                              <CheckBox layoutX="976.0" layoutY="79.0" mnemonicParsing="false" text="Global Solar" />
-                              <CheckBox layoutX="976.0" layoutY="102.0" mnemonicParsing="false" text="Incident Solar" />
-                              <CheckBox layoutX="976.0" layoutY="125.0" mnemonicParsing="false" text="AC Primary Load" />
-                              <CheckBox layoutX="976.0" layoutY="196.0" mnemonicParsing="false" text="PV Power" />
-                              <CheckBox layoutX="976.0" layoutY="173.0" mnemonicParsing="false" text="Grid Sellback Rate" />
-                              <CheckBox layoutX="976.0" layoutY="150.0" mnemonicParsing="false" text="Grid Power Price" />
-                              <CheckBox layoutX="976.0" layoutY="264.0" mnemonicParsing="false" text="Inverter Input Power" />
-                              <CheckBox layoutX="976.0" layoutY="241.0" mnemonicParsing="false" text="Grid Sales" />
-                              <CheckBox layoutX="976.0" layoutY="218.0" mnemonicParsing="false" text="Grid Purchases" />
-                              <CheckBox layoutX="976.0" layoutY="288.0" mnemonicParsing="false" text="Inverter Output Power" />
-                              <CheckBox layoutX="976.0" layoutY="311.0" mnemonicParsing="false" text="Rectifier Input Power" />
-                              <CheckBox layoutX="976.0" layoutY="337.0" mnemonicParsing="false" text="Rectifier Output Power" />
+                              <CheckBox fx:id="tieredRateCB" layoutX="976.0" layoutY="79.0" mnemonicParsing="false" selected="true" text="Tiered Rate">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox fx:id="timeOfUseCB" layoutX="976.0" layoutY="102.0" mnemonicParsing="false" selected="true" text="Time-of-Use">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox fx:id="criticalPeakCB" layoutX="976.0" layoutY="125.0" mnemonicParsing="false" selected="true" text="Critical Peak">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="196.0" mnemonicParsing="false" text="PV Power">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox fx:id="netGridNonSolarCB" layoutX="976.0" layoutY="173.0" mnemonicParsing="false" selected="true" text="Net Grid (without Solar)">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox fx:id="netGridSolarCB" layoutX="976.0" layoutY="150.0" mnemonicParsing="false" selected="true" text="Net Grid (with Solar)">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="264.0" mnemonicParsing="false" text="Inverter Input Power">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="241.0" mnemonicParsing="false" text="Grid Sales">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="218.0" mnemonicParsing="false" text="Grid Purchases">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="288.0" mnemonicParsing="false" text="Inverter Output Power">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="311.0" mnemonicParsing="false" text="Rectifier Input Power">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
+                              <CheckBox layoutX="976.0" layoutY="337.0" mnemonicParsing="false" text="Rectifier Output Power">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font></CheckBox>
                               <Button layoutX="970.0" layoutY="380.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="154.0" text="Export">
                                  <font>
                                     <Font name="Arial" size="22.0" />
                                  </font>
                               </Button>
+                              <Pane fx:id="gridGraphPane" layoutX="31.0" layoutY="50.0" prefHeight="392.0" prefWidth="908.0" />
                            </children>
                         </Pane>
                      </children></AnchorPane>

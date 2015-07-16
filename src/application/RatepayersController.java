@@ -1,5 +1,8 @@
 package application;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -44,8 +47,9 @@ public class RatepayersController extends AnchorPane {
 				String oldDate = "";
 				for(int y = 1; y < series.length; y++){
 					if(series[y][x] != null){
-						String date = series[y][0];
-						s.getData().add(new XYChart.Data(date,Double.parseDouble(series[y][x])));
+						Date date = new Date(Long.parseLong(series[y][0]));
+						SimpleDateFormat df = new SimpleDateFormat("MM:dd kk:mm");
+						s.getData().add(new XYChart.Data(df.format(date),Double.parseDouble(series[y][x])));
 					}else{
 						break;
 					}

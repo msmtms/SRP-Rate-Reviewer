@@ -1,5 +1,7 @@
 package application;
 
+import javafx.scene.text.Font;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,8 +23,10 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -45,7 +51,17 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private GridPane rateGrid;
 	@FXML
-	private LineChart gridGraph;
+	private Pane gridGraphPane;
+	@FXML
+	private CheckBox tieredRateCB;
+	@FXML
+	private CheckBox timeOfUseCB;
+	@FXML
+	private CheckBox criticalPeakCB;
+	@FXML
+	private CheckBox netGridNonSolarCB;
+	@FXML
+	private CheckBox netGridSolarCB;
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
@@ -53,6 +69,7 @@ public class SceneController extends AnchorPane{
 	private int gridIndex;
 	private Pane[] panes;
 	private String[][] series;
+	private String[] colors = {"pink","green","blue","purple", "red"};
 	
 	public void init(){
 		gridIndex = 0;
@@ -78,6 +95,7 @@ public class SceneController extends AnchorPane{
 		}
 		InputStream is;
 		try {
+			LineChart<Date,Number> gridChart;
 			is = this.getClass().getResourceAsStream("/srpweek.xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(is);
 			
@@ -93,52 +111,48 @@ public class SceneController extends AnchorPane{
 					}else{
 						Date date = row.getCell(0).getDateCellValue();
 						if(date!= null){
-							SimpleDateFormat df = new SimpleDateFormat("MM/dd kk:mm");
-							series[x][y] = df.format(date);
+							series[x][y] = Long.toString(date.getTime());
 						}
 					}
 				}
 			}
 
-			gridGraph.getData().clear();
-			final NumberAxis xAxis = new NumberAxis();
-			final NumberAxis yAxis = new NumberAxis();
-			yAxis.setLabel("Load (kW)");
-
+			ObservableList<XYChart.Series<Date, Number>> s = FXCollections.observableArrayList();
 			for(int x = 1; x < 6; x++){
-				XYChart.Series s = new XYChart.Series();
-				switch(x){
-					case 1:{
-						s.setName("Tiered Rate");
-						break;
-					}
-					case 2:{
-						s.setName("Time-of-Use");
-						break;
-					}
-					case 3:{
-						s.setName("Critical Peak");
-						break;
-					}
-					case 4:{
-						s.setName("Net Grid (with solar)");
-						break;
-					}
-					case 5:{
-						s.setName("Net Grid (without solar)");
-						break;
-					}
-				}
-				String oldDate = "";
+				ObservableList<XYChart.Data<Date, Number>> ss = FXCollections.observableArrayList();
+				Date date = null; 
 				for(int y = 1; y < series.length; y++){
-					if(series[y][x] != null){
-						String date = series[y][0];
-						s.getData().add(new XYChart.Data(date,Double.parseDouble(series[y][x])));
+					if(series[y][0] != null){
+						date = new Date(Long.parseLong(series[y][0]));
+					}
+					if(series[y][x] != null && date != null){
+						ss.add(new XYChart.Data<Date,Number>(date,Double.parseDouble(series[y][x])));
 					}else{
 						break;
 					}
 				}
-				gridGraph.getData().add(s);
+				s.add(new XYChart.Series<>("",ss));
+			}
+			DateAxis dateAxis = new DateAxis();
+			NumberAxis numberAxis = new NumberAxis();
+			gridChart = new LineChart<Date,Number>(dateAxis, numberAxis, s);
+			gridChart.getYAxis().setLabel("Load (kW)");
+			gridChart.getYAxis().setStyle("-fx-font-size:15;");
+			gridChart.getXAxis().setTickLabelRotation(80);
+			gridChart.getXAxis().setTickLabelFont(new Font("Arial", 14));
+			gridChart.setLegendVisible(false);
+			gridChart.setCreateSymbols(false);
+			gridChart.setMinHeight(392);
+			gridChart.setMinWidth(908);
+			gridGraphPane.getChildren().add(gridChart);
+			tieredRateCB.setStyle("-fx-text-fill:"+colors[0]+";");
+			timeOfUseCB.setStyle("-fx-text-fill:"+colors[1]+";");
+			criticalPeakCB.setStyle("-fx-text-fill:"+colors[2]+";");
+			netGridNonSolarCB.setStyle("-fx-text-fill:"+colors[3]+";");
+			netGridSolarCB.setStyle("-fx-text-fill:"+colors[4]+";");
+			
+			for(int x = 0; x<s.size();x++){
+				s.get(x).nodeProperty().get().setStyle("-fx-stroke: "+colors[x]+";");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
