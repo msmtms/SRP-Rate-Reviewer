@@ -1059,16 +1059,16 @@
         <menus>
           <Menu mnemonicParsing="false" style="-fx-font-size: 18;" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" text="New" />
-                  <MenuItem mnemonicParsing="false" text="Open" />
-                  <MenuItem mnemonicParsing="false" text="Save" />
-                  <MenuItem mnemonicParsing="false" text="Save As" />
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#newClicked" text="New" />
+                  <MenuItem mnemonicParsing="false" onAction="#openClicked" text="Open" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveClicked" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveAsClicked" text="Save As" />
+              <MenuItem mnemonicParsing="false" onAction="#closeClicked" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" style="-fx-font-size: 18;" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#aboutClicked" text="About" />
             </items>
           </Menu>
         </menus>

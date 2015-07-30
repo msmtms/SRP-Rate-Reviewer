@@ -2,6 +2,7 @@ package application;
 
 import javafx.scene.text.Font;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,6 +27,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToggleGroup;
@@ -32,6 +36,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -220,6 +225,48 @@ public class SceneController extends AnchorPane{
 			}
 			
 		}
+	}
+	
+	// Event Listener on MenuItem.onAction
+	@FXML
+	public void aboutClicked(ActionEvent event) {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("About SRP Rate Reviewer");
+		alert.setHeaderText("©NathanJohnson2015");
+		alert.setContentText("Build .17\nDeveloper: Derek Hamel");
+		alert.show();
+	}
+	@FXML
+	public void newClicked(ActionEvent event) {
+		//TODO: save()? and clear()
+	}
+	@FXML
+	public void openClicked(ActionEvent event) {
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		fc.showOpenDialog(null);
+	}
+	@FXML
+	public void saveClicked(ActionEvent event) {
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		fc.showSaveDialog(null);
+	}
+	@FXML
+	public void saveAsClicked(ActionEvent event) {
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		fc.showSaveDialog(null);
+	}
+	@FXML
+	public void closeClicked(ActionEvent event) {
+		System.exit(0);
 	}
 }
 
