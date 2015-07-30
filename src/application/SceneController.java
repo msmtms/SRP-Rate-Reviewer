@@ -31,6 +31,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -44,19 +54,227 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private AnchorPane AnchorPane;
 	@FXML
+	private Tab notesTab;
+	@FXML
+	private TextField authorTB;
+	@FXML
+	private TextArea notesTB;
+	@FXML
+	private Tab solarTab;
+	@FXML
+	private TableView solarTable;
+	@FXML
+	private TableColumn solarMonthColumn;
+	@FXML
+	private TableColumn solarGHIColumn;
+	@FXML
+	private TableColumn solarDNIColumn;
+	@FXML
+	private TableColumn solarClearnessColumn;
+	@FXML
+	private RadioButton enterMonthlyAveragesRadio;
+	@FXML
 	private ToggleGroup solarone;
+	@FXML
+	private RadioButton importHourlyDataRadio;
+	@FXML
+	private TextField hourlyDataFileTB;
+	@FXML
+	private RadioButton solarNorthRadio;
 	@FXML
 	private ToggleGroup solartwo;
 	@FXML
+	private RadioButton solarSouthRadio;
+	@FXML
+	private RadioButton solarEastRadio;
+	@FXML
 	private ToggleGroup solarthree;
+	@FXML
+	private RadioButton solarWestRadio;
+	@FXML
+	private TextField solarLatTB;
+	@FXML
+	private TextField solarLonTB;
+	@FXML
+	private ComboBox solarTimeCB;
+	@FXML
+	private CheckBox solarDaylightSavingsCB;
+	@FXML
+	private DatePicker solarStartDP;
+	@FXML
+	private DatePicker solarEndDP;
+	@FXML
+	private LineChart solarGraph;
+	@FXML
+	private Tab ratesTab;
+	@FXML
+	private ComboBox ratesScheduleCB;
+	@FXML
+	private TextField ratesNameTB;
+	@FXML
+	private RadioButton ratesNoNetRadio;
 	@FXML
 	private ToggleGroup netmetering;
 	@FXML
+	private RadioButton ratesMonthlyRadio;
+	@FXML
+	private RadioButton ratesAnnualRadio;
+	@FXML
+	private TextField ratesOverprodTB;
+	@FXML
+	private TableColumn rateColumn;
+	@FXML
+	private TableColumn priceColumn;
+	@FXML
+	private TableColumn feedInColumn;
+	@FXML
+	private TableColumn demandColumn;
+	@FXML
+	private ToggleButton ratesAllWeekBtn;
+	@FXML
 	private ToggleGroup ratesweek;
+	@FXML
+	private ToggleButton ratesWeekdayBtn;
+	@FXML
+	private ToggleButton ratesWeekendBtn;
 	@FXML
 	private GridPane rateGrid;
 	@FXML
-	private Pane gridGraphPane;
+	private TextField ratesInterconTB;
+	@FXML
+	private Tab ratepayersTab;
+	@FXML
+	private ComboBox rpStrataCB;
+	@FXML
+	private TextField rpNameTB;
+	@FXML
+	private TextField rpNoCustTB;
+	@FXML
+	private Pane rpSolarPane;
+	@FXML
+	private TextField rpSolarEOTB;
+	@FXML
+	private TextField rpSolarSlopeTB;
+	@FXML
+	private TextField rpSolarAzTB;
+	@FXML
+	private TextField rpSolarCapTB;
+	@FXML
+	private TextField rpCapFactorTB;
+	@FXML
+	private TextField rpSolarPVPenTB;
+	@FXML
+	private TextField rpSolarEOYearTB;
+	@FXML
+	private TextField rpSolarEODayTB;
+	@FXML
+	private TextField rpLoadDataTB;
+	@FXML
+	private TextField rpPeakLoadTB;
+	@FXML
+	private TextField rpAverageLoadTB;
+	@FXML
+	private TextField rpEUDayTB;
+	@FXML
+	private TextField rpEUYearTB;
+	@FXML
+	private TextField rpLoadFactorTB;
+	@FXML
+	private TextField rpDemandChargesTB;
+	@FXML
+	private TextField rpEnergyChargesTB;
+	@FXML
+	private TextField rpInterconChargesTB;
+	@FXML
+	private TextField rpTotalChargesTB;
+	@FXML
+	private TextField rpNetPurchasesTB;
+	@FXML
+	private TextField rpEnergySoldTB;
+	@FXML
+	private TextField rpEnergyPurchasedTB;
+	@FXML
+	private Pane rpInverterPane;
+	@FXML
+	private TextField rpInvertEnergyInTB;
+	@FXML
+	private TextField rpInvertEnergyOutTB;
+	@FXML
+	private TextField rpInvertLossesTB;
+	@FXML
+	private TextField rpInvertCapFactorTB;
+	@FXML
+	private TextField rpInvertCapTB;
+	@FXML
+	private TextField rpInvertEfficiencyTB;
+	@FXML
+	private Pane rpBatteryStoragePane;
+	@FXML
+	private TextField rpBSEnergyInTB;
+	@FXML
+	private TextField rpBSEnergyOutTB;
+	@FXML
+	private TextField rpBSLossesTB;
+	@FXML
+	private TextField rpBSAutonomyTB;
+	@FXML
+	private TextField rpBSCapTB;
+	@FXML
+	private TextField rpBSRoundEffTB;
+	@FXML
+	private TextField rpBSMaxCTB;
+	@FXML
+	private TextField rpBSMinSOCTB;
+	@FXML
+	private Pane rpDemandRespPane;
+	@FXML
+	private TextField rpDRDemandContTB;
+	@FXML
+	private TextField rpDRCapFactorTB;
+	@FXML
+	private TextField rpDRPercentContTB;
+	@FXML
+	private Pane rpElecVehiclePane;
+	@FXML
+	private TextField rpEVEInDayTB;
+	@FXML
+	private TextField rpEVEInYearTB;
+	@FXML
+	private TextField rpEVLossesTB;
+	@FXML
+	private TextField rpEVLoadPercentTB;
+	@FXML
+	private TextField rpEVBatteryCapTB;
+	@FXML
+	private TextField rpEVStartSOCTB;
+	@FXML
+	private TextField rpEVChargeEffTB;
+	@FXML
+	private ComboBox rpEVChargerCB;
+	@FXML
+	private TextField rpEVEndTimeTB;
+	@FXML
+	private TextField rpEVChargStratTB;
+	@FXML
+	private TextField rpEVStartTimeTB;
+	@FXML
+	private TextField rpEVEndSOCTB;
+	@FXML
+	private Tab gridTab;
+	@FXML
+	private ComboBox gridStrataCB;
+	@FXML
+	private TextField gridPeakLoadTB;
+	@FXML
+	private TextField gridAvgLoadTB;
+	@FXML
+	private Label noCustLabel;
+	@FXML
+	private TextField gridEUseYearTB;
+	@FXML
+	private TextField gridEUseDayTB;
+	@FXML
+	private TextField gridLoadFactorTB;
 	@FXML
 	private CheckBox tieredRateCB;
 	@FXML
@@ -64,13 +282,39 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private CheckBox criticalPeakCB;
 	@FXML
+	private CheckBox pvPowerCB;
+	@FXML
 	private CheckBox netGridNonSolarCB;
 	@FXML
 	private CheckBox netGridSolarCB;
-
+	@FXML
+	private CheckBox invertInputCB;
+	@FXML
+	private CheckBox gridSalesCB;
+	@FXML
+	private CheckBox griddPurchasesCB;
+	@FXML
+	private CheckBox invertOutputCB;
+	@FXML
+	private CheckBox rectInputCB;
+	@FXML
+	private CheckBox rectOutputCB;
+	@FXML
+	private Pane gridGraphPane;
+	@FXML
+	private CheckBox rpSolarCB;
+	@FXML
+	private CheckBox rpInvertCB;
+	@FXML
+	private CheckBox rpBSCB;
+	@FXML
+	private CheckBox rpEVCB;
+	@FXML
+	private CheckBox rpDRCB;
+	
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
-	private boolean gridToggle;
+	private boolean gridToggle,rpSolarToggle,rpInvertToggle,rpBSToggle,rpEVToggle,rpDRToggle;
 	private int gridIndex;
 	private Pane[] panes;
 	private String[][] series;
@@ -79,6 +323,11 @@ public class SceneController extends AnchorPane{
 	public void init(){
 		gridIndex = 0;
 		gridToggle = false;
+		rpSolarToggle = true;
+		rpInvertToggle = true;
+		rpBSToggle = true;
+		rpEVToggle = true;
+		rpDRToggle = true;
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS];
 		GridListener gl = new GridListener();
@@ -268,5 +517,137 @@ public class SceneController extends AnchorPane{
 	public void closeClicked(ActionEvent event) {
 		System.exit(0);
 	}
+	// Event Listener on RadioButton[#enterMonthlyAveragesRadio].onAction
+	@FXML
+	public void monthlyAveragesSelected(ActionEvent event) {
+		
+	}
+	// Event Listener on RadioButton[#importHourlyDataRadio].onAction
+	@FXML
+	public void importHourlyDataSelected(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void hourlyDataFileButton(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void ratesNewClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void ratesCopyClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void ratesDeleteClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void ratesAddClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void ratesRemoveClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void rpNewClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void rpCopyClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void rpDeleteClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void rpLoadDataClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on CheckBox.onAction
+	@FXML
+	public void rpDRDeferClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on CheckBox.onAction
+	@FXML
+	public void rpDemandResponseClicked(ActionEvent event) {
+		if(rpDRToggle){
+			rpDemandRespPane.setDisable(true);
+			rpDRToggle = false;
+		}else{
+			rpDemandRespPane.setDisable(false);
+			rpDRToggle = true;
+		}
+	}
+	// Event Listener on CheckBox.onAction
+	@FXML
+	public void rpBatteryStorageClicked(ActionEvent event) {
+		if(rpBSToggle){
+			rpBatteryStoragePane.setDisable(true);
+			rpBSToggle = false;
+		}else{
+			rpBatteryStoragePane.setDisable(false);
+			rpBSToggle = true;
+		}
+	}
+	// Event Listener on CheckBox.onAction
+	@FXML
+	public void rpElectricVehicleClicked(ActionEvent event) {
+		if(rpEVToggle){
+			rpElecVehiclePane.setDisable(true);
+			rpEVToggle = false;
+		}else{
+			rpElecVehiclePane.setDisable(false);
+			rpEVToggle = true;
+		}
+	}
+	// Event Listener on CheckBox.onAction
+	@FXML
+	public void rpInvertCBClicked(ActionEvent event) {
+		if(rpInvertToggle){
+			rpInverterPane.setDisable(true);
+			rpInvertToggle = false;
+		}else{
+			rpInverterPane.setDisable(false);
+			rpInvertToggle = true;
+		}
+	}
+	// Event Listener on CheckBox.onAction
+	@FXML
+	public void rpSolarCBClicked(ActionEvent event) {
+		if(rpSolarToggle){
+			rpSolarPane.setDisable(true);
+			rpSolarToggle = false;
+		}else{
+			rpSolarPane.setDisable(false);
+			rpSolarToggle = true;
+		}
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void onRunClicked(ActionEvent event) {
+		
+	}
+	// Event Listener on Button.onAction
+	@FXML
+	public void onExportClicked(ActionEvent event) {
+		
+	}
+
+	
 }
 
