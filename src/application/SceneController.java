@@ -37,11 +37,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -62,7 +65,7 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private Tab solarTab;
 	@FXML
-	private TableView solarTable;
+	private TableView<SolarMonthly> solarTable;
 	@FXML
 	private TableColumn solarMonthColumn;
 	@FXML
@@ -77,6 +80,8 @@ public class SceneController extends AnchorPane{
 	private ToggleGroup solarone;
 	@FXML
 	private RadioButton importHourlyDataRadio;
+	@FXML
+	private Button solarBrowseBtn;
 	@FXML
 	private TextField hourlyDataFileTB;
 	@FXML
@@ -328,6 +333,11 @@ public class SceneController extends AnchorPane{
 		rpBSToggle = true;
 		rpEVToggle = true;
 		rpDRToggle = true;
+		initGrid();
+		initSolar();
+	}
+	
+	private void initGrid(){
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS];
 		GridListener gl = new GridListener();
@@ -392,7 +402,7 @@ public class SceneController extends AnchorPane{
 			gridChart = new LineChart<Date,Number>(dateAxis, numberAxis, s);
 			gridChart.getYAxis().setLabel("Load (kW)");
 			gridChart.getYAxis().setStyle("-fx-font-size:15;");
-			gridChart.getXAxis().setTickLabelRotation(80);
+			gridChart.getXAxis().setTickLabelRotation(45);
 			gridChart.getXAxis().setTickLabelFont(new Font("Arial", 14));
 			gridChart.setLegendVisible(false);
 			gridChart.setCreateSymbols(false);
@@ -411,6 +421,80 @@ public class SceneController extends AnchorPane{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void initSolar(){
+		solarMonthColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("month"));
+		solarGHIColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("GHI"));
+		solarDNIColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("DNI"));
+		solarClearnessColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("clearness"));
+		
+		solarGHIColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		solarGHIColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<SolarMonthly, String>>() {
+                @Override
+                public void handle(CellEditEvent<SolarMonthly, String> t) {
+                    ((SolarMonthly) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setGHI(t.getNewValue());
+                }
+            }
+        );
+		solarDNIColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		solarDNIColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<SolarMonthly, String>>() {
+                @Override
+                public void handle(CellEditEvent<SolarMonthly, String> t) {
+                    ((SolarMonthly) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setDNI(t.getNewValue());
+                }
+            }
+        );
+		solarClearnessColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		solarClearnessColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<SolarMonthly, String>>() {
+                @Override
+                public void handle(CellEditEvent<SolarMonthly, String> t) {
+                    ((SolarMonthly) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setClearness(t.getNewValue());
+                }
+            }
+        );
+        
+		ObservableList<SolarMonthly> m = FXCollections.observableArrayList();
+		String[] arr1 = {"January", "February", "March", "April","May","June","July",
+				"August","September","October","November","December"};
+		String[] arr2 = {"3.35", "4.22", "5.57", "6.94","7.74","8.02","7.39",
+				"6.74","6.04","4.84","3.76","3.07"};
+		String[] arr3 = {"3.07", "3.35", "4.22", "5.57","6.94","7.74","6.74",
+				"6.04","4.84","3.76","3.07","2.89"};
+		String[] arr4 = {"0.618", "0.629", "0.660", "0.689","0.697","0.698","0.655",
+				"0.647","0.673","0.671","0.660","0.612"};
+		for(int x = 0; x < 12; x++){
+			m.add(new SolarMonthly(arr1[x],arr2[x],arr3[x],arr4[x]));
+		}
+		solarTable.setItems(m);
+		solarTable.setFixedCellSize(39);
+
+		ObservableList<XYChart.Series<String, Number>> s = FXCollections.observableArrayList();
+		ObservableList<XYChart.Data<String, Number>> ss = FXCollections.observableArrayList();
+		for(int x = 0; x < arr1.length; x++){
+			ss.add(new XYChart.Data<String,Number>(arr1[x],Double.parseDouble(arr2[x])));
+		}
+		s.add(new XYChart.Series<>("GHI",ss));
+		ss = FXCollections.observableArrayList();
+		for(int x = 0; x < arr1.length; x++){
+			ss.add(new XYChart.Data<String,Number>(arr1[x],Double.parseDouble(arr3[x])));
+		}
+		s.add(new XYChart.Series<>("DNI",ss));
+		solarGraph.setData(s);
+		solarGraph.getYAxis().setLabel("Radiation (kWh/m2/day)");
+		solarGraph.getYAxis().setStyle("-fx-font-size:15;");
+		solarGraph.getXAxis().setTickLabelRotation(45);
+		solarGraph.getXAxis().setTickLabelFont(new Font("Arial", 11));
 	}
 	
 	@FXML
@@ -520,12 +604,14 @@ public class SceneController extends AnchorPane{
 	// Event Listener on RadioButton[#enterMonthlyAveragesRadio].onAction
 	@FXML
 	public void monthlyAveragesSelected(ActionEvent event) {
-		
+		solarBrowseBtn.setDisable(true);
+		hourlyDataFileTB.setDisable(true);
 	}
 	// Event Listener on RadioButton[#importHourlyDataRadio].onAction
 	@FXML
 	public void importHourlyDataSelected(ActionEvent event) {
-		
+		solarBrowseBtn.setDisable(false);
+		hourlyDataFileTB.setDisable(false);
 	}
 	// Event Listener on Button.onAction
 	@FXML

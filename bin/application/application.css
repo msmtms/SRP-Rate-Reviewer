@@ -33,3 +33,14 @@
 	-fx-font-size:12;
 	-fx-max-width:150px;
 }
+.monthcolumn{
+	-fx-font-size:15;
+	-fx-font-family:arial;
+	-fx-font-weight:bold;
+	-fx-alignment:center-left;
+}
+.solartablecolumns{
+	-fx-font-size:12;
+	-fx-font-family:arial;
+	-fx-alignment:center;
+}

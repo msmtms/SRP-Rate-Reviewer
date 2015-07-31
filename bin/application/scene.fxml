@@ -31,12 +31,12 @@
                      <children>
                         <Pane layoutX="26.0" layoutY="14.0" prefHeight="692.0" prefWidth="478.0" styleClass="solarbg">
                            <children>
-                              <TableView fx:id="solarTable" layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
+                              <TableView fx:id="solarTable" editable="true" layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
                                 <columns>
-                                    <TableColumn fx:id="solarMonthColumn" text="Month" />
-                                  <TableColumn fx:id="solarGHIColumn" prefWidth="125.0" text="GHI (kWh/m2/d)" />
-                                    <TableColumn fx:id="solarDNIColumn" prefWidth="125.0" text="DNI (kWh/m2/d)" />
-                                  <TableColumn fx:id="solarClearnessColumn" prefWidth="120.0" text="Clearness Index" />
+                                    <TableColumn fx:id="solarMonthColumn" editable="false" prefWidth="106.0" sortable="false" styleClass="monthcolumn" text="Month" />
+                                  <TableColumn fx:id="solarGHIColumn" prefWidth="114.0" sortable="false" styleClass="solartablecolumns" text="GHI (kWh/m2/d)" />
+                                    <TableColumn fx:id="solarDNIColumn" prefWidth="115.0" sortable="false" styleClass="solartablecolumns" text="DNI (kWh/m2/d)" />
+                                  <TableColumn fx:id="solarClearnessColumn" prefWidth="113.0" sortable="false" styleClass="solartablecolumns" text="Clearness Index" />
                                 </columns>
                               </TableView>
                               <RadioButton fx:id="enterMonthlyAveragesRadio" layoutX="79.0" layoutY="69.0" mnemonicParsing="false" onAction="#monthlyAveragesSelected" text="Enter Monthly Averages">
@@ -49,7 +49,7 @@
                               </RadioButton>
                               <RadioButton fx:id="importHourlyDataRadio" layoutX="79.0" layoutY="96.0" mnemonicParsing="false" onAction="#importHourlyDataSelected" text="Import Hourly Data" toggleGroup="$solarone" />
                               <TextField fx:id="hourlyDataFileTB" disable="true" layoutX="163.0" layoutY="130.0" />
-                              <Button disable="true" layoutX="79.0" layoutY="130.0" mnemonicParsing="false" onAction="#hourlyDataFileButton" text="Browse..." />
+                              <Button fx:id="solarBrowseBtn" disable="true" layoutX="79.0" layoutY="130.0" mnemonicParsing="false" onAction="#hourlyDataFileButton" text="Browse..." />
                               <Label layoutX="34.0" layoutY="16.0" styleClass="panesubs" text="Solar Radiation Data">
                                  <font>
                                     <Font name="System Bold" size="22.0" />
@@ -95,7 +95,7 @@
                                     <Font name="System Bold" size="22.0" />
                                  </font>
                               </Label>
-                              <LineChart fx:id="solarGraph" createSymbols="false" layoutX="29.0" layoutY="64.0" prefHeight="335.0" prefWidth="623.0">
+                              <LineChart fx:id="solarGraph" layoutX="8.0" layoutY="64.0" prefHeight="347.0" prefWidth="658.0">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>
