@@ -1,5 +1,6 @@
 package application;
 
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.io.File;
@@ -7,7 +8,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -22,6 +25,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -32,10 +36,12 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -52,6 +58,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 
 public class SceneController extends AnchorPane{
 	@FXML
@@ -126,6 +133,8 @@ public class SceneController extends AnchorPane{
 	private RadioButton ratesAnnualRadio;
 	@FXML
 	private TextField ratesOverprodTB;
+	@FXML
+	private TableView<Rate> rateTable;
 	@FXML
 	private TableColumn rateColumn;
 	@FXML
@@ -297,7 +306,7 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private CheckBox gridSalesCB;
 	@FXML
-	private CheckBox griddPurchasesCB;
+	private CheckBox gridPurchasesCB;
 	@FXML
 	private CheckBox invertOutputCB;
 	@FXML
@@ -316,15 +325,19 @@ public class SceneController extends AnchorPane{
 	private CheckBox rpEVCB;
 	@FXML
 	private CheckBox rpDRCB;
-	
+	@FXML
+	private TableColumn colorColumn;
+
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
 	private boolean gridToggle,rpSolarToggle,rpInvertToggle,rpBSToggle,rpEVToggle,rpDRToggle;
-	private int gridIndex;
+	private int gridIndex,rateCount;
 	private Pane[] panes;
+	private boolean[] pp;
 	private String[][] series;
-	private String[] colors = {"pink","green","blue","purple", "red"};
-	
+	private ArrayList<String> colors = new ArrayList();
+	private ObservableList<Rate> rateList;
+
 	public void init(){
 		gridIndex = 0;
 		gridToggle = false;
@@ -333,16 +346,125 @@ public class SceneController extends AnchorPane{
 		rpBSToggle = true;
 		rpEVToggle = true;
 		rpDRToggle = true;
+		populateColors();
 		initGrid();
 		initSolar();
+		initRates();
 	}
-	
+	private void populateColors(){
+		colors.add("pink");
+		colors.add("green");
+		colors.add("blue");
+		colors.add("purple");
+		colors.add("red");
+		colors.add("aquamarine");
+		colors.add("beige");
+		colors.add("brown");
+		colors.add("forestgreen");
+		colors.add("gold");
+		colors.add("grey");
+		colors.add("lime");
+		colors.add("yellow");
+		colors.add("maroon");
+	}
+
+	@SuppressWarnings("unchecked")
+	private void initRates(){
+		rateGrid.setStyle("-fx-background-color:burlywood;");
+		rateColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("rate"));
+		priceColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("price"));
+		feedInColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("feedin"));
+		demandColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("demand"));
+		colorColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("color"));
+
+		Callback<TableColumn<Rate, String>, TableCell<Rate, String>> cellFactory =
+				new Callback<TableColumn<Rate, String>, TableCell<Rate, String>>() {
+			public TableCell call(TableColumn p) {
+				TableCell cell = new TableCell<Rate, String>() {
+					@Override
+					public void updateItem(String item, boolean empty) {
+						super.updateItem(item, empty);
+						if (item == null || empty) {
+							setText(null);
+							setStyle("");
+						} else {
+							setText(item);
+							setStyle("-fx-background-color:"+item+";-fx-text-fill:"+item);
+
+						}
+					}
+				};
+
+
+				return cell;
+			}
+		};
+		
+		rateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		rateColumn.setOnEditCommit(
+				new EventHandler<CellEditEvent<Rate, String>>() {
+					@Override
+					public void handle(CellEditEvent<Rate, String> t) {
+						((Rate) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setRate(t.getNewValue());
+					}
+				}
+				);
+		priceColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		priceColumn.setOnEditCommit(
+				new EventHandler<CellEditEvent<Rate, String>>() {
+					@Override
+					public void handle(CellEditEvent<Rate, String> t) {
+						((Rate) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setPrice(t.getNewValue());
+					}
+				}
+				);
+		feedInColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		feedInColumn.setOnEditCommit(
+				new EventHandler<CellEditEvent<Rate, String>>() {
+					@Override
+					public void handle(CellEditEvent<Rate, String> t) {
+						((Rate) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setFeedin(t.getNewValue());
+					}
+				}
+				);
+
+		demandColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		demandColumn.setOnEditCommit(
+				new EventHandler<CellEditEvent<Rate, String>>() {
+					@Override
+					public void handle(CellEditEvent<Rate, String> t) {
+						((Rate) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setDemand(t.getNewValue());
+					}
+				}
+				);
+		colorColumn.setCellFactory(cellFactory);
+		rateList = FXCollections.observableArrayList();
+		String[] arr1 = {"Non-summer", "Summer off-Peak", "Summer on-peak"};
+		String[] arr2 = {"0.12", "0.16", "0.16"};
+		String[] arr3 = {"0.3", "0.3", "0.3"};
+		String[] arr4 = {"0.0", "0.0", "0.0"};
+		for(int x = 0; x < arr1.length; x++){
+			rateList.add(new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x)));
+		}
+		rateTable.setItems(rateList);
+	}
+
 	private void initGrid(){
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS];
+		pp = new boolean[GRID_ROWS*GRID_COLUMNS];
 		GridListener gl = new GridListener();
 		for(int x = 0; x< GRID_ROWS; x++){
 			for(int y = 0; y< GRID_COLUMNS; y++){
+				pp[count] = false;
 				Pane pane = new Pane();
 				pane.setMinSize(40, 10);
 				pane.setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
@@ -352,7 +474,7 @@ public class SceneController extends AnchorPane{
 				button.setOpacity(0);
 				button.setOnMouseReleased(gl);
 				panes[count] = pane;
- 				rateGrid.add(pane, y, x);
+				rateGrid.add(pane, y, x);
 				rateGrid.add(button, y, x);
 				count++;
 			}
@@ -362,13 +484,13 @@ public class SceneController extends AnchorPane{
 			LineChart<Date,Number> gridChart;
 			is = this.getClass().getResourceAsStream("/srpweek.xlsx");
 			XSSFWorkbook wb = new XSSFWorkbook(is);
-			
+
 			XSSFSheet sheet = wb.getSheetAt(0);
 			series = new String[sheet.getPhysicalNumberOfRows()][sheet.getRow(0).getPhysicalNumberOfCells()];
-			
+
 			for(int x = 1; x < sheet.getPhysicalNumberOfRows(); x++){
 				XSSFRow row = sheet.getRow(x);
-				
+
 				for(int y = 0; y < row.getPhysicalNumberOfCells(); y++){
 					if(row.getCell(y).getCellType() == XSSFCell.CELL_TYPE_FORMULA){
 						series[x][y] = Double.toString(row.getCell(y).getNumericCellValue());
@@ -409,61 +531,68 @@ public class SceneController extends AnchorPane{
 			gridChart.setMinHeight(392);
 			gridChart.setMinWidth(908);
 			gridGraphPane.getChildren().add(gridChart);
-			tieredRateCB.setStyle("-fx-text-fill:"+colors[0]+";");
-			timeOfUseCB.setStyle("-fx-text-fill:"+colors[1]+";");
-			criticalPeakCB.setStyle("-fx-text-fill:"+colors[2]+";");
-			netGridNonSolarCB.setStyle("-fx-text-fill:"+colors[3]+";");
-			netGridSolarCB.setStyle("-fx-text-fill:"+colors[4]+";");
-			
+			tieredRateCB.setStyle("-fx-text-fill:"+colors.get(0)+";");
+			timeOfUseCB.setStyle("-fx-text-fill:"+colors.get(1)+";");
+			criticalPeakCB.setStyle("-fx-text-fill:"+colors.get(2)+";");
+			netGridNonSolarCB.setStyle("-fx-text-fill:"+colors.get(3)+";");
+			netGridSolarCB.setStyle("-fx-text-fill:"+colors.get(4)+";");
+			pvPowerCB.setStyle("-fx-text-fill:"+colors.get(5)+";");
+			gridPurchasesCB.setStyle("-fx-text-fill:"+colors.get(6)+";");
+			gridSalesCB.setStyle("-fx-text-fill:"+colors.get(7)+";");
+			invertInputCB.setStyle("-fx-text-fill:"+colors.get(8)+";");
+			invertOutputCB.setStyle("-fx-text-fill:"+colors.get(9)+";");
+			rectInputCB.setStyle("-fx-text-fill:"+colors.get(10)+";");
+			rectOutputCB.setStyle("-fx-text-fill:"+colors.get(11)+";");
+
 			for(int x = 0; x<s.size();x++){
-				s.get(x).nodeProperty().get().setStyle("-fx-stroke: "+colors[x]+";");
+				s.get(x).nodeProperty().get().setStyle("-fx-stroke: "+colors.get(x)+";");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void initSolar(){
 		solarMonthColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("month"));
 		solarGHIColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("GHI"));
 		solarDNIColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("DNI"));
 		solarClearnessColumn.setCellValueFactory(new PropertyValueFactory<SolarMonthly, String>("clearness"));
-		
+
 		solarGHIColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		solarGHIColumn.setOnEditCommit(
-            new EventHandler<CellEditEvent<SolarMonthly, String>>() {
-                @Override
-                public void handle(CellEditEvent<SolarMonthly, String> t) {
-                    ((SolarMonthly) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setGHI(t.getNewValue());
-                }
-            }
-        );
+				new EventHandler<CellEditEvent<SolarMonthly, String>>() {
+					@Override
+					public void handle(CellEditEvent<SolarMonthly, String> t) {
+						((SolarMonthly) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setGHI(t.getNewValue());
+					}
+				}
+				);
 		solarDNIColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		solarDNIColumn.setOnEditCommit(
-            new EventHandler<CellEditEvent<SolarMonthly, String>>() {
-                @Override
-                public void handle(CellEditEvent<SolarMonthly, String> t) {
-                    ((SolarMonthly) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setDNI(t.getNewValue());
-                }
-            }
-        );
+				new EventHandler<CellEditEvent<SolarMonthly, String>>() {
+					@Override
+					public void handle(CellEditEvent<SolarMonthly, String> t) {
+						((SolarMonthly) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setDNI(t.getNewValue());
+					}
+				}
+				);
 		solarClearnessColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		solarClearnessColumn.setOnEditCommit(
-            new EventHandler<CellEditEvent<SolarMonthly, String>>() {
-                @Override
-                public void handle(CellEditEvent<SolarMonthly, String> t) {
-                    ((SolarMonthly) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setClearness(t.getNewValue());
-                }
-            }
-        );
-        
+				new EventHandler<CellEditEvent<SolarMonthly, String>>() {
+					@Override
+					public void handle(CellEditEvent<SolarMonthly, String> t) {
+						((SolarMonthly) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setClearness(t.getNewValue());
+					}
+				}
+				);
+
 		ObservableList<SolarMonthly> m = FXCollections.observableArrayList();
 		String[] arr1 = {"January", "February", "March", "April","May","June","July",
 				"August","September","October","November","December"};
@@ -496,39 +625,39 @@ public class SceneController extends AnchorPane{
 		solarGraph.getXAxis().setTickLabelRotation(45);
 		solarGraph.getXAxis().setTickLabelFont(new Font("Arial", 11));
 	}
-	
+
 	@FXML
-    public void showRatepayersGraph() {
+	public void showRatepayersGraph() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-	        RatepayersController cont;
-	        InputStream in = Main.class.getResourceAsStream("ratepayers.fxml");
-	        loader.setBuilderFactory(new JavaFXBuilderFactory());
-	        loader.setLocation(Main.class.getResource("ratepayers.fxml"));
-	        AnchorPane page;
-	        try {
-	            page = (AnchorPane) loader.load(in);
-	            cont = (RatepayersController) loader.getController();
-	            
-	        }finally{
-	        	in.close();
-	        }
-            Stage stage = new Stage();
-            stage.setTitle("Ratepayers");
-            stage.setScene(new Scene(page, 1280, 720));
-            cont.init(series);
-            stage.show();
-            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
+			RatepayersController cont;
+			InputStream in = Main.class.getResourceAsStream("ratepayers.fxml");
+			loader.setBuilderFactory(new JavaFXBuilderFactory());
+			loader.setLocation(Main.class.getResource("ratepayers.fxml"));
+			AnchorPane page;
+			try {
+				page = (AnchorPane) loader.load(in);
+				cont = (RatepayersController) loader.getController();
 
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			}finally{
+				in.close();
+			}
+			Stage stage = new Stage();
+			stage.setTitle("Ratepayers");
+			stage.setScene(new Scene(page, 1280, 720));
+			cont.init(series);
+			stage.show();
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent event) {
+
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	class GridListener implements EventHandler<Event>{
 
 		@Override
@@ -536,30 +665,64 @@ public class SceneController extends AnchorPane{
 			if(event.getEventType() == MouseEvent.MOUSE_RELEASED){
 				Button button = (Button)event.getSource();
 				if(gridToggle){
-					int index = Integer.parseInt(button.getId());
-					if(index < gridIndex || (index%12 < gridIndex%12)){
-						panes[gridIndex].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
-					}else{
-						int col1 = gridIndex%12;
-						int col2 = index%12;
-						for(int x = gridIndex; x<=index; x++){
-							if(x%12 >= col1 && x%12 <= col2){
-								panes[x].setStyle("-fx-background-color:green;-fx-border-color:black;");
+					Rate r = rateTable.getSelectionModel().getSelectedItem();
+					if(r != null){
+						int index = Integer.parseInt(button.getId());
+						if(index < gridIndex || (index%12 < gridIndex%12)){
+							panes[gridIndex].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+						}else{
+
+							int col1 = gridIndex%12;
+							int col2 = index%12;
+							for(int x = gridIndex; x<=index; x++){
+								if(x%12 >= col1 && x%12 <= col2){
+									panes[x].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
+									if(ratesAllWeekBtn.isSelected()){
+										panes[x].setMaxWidth(50);
+										panes[x].setPrefWidth(40);
+										panes[x].setMinWidth(40);
+										if(pp[x]){
+											panes[x].setTranslateX(0);
+											pp[x] = false;
+										}
+									}
+									if(ratesWeekdayBtn.isSelected()){
+										panes[x].setMaxWidth(29);
+										panes[x].setPrefWidth(29);
+										panes[x].setMinWidth(29);
+										if(pp[x]){
+											panes[x].setTranslateX(0);
+											pp[x] = false;
+										}
+									}
+									if(ratesWeekendBtn.isSelected()){
+										panes[x].setMaxWidth(11);
+										panes[x].setPrefWidth(11);
+										panes[x].setMinWidth(11);
+										if(!pp[x]){
+											panes[x].setTranslateX(30);
+											pp[x] = true;
+										}
+									}
+								}
 							}
 						}
+						gridToggle=false;
 					}
-					gridToggle=false;
 				}else{
-					int index = Integer.parseInt(button.getId());
-					panes[index].setStyle("-fx-background-color:gray;-fx-border-color:black;");
-					gridIndex = index;
-					gridToggle = true;
+					Rate r = rateTable.getSelectionModel().getSelectedItem();
+					if(r != null){
+						int index = Integer.parseInt(button.getId());
+						panes[index].setStyle("-fx-background-color:gray;-fx-border-color:black;");
+						gridIndex = index;
+						gridToggle = true;
+					}
 				}
 			}
-			
+
 		}
 	}
-	
+
 	// Event Listener on MenuItem.onAction
 	@FXML
 	public void aboutClicked(ActionEvent event) {
@@ -616,57 +779,57 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void hourlyDataFileButton(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesNewClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesCopyClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesDeleteClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesAddClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesRemoveClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpNewClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpCopyClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpDeleteClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpLoadDataClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
 	public void rpDRDeferClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
@@ -726,14 +889,14 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void onRunClicked(ActionEvent event) {
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void onExportClicked(ActionEvent event) {
-		
+
 	}
 
-	
+
 }
 

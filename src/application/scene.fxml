@@ -136,7 +136,7 @@
                                     <Font name="Arial Bold" size="24.0" />
                                  </font>
                               </Label>
-                              <Pane layoutX="20.0" layoutY="55.0" prefHeight="171.0" prefWidth="352.0" styleClass="subpanes">
+                              <Pane layoutX="11.0" layoutY="55.0" prefHeight="171.0" prefWidth="361.0" styleClass="subpanes">
                                  <children>
                                     <Label layoutX="10.0" layoutY="4.0" styleClass="subsubs" text="Net Metering and Overproduction Credit" />
                                     <RadioButton fx:id="ratesNoNetRadio" layoutX="23.0" layoutY="45.0" mnemonicParsing="false" selected="true" text="No Net Metering">
@@ -151,19 +151,20 @@
                                     <Label layoutX="293.0" layoutY="136.0" text="\$/kWh" />
                                  </children>
                               </Pane>
-                              <Pane layoutX="20.0" layoutY="246.0" prefHeight="256.0" prefWidth="412.0" styleClass="subpanes">
+                              <Pane layoutX="12.0" layoutY="246.0" prefHeight="256.0" prefWidth="441.0" styleClass="subpanes">
                                  <children>
                                     <Label layoutX="7.0" layoutY="4.0" styleClass="subsubs" text="Rates" />
-                                    <ScrollPane layoutX="14.0" layoutY="45.0" prefHeight="146.0" prefWidth="385.0">
+                                    <ScrollPane layoutX="5.0" layoutY="45.0" prefHeight="146.0" prefWidth="428.0">
                                       <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="381.0">
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="413.0">
                                              <children>
-                                                <TableView layoutY="-1.0" prefHeight="215.0" prefWidth="390.0">
+                                                <TableView fx:id="rateTable" editable="true" layoutY="-1.0" prefHeight="215.0" prefWidth="413.0">
                                                   <columns>
-                                                    <TableColumn fx:id="rateColumn" prefWidth="107.0" sortable="false" styleClass="columnheaders" text="Rate" />
-                                                    <TableColumn fx:id="priceColumn" prefWidth="73.0" sortable="false" styleClass="columnheaders" text="Price ($/kWh)" />
-                                                      <TableColumn fx:id="feedInColumn" prefWidth="84.0" sortable="false" styleClass="columnheaders" text="Feed-in ($/kWh)" />
-                                                      <TableColumn fx:id="demandColumn" prefWidth="105.0" sortable="false" styleClass="columnheaders" text="Demand ($/kW/mo)" />
+                                                    <TableColumn fx:id="rateColumn" prefWidth="107.0" styleClass="columnheaders" text="Rate" />
+                                                    <TableColumn fx:id="priceColumn" prefWidth="73.0" styleClass="columnheaders" text="Price ($/kWh)" />
+                                                      <TableColumn fx:id="feedInColumn" prefWidth="84.0" styleClass="columnheaders" text="Feed-in ($/kWh)" />
+                                                      <TableColumn fx:id="demandColumn" prefWidth="101.0" styleClass="columnheaders" text="Demand ($/kW/mo)" />
+                                                      <TableColumn fx:id="colorColumn" editable="false" prefWidth="47.0" sortable="false" text="Color" />
                                                   </columns>
                                                 </TableView>
                                              </children>
@@ -1026,7 +1027,7 @@
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
-                              <CheckBox fx:id="griddPurchasesCB" layoutX="976.0" layoutY="218.0" mnemonicParsing="false" text="Grid Purchases">
+                              <CheckBox fx:id="gridPurchasesCB" layoutX="976.0" layoutY="218.0" mnemonicParsing="false" text="Grid Purchases">
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
