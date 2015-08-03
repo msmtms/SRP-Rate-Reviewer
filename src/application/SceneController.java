@@ -799,12 +799,20 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesAddClicked(ActionEvent event) {
-
+		rateList.add(new Rate("Enter Name","","","",colors.get(rateList.size())));
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesRemoveClicked(ActionEvent event) {
-
+		try{
+			rateList.remove(rateTable.getSelectionModel().getSelectedItem());
+			for(int x = 0; x < rateList.size(); x++){
+				rateList.get(x).setColor(colors.get(x));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 	}
 	// Event Listener on Button.onAction
 	@FXML
