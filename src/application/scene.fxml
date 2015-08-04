@@ -115,8 +115,8 @@
                      <children>
                         <Pane layoutX="46.0" layoutY="33.0" prefHeight="147.0" prefWidth="477.0" styleClass="solarbg">
                            <children>
-                              <ComboBox fx:id="ratesScheduleCB" layoutX="28.0" layoutY="50.0" prefHeight="25.0" prefWidth="175.0" promptText="TOU 3-6" />
-                              <TextField fx:id="ratesNameTB" layoutX="308.0" layoutY="50.0" text="TOU 3-6" />
+                              <ComboBox fx:id="ratesScheduleCB" layoutX="28.0" layoutY="50.0" onAction="#onRateCBChange" prefHeight="25.0" prefWidth="175.0" promptText="Select A Rate Schedule" />
+                              <TextField fx:id="ratesNameTB" layoutX="308.0" layoutY="50.0" onKeyReleased="#onRateNameChanged" />
                               <Label layoutX="256.0" layoutY="55.0" text="Name:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -131,7 +131,7 @@
                         <Pane layoutX="46.0" layoutY="196.0" prefHeight="518.0" prefWidth="1186.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Rate Schedule:" />
-                              <Label layoutX="205.0" layoutY="14.0" text="TOU 3-6">
+                              <Label fx:id="rateScheduleLabel" layoutX="205.0" layoutY="14.0">
                                  <font>
                                     <Font name="Arial Bold" size="24.0" />
                                  </font>
@@ -286,9 +286,9 @@
                      <children>
                         <Pane layoutX="65.0" layoutY="39.0" prefHeight="147.0" prefWidth="477.0" styleClass="solarbg">
                            <children>
-                              <ComboBox fx:id="rpStrataCB" layoutX="38.0" layoutY="50.0" prefWidth="150.0" promptText="Strata 1" />
-                              <TextField fx:id="rpNameTB" alignment="CENTER_RIGHT" layoutX="308.0" layoutY="50.0" text="Strata 1" />
-                              <TextField fx:id="rpNoCustTB" alignment="CENTER_RIGHT" layoutX="344.0" layoutY="91.0" prefHeight="25.0" prefWidth="113.0" text="15000" />
+                              <ComboBox fx:id="rpStrataCB" layoutX="38.0" layoutY="50.0" onAction="#onRPCBChange" prefWidth="150.0" promptText="Select A Group" />
+                              <TextField fx:id="rpNameTB" alignment="CENTER_RIGHT" layoutX="308.0" layoutY="50.0" onKeyReleased="#onRPNameChanged" />
+                              <TextField fx:id="rpNoCustTB" alignment="CENTER_RIGHT" layoutX="344.0" layoutY="91.0" onAction="#onRPNumChanged" prefHeight="25.0" prefWidth="113.0" />
                               <Label layoutX="239.0" layoutY="54.0" text="Name:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -928,7 +928,7 @@
                         </Pane>
                         <Pane layoutX="376.0" layoutY="55.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
                            <children>
-                              <ComboBox fx:id="gridStrataCB" layoutX="38.0" layoutY="50.0" prefWidth="150.0" promptText="Strata 1" />
+                              <ComboBox fx:id="gridStrataCB" layoutX="38.0" layoutY="50.0" onAction="#onGridSummaryCBChange" prefWidth="150.0" promptText="Strata 1" />
                               <TextField fx:id="gridPeakLoadTB" editable="false" layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="102,000" />
                               <TextField fx:id="gridAvgLoadTB" editable="false" layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="30,600" />
                               <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">

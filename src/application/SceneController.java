@@ -4,13 +4,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -25,19 +23,19 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
@@ -47,10 +45,13 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -327,16 +328,20 @@ public class SceneController extends AnchorPane{
 	private CheckBox rpDRCB;
 	@FXML
 	private TableColumn colorColumn;
+	@FXML
+	private Label rateScheduleLabel;
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
 	private boolean gridToggle,rpSolarToggle,rpInvertToggle,rpBSToggle,rpEVToggle,rpDRToggle;
-	private int gridIndex,rateCount;
+	private int gridIndex,rateCount,ratesScheduleIndex,rpGroupIndex;
 	private Pane[] panes;
 	private boolean[] pp;
 	private String[][] series;
 	private ArrayList<String> colors = new ArrayList();
 	private ObservableList<Rate> rateList;
+	private ObservableList<String> rateSchedules,rpGroupList;
+	private ObservableList<RatepayerGroup> rpGroups;
 
 	public void init(){
 		gridIndex = 0;
@@ -346,10 +351,12 @@ public class SceneController extends AnchorPane{
 		rpBSToggle = true;
 		rpEVToggle = true;
 		rpDRToggle = true;
+		
 		populateColors();
 		initGrid();
 		initSolar();
 		initRates();
+		initRatepayers();
 	}
 	private void populateColors(){
 		colors.add("pink");
@@ -369,7 +376,21 @@ public class SceneController extends AnchorPane{
 	}
 
 	@SuppressWarnings("unchecked")
+	private void initRatepayers(){
+		rpGroups = FXCollections.observableArrayList();
+		rpGroupList = FXCollections.observableArrayList();
+		rpGroups.add(new RatepayerGroup("Strata 1","15000"));
+		rpGroups.add(new RatepayerGroup("Strata 2","20000"));
+		rpGroupList.addAll("Strata 1", "Strata 2");
+		rpGroupIndex = -1;
+		rpStrataCB.setItems(rpGroupList);
+	}
+	@SuppressWarnings("unchecked")
 	private void initRates(){
+		rateSchedules = FXCollections.observableArrayList();
+		rateSchedules.addAll("TOU 3-6","TOU 4-7");
+		ratesScheduleIndex = -1;
+		ratesScheduleCB.setItems(rateSchedules);
 		rateGrid.setStyle("-fx-background-color:burlywood;");
 		rateColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("rate"));
 		priceColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("price"));
@@ -394,8 +415,6 @@ public class SceneController extends AnchorPane{
 						}
 					}
 				};
-
-
 				return cell;
 			}
 		};
@@ -456,7 +475,6 @@ public class SceneController extends AnchorPane{
 		}
 		rateTable.setItems(rateList);
 	}
-
 	private void initGrid(){
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS];
@@ -784,17 +802,77 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesNewClicked(ActionEvent event) {
+		TextInputDialog dlg = new TextInputDialog();
+		dlg.setTitle("New Schedule");
+		dlg.setGraphic(null);
+		dlg.setHeaderText("Enter the new rate schedule information.");
+		dlg.setResizable(true);
 
+		Label label1 = new Label("Name: ");
+		TextField text1 = new TextField();
+		GridPane grid = new GridPane();
+		grid.add(label1, 1, 1);
+		grid.add(text1, 2, 1);
+		dlg.getDialogPane().setContent(grid);
+		
+		dlg.setResultConverter(new Callback<ButtonType, String>() {
+		    @Override
+		    public String call(ButtonType b) {
+		        if (b == ButtonType.OK) {
+		            rateSchedules.add(text1.getText());
+		        }
+		        return null;
+		    }
+		});
+		dlg.show();
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesCopyClicked(ActionEvent event) {
+		TextInputDialog dlg = new TextInputDialog();
+		dlg.setTitle("Copy Schedule");
+		dlg.setGraphic(null);
+		dlg.setHeaderText("Enter the new rate schedule information.");
+		dlg.setResizable(true);
 
+		Label label1 = new Label("Name: ");
+		TextField text1 = new TextField();
+		text1.setText(ratesScheduleCB.getSelectionModel().getSelectedItem().toString() + " - copy");
+		GridPane grid = new GridPane();
+		grid.add(label1, 1, 1);
+		grid.add(text1, 2, 1);
+		dlg.getDialogPane().setContent(grid);
+		
+		dlg.setResultConverter(new Callback<ButtonType, String>() {
+		    @Override
+		    public String call(ButtonType b) {
+		        if (b == ButtonType.OK) {
+		            rateSchedules.add(text1.getText());
+		        }
+		        return null;
+		    }
+		});
+		dlg.show();
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesDeleteClicked(ActionEvent event) {
+		String name = ratesScheduleCB.getSelectionModel().getSelectedItem().toString();
+		Alert dlg = new Alert(AlertType.CONFIRMATION);
+		dlg.setTitle("Copy Schedule");
+		dlg.setHeaderText("Are you sure you want to delete: "+ name);
+		dlg.setResizable(true);
+		
+		Optional<ButtonType> result = dlg.showAndWait();
 
+		if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
+			rateSchedules.remove(name);
+			if(rateSchedules.size() > 0){
+				ratesScheduleCB.getSelectionModel().select(0);
+			}else{
+				ratesScheduleCB.getSelectionModel().select(-1);
+			}
+		}
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -817,17 +895,90 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpNewClicked(ActionEvent event) {
+		TextInputDialog dlg = new TextInputDialog();
+		dlg.setTitle("Copy Schedule");
+		dlg.setGraphic(null);
+		dlg.setHeaderText("Enter the new ratepayer group information.");
+		dlg.setResizable(true);
 
+		Label label1 = new Label("Name: ");
+		TextField text1 = new TextField();
+		Label label2 = new Label("No. of Customers: ");
+		TextField text2 = new TextField();
+		GridPane grid = new GridPane();
+		grid.add(label1, 1, 1);
+		grid.add(text1, 2, 1);
+		grid.add(label2, 1, 2);
+		grid.add(text2, 2, 2);
+		dlg.getDialogPane().setContent(grid);
+		
+		dlg.setResultConverter(new Callback<ButtonType, String>() {
+		    @Override
+		    public String call(ButtonType b) {
+		        if (b == ButtonType.OK) {
+		        	rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
+		        	rpGroupList.add(text1.getText());
+		        }
+		        return null;
+		    }
+		});
+		dlg.show();
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpCopyClicked(ActionEvent event) {
+		TextInputDialog dlg = new TextInputDialog();
+		dlg.setTitle("Copy Schedule");
+		dlg.setGraphic(null);
+		dlg.setHeaderText("Enter the new ratepayer group information.");
+		dlg.setResizable(true);
 
+		Label label1 = new Label("Name: ");
+		TextField text1 = new TextField();
+		Label label2 = new Label("No. of Customers: ");
+		TextField text2 = new TextField();
+		text1.setText(rpStrataCB.getSelectionModel().getSelectedItem().toString() + " - copy");
+		text2.setText(rpGroups.get(rpStrataCB.getSelectionModel().getSelectedIndex()).getNum());
+		GridPane grid = new GridPane();
+		grid.add(label1, 1, 1);
+		grid.add(text1, 2, 1);
+		grid.add(label2, 1, 2);
+		grid.add(text2, 2, 2);
+		dlg.getDialogPane().setContent(grid);
+		
+		dlg.setResultConverter(new Callback<ButtonType, String>() {
+		    @Override
+		    public String call(ButtonType b) {
+		        if (b == ButtonType.OK) {
+		        	rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
+		        	rpGroupList.add(text1.getText());
+		        }
+		        return null;
+		    }
+		});
+		dlg.show();
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpDeleteClicked(ActionEvent event) {
+		String name = rpStrataCB.getSelectionModel().getSelectedItem().toString();
+		int index = rpStrataCB.getSelectionModel().getSelectedIndex();
+		Alert dlg = new Alert(AlertType.CONFIRMATION);
+		dlg.setTitle("Copy Group");
+		dlg.setHeaderText("Are you sure you want to delete: "+ name);
+		dlg.setResizable(true);
+		
+		Optional<ButtonType> result = dlg.showAndWait();
 
+		if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
+			rpGroups.remove(index);
+			rpGroupList.remove(index);
+			if(rpGroups.size() > 0){
+				rpStrataCB.getSelectionModel().select(0);
+			}else{
+				rpStrataCB.getSelectionModel().select(-1);
+			}
+		}
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -904,7 +1055,51 @@ public class SceneController extends AnchorPane{
 	public void onExportClicked(ActionEvent event) {
 
 	}
-
-
+	// Event Listener on ComboBox[#ratesScheduleCB].onAction
+	@FXML
+	public void onRateCBChange(ActionEvent event) {
+		ratesNameTB.setText(ratesScheduleCB.getSelectionModel().getSelectedItem().toString());
+		rateScheduleLabel.setText(ratesScheduleCB.getSelectionModel().getSelectedItem().toString());
+		ratesScheduleIndex = ratesScheduleCB.getSelectionModel().getSelectedIndex();
+	}
+	// Event Listener on TextField[#ratesNameTB].onKeyReleased
+	@FXML
+	public void onRateNameChanged(KeyEvent event) {
+		int tmp = ratesScheduleIndex;
+		rateSchedules.set(ratesScheduleIndex, ratesNameTB.getText());
+		ratesScheduleIndex = tmp;
+		ratesScheduleCB.getSelectionModel().select(ratesScheduleIndex);
+		ratesNameTB.positionCaret(ratesNameTB.getLength());
+	}
+	// Event Listener on ComboBox[#rpStrataCB].onAction
+	@FXML
+	public void onRPCBChange(ActionEvent event) {
+		rpGroupIndex = rpStrataCB.getSelectionModel().getSelectedIndex();
+		RatepayerGroup rpg = rpGroups.get(rpStrataCB.getSelectionModel().getSelectedIndex());
+		rpNameTB.setText(rpg.getName());
+		rpNoCustTB.setText(rpg.getNum());
+	}
+	// Event Listener on TextField[#rpNameTB].onKeyReleased
+	@FXML
+	public void onRPNameChanged(KeyEvent event) {
+		int tmp = rpGroupIndex;
+		RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+		rpg.setName(rpNameTB.getText());
+		rpGroupList.set(rpGroupIndex, rpNameTB.getText());
+		rpGroupIndex = tmp;
+		rpStrataCB.getSelectionModel().select(rpGroupIndex);
+		rpNameTB.positionCaret(rpNameTB.getLength());
+	}
+	@FXML
+	public void onRPNumChanged(KeyEvent event) {
+		RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+		System.out.println(rpGroupIndex);
+		rpg.setNum(rpNoCustTB.getText());
+	}
+	// Event Listener on ComboBox[#gridStrataCB].onAction
+	@FXML
+	public void onGridSummaryCBChange(ActionEvent event) {
+		
+	}
 }
 
