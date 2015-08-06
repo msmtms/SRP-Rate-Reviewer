@@ -6,15 +6,60 @@ public class Rate {
 	private String feedin;
 	private String demand;
 	private String color;
+	private int meter;
+	private double credit;
+	private double charge;
+	private int[][][] cells;
+	
+	public Rate() {
+		this.rate = "";
+		this.price = "";
+		this.feedin = "";
+		this.demand = "";
+		this.color = "";
+		this.meter = 0;
+		this.credit = 0;
+		this.charge = 0;
+		this.cells = new int[12][24][2];
+	}
 	
 	public Rate(String rate, String price, String feedin, String demand,
-			String color) {
-		super();
+			String color, int meter, double credit, double charge,
+			int[][][] cells) {
 		this.rate = rate;
 		this.price = price;
 		this.feedin = feedin;
 		this.demand = demand;
 		this.color = color;
+		this.meter = meter;
+		this.credit = credit;
+		this.charge = charge;
+		this.cells = cells;
+	}
+
+	public int getMeter() {
+		return meter;
+	}
+	public void setMeter(int meter) {
+		this.meter = meter;
+	}
+	public double getCredit() {
+		return credit;
+	}
+	public void setCredit(double credit) {
+		this.credit = credit;
+	}
+	public double getCharge() {
+		return charge;
+	}
+	public void setCharge(double charge) {
+		this.charge = charge;
+	}
+	public int[][][] getCells() {
+		return cells;
+	}
+	public void setCells(int[][][] cells) {
+		this.cells = cells;
 	}
 	public String getRate() {
 		return rate;

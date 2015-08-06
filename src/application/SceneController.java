@@ -4,6 +4,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -342,8 +343,11 @@ public class SceneController extends AnchorPane{
 	private ObservableList<Rate> rateList;
 	private ObservableList<String> rateSchedules,rpGroupList;
 	private ObservableList<RatepayerGroup> rpGroups;
+	private String sessionFileName;
+	private Main app;
 
-	public void init(){
+	public void init(Main app){
+		this.app = app;
 		gridIndex = 0;
 		gridToggle = false;
 		rpSolarToggle = true;
@@ -351,7 +355,8 @@ public class SceneController extends AnchorPane{
 		rpBSToggle = true;
 		rpEVToggle = true;
 		rpDRToggle = true;
-		
+		sessionFileName = "";
+
 		populateColors();
 		initGrid();
 		initSolar();
@@ -384,6 +389,7 @@ public class SceneController extends AnchorPane{
 		rpGroupList.addAll("Strata 1", "Strata 2");
 		rpGroupIndex = -1;
 		rpStrataCB.setItems(rpGroupList);
+		gridStrataCB.setItems(rpGroupList);
 	}
 	@SuppressWarnings("unchecked")
 	private void initRates(){
@@ -418,7 +424,7 @@ public class SceneController extends AnchorPane{
 				return cell;
 			}
 		};
-		
+
 		rateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		rateColumn.setOnEditCommit(
 				new EventHandler<CellEditEvent<Rate, String>>() {
@@ -471,7 +477,7 @@ public class SceneController extends AnchorPane{
 		String[] arr3 = {"0.3", "0.3", "0.3"};
 		String[] arr4 = {"0.0", "0.0", "0.0"};
 		for(int x = 0; x < arr1.length; x++){
-			rateList.add(new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x)));
+			//rateList.add(new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x)));
 		}
 		rateTable.setItems(rateList);
 	}
@@ -753,6 +759,18 @@ public class SceneController extends AnchorPane{
 	@FXML
 	public void newClicked(ActionEvent event) {
 		//TODO: save()? and clear()
+		Alert dlg = new Alert(AlertType.CONFIRMATION);
+		dlg.setTitle("Save?");
+		dlg.setHeaderText("Do you want to save the current session?");
+		dlg.setResizable(true);
+
+		Optional<ButtonType> result = dlg.showAndWait();
+
+		if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
+			writeToFile();
+		}else{
+			clear();
+		}
 	}
 	@FXML
 	public void openClicked(ActionEvent event) {
@@ -764,19 +782,15 @@ public class SceneController extends AnchorPane{
 	}
 	@FXML
 	public void saveClicked(ActionEvent event) {
-		FileChooser fc = new FileChooser();
-		String currentDir = System.getProperty("user.dir") + File.separator;
-		File file = new File(currentDir);
-		fc.setInitialDirectory(file);
-		fc.showSaveDialog(null);
+		if(!(sessionFileName.length() > 0)){
+			save();
+		}else{
+			writeToFile();
+		}
 	}
 	@FXML
 	public void saveAsClicked(ActionEvent event) {
-		FileChooser fc = new FileChooser();
-		String currentDir = System.getProperty("user.dir") + File.separator;
-		File file = new File(currentDir);
-		fc.setInitialDirectory(file);
-		fc.showSaveDialog(null);
+		save();
 	}
 	@FXML
 	public void closeClicked(ActionEvent event) {
@@ -814,15 +828,15 @@ public class SceneController extends AnchorPane{
 		grid.add(label1, 1, 1);
 		grid.add(text1, 2, 1);
 		dlg.getDialogPane().setContent(grid);
-		
+
 		dlg.setResultConverter(new Callback<ButtonType, String>() {
-		    @Override
-		    public String call(ButtonType b) {
-		        if (b == ButtonType.OK) {
-		            rateSchedules.add(text1.getText());
-		        }
-		        return null;
-		    }
+			@Override
+			public String call(ButtonType b) {
+				if (b == ButtonType.OK) {
+					rateSchedules.add(text1.getText());
+				}
+				return null;
+			}
 		});
 		dlg.show();
 	}
@@ -842,15 +856,15 @@ public class SceneController extends AnchorPane{
 		grid.add(label1, 1, 1);
 		grid.add(text1, 2, 1);
 		dlg.getDialogPane().setContent(grid);
-		
+
 		dlg.setResultConverter(new Callback<ButtonType, String>() {
-		    @Override
-		    public String call(ButtonType b) {
-		        if (b == ButtonType.OK) {
-		            rateSchedules.add(text1.getText());
-		        }
-		        return null;
-		    }
+			@Override
+			public String call(ButtonType b) {
+				if (b == ButtonType.OK) {
+					rateSchedules.add(text1.getText());
+				}
+				return null;
+			}
 		});
 		dlg.show();
 	}
@@ -862,7 +876,7 @@ public class SceneController extends AnchorPane{
 		dlg.setTitle("Copy Schedule");
 		dlg.setHeaderText("Are you sure you want to delete: "+ name);
 		dlg.setResizable(true);
-		
+
 		Optional<ButtonType> result = dlg.showAndWait();
 
 		if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
@@ -877,7 +891,7 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesAddClicked(ActionEvent event) {
-		rateList.add(new Rate("Enter Name","","","",colors.get(rateList.size())));
+		//rateList.add(new Rate("Enter Name","","","",colors.get(rateList.size())));
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -890,7 +904,7 @@ public class SceneController extends AnchorPane{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -911,16 +925,16 @@ public class SceneController extends AnchorPane{
 		grid.add(label2, 1, 2);
 		grid.add(text2, 2, 2);
 		dlg.getDialogPane().setContent(grid);
-		
+
 		dlg.setResultConverter(new Callback<ButtonType, String>() {
-		    @Override
-		    public String call(ButtonType b) {
-		        if (b == ButtonType.OK) {
-		        	rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
-		        	rpGroupList.add(text1.getText());
-		        }
-		        return null;
-		    }
+			@Override
+			public String call(ButtonType b) {
+				if (b == ButtonType.OK) {
+					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
+					rpGroupList.add(text1.getText());
+				}
+				return null;
+			}
 		});
 		dlg.show();
 	}
@@ -945,16 +959,16 @@ public class SceneController extends AnchorPane{
 		grid.add(label2, 1, 2);
 		grid.add(text2, 2, 2);
 		dlg.getDialogPane().setContent(grid);
-		
+
 		dlg.setResultConverter(new Callback<ButtonType, String>() {
-		    @Override
-		    public String call(ButtonType b) {
-		        if (b == ButtonType.OK) {
-		        	rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
-		        	rpGroupList.add(text1.getText());
-		        }
-		        return null;
-		    }
+			@Override
+			public String call(ButtonType b) {
+				if (b == ButtonType.OK) {
+					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
+					rpGroupList.add(text1.getText());
+				}
+				return null;
+			}
 		});
 		dlg.show();
 	}
@@ -967,7 +981,7 @@ public class SceneController extends AnchorPane{
 		dlg.setTitle("Copy Group");
 		dlg.setHeaderText("Are you sure you want to delete: "+ name);
 		dlg.setResizable(true);
-		
+
 		Optional<ButtonType> result = dlg.showAndWait();
 
 		if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
@@ -1099,7 +1113,44 @@ public class SceneController extends AnchorPane{
 	// Event Listener on ComboBox[#gridStrataCB].onAction
 	@FXML
 	public void onGridSummaryCBChange(ActionEvent event) {
+
+	}
+	private void save(){
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		fc.setInitialFileName(sessionFileName);
+		file = fc.showSaveDialog(app.getStage());
+		sessionFileName = file.getName();
+		writeToFile();
+	}
+	private void clear(){
 		
+	}
+	private void writeToFile(){
+		File file = new File(System.getProperty("user.dir")+File.separator+sessionFileName);
+		String d = ",";
+		String n = "\n";
+		try {
+			FileWriter fr = new FileWriter(file);
+			fr.write(authorTB.getText()+d+notesTB.getText()+n);
+			ObservableList<SolarMonthly> l = solarTable.getItems();
+			for(int x = 0; x < (l.size()); x++){
+				fr.write(l.get(x).getGHI());
+				if(!(x+1==l.size())){
+					fr.write(d);
+				}
+			}
+			//fr.write(solarLatTB.getText()+d+solarLonTB.getText()+d+solarNorthRadio.isSelected()+d+
+			//		solarEastRadio.isSelected()+d+solarTimeCB.getSelectionModel().getSelectedIndex()+d+
+			//		solarDaylightSavingsCB.isSelected()+d+solarStartDP.getValue().);
+			fr.write(authorTB.getText()+d+notesTB.getText());
+			fr.write(authorTB.getText()+d+notesTB.getText());
+			fr.write(authorTB.getText()+d+notesTB.getText());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

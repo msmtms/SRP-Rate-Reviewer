@@ -26,7 +26,6 @@ public class Main extends Application {
 			BorderPane root = new BorderPane();
 			scene = new Scene(root,400,400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			stage = primaryStage;
 			primaryStage.setMinWidth(MINIMUM_WINDOW_WIDTH);
 			primaryStage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
 			primaryStage.setScene(scene);
@@ -34,14 +33,24 @@ public class Main extends Application {
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
                 public void handle(WindowEvent event) {
-
+                	
                 }
             });
+			stage = primaryStage;
+			stage.setTitle("Rate Reviewer");
 			SceneController cont = (SceneController) replaceSceneContent("scene.fxml", null);
-			cont.init();
+			cont.init(this);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Stage getStage(){
+		return stage;
+	}
+	
+	public Scene getScene(){
+		return scene;
 	}
 	
 	public static void main(String[] args) {
