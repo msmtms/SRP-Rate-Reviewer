@@ -139,13 +139,13 @@
                               <Pane layoutX="11.0" layoutY="55.0" prefHeight="171.0" prefWidth="361.0" styleClass="subpanes">
                                  <children>
                                     <Label layoutX="10.0" layoutY="4.0" styleClass="subsubs" text="Net Metering and Overproduction Credit" />
-                                    <RadioButton fx:id="ratesNoNetRadio" layoutX="23.0" layoutY="45.0" mnemonicParsing="false" selected="true" text="No Net Metering">
+                                    <RadioButton fx:id="ratesNoNetRadio" layoutX="23.0" layoutY="45.0" mnemonicParsing="false" onAction="#onNoNetChange" selected="true" text="No Net Metering">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="netmetering" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton fx:id="ratesMonthlyRadio" layoutX="23.0" layoutY="69.0" mnemonicParsing="false" text="Monthly Net Metering" toggleGroup="$netmetering" />
-                                    <RadioButton fx:id="ratesAnnualRadio" layoutX="23.0" layoutY="94.0" mnemonicParsing="false" text="Annual Net Metering" toggleGroup="$netmetering" />
+                                    <RadioButton fx:id="ratesMonthlyRadio" layoutX="23.0" layoutY="69.0" mnemonicParsing="false" onAction="#onMonthlyChange" text="Monthly Net Metering" toggleGroup="$netmetering" />
+                                    <RadioButton fx:id="ratesAnnualRadio" layoutX="23.0" layoutY="94.0" mnemonicParsing="false" onAction="#onAnnualChange" text="Annual Net Metering" toggleGroup="$netmetering" />
                                     <Label layoutX="23.0" layoutY="136.0" text="Overproduction Credit:" />
                                     <TextField fx:id="ratesOverprodTB" alignment="CENTER" layoutX="160.0" layoutY="132.0" prefHeight="25.0" prefWidth="113.0" text="0.03" />
                                     <Label layoutX="293.0" layoutY="136.0" text="\$/kWh" />

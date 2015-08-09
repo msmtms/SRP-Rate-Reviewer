@@ -340,11 +340,12 @@ public class SceneController extends AnchorPane{
 	private boolean[] pp;
 	private String[][] series;
 	private ArrayList<String> colors = new ArrayList();
-	private ObservableList<Rate> rateList;
-	private ObservableList<String> rateSchedules,rpGroupList;
+	private ObservableList<RateSchedule> rateSchedules;
+	private ObservableList<String> rateTitles,rpGroupList;
 	private ObservableList<RatepayerGroup> rpGroups;
 	private String sessionFileName;
 	private Main app;
+	private Session session;
 
 	public void init(Main app){
 		this.app = app;
@@ -356,6 +357,7 @@ public class SceneController extends AnchorPane{
 		rpEVToggle = true;
 		rpDRToggle = true;
 		sessionFileName = "";
+		session = new Session();
 
 		populateColors();
 		initGrid();
@@ -394,9 +396,17 @@ public class SceneController extends AnchorPane{
 	@SuppressWarnings("unchecked")
 	private void initRates(){
 		rateSchedules = FXCollections.observableArrayList();
-		rateSchedules.addAll("TOU 3-6","TOU 4-7");
+		rateTitles = FXCollections.observableArrayList();
+		RateSchedule rs1 = new RateSchedule();
+		RateSchedule rs2 = new RateSchedule();
+		rs1.setName("TOU 3-6");
+		rateTitles.add("TOU 3-6");
+		rs2.setName("TOU 4-7");
+		rateTitles.add("TOU 4-7");
+		rateSchedules.addAll(rs1,rs2);
+		
 		ratesScheduleIndex = -1;
-		ratesScheduleCB.setItems(rateSchedules);
+		ratesScheduleCB.setItems(rateTitles);
 		rateGrid.setStyle("-fx-background-color:burlywood;");
 		rateColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("rate"));
 		priceColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("price"));
@@ -471,17 +481,15 @@ public class SceneController extends AnchorPane{
 				}
 				);
 		colorColumn.setCellFactory(cellFactory);
-		rateList = FXCollections.observableArrayList();
+		ObservableList<Rate> rateList = FXCollections.observableArrayList();
 		String[] arr1 = {"Non-summer", "Summer off-Peak", "Summer on-peak"};
 		String[] arr2 = {"0.12", "0.16", "0.16"};
 		String[] arr3 = {"0.3", "0.3", "0.3"};
 		String[] arr4 = {"0.0", "0.0", "0.0"};
 		for(int x = 0; x < arr1.length; x++){
-			//rateList.add(new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x)));
+			Rate rate = new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x));
+			rateList.add(rate);
 		}
-		rateTable.setItems(rateList);
-	}
-	private void initGrid(){
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS];
 		pp = new boolean[GRID_ROWS*GRID_COLUMNS];
@@ -503,6 +511,9 @@ public class SceneController extends AnchorPane{
 				count++;
 			}
 		}
+		rateSchedules.get(0).setRates(rateList);
+	}
+	private void initGrid(){
 		InputStream is;
 		try {
 			LineChart<Date,Number> gridChart;
@@ -694,6 +705,7 @@ public class SceneController extends AnchorPane{
 						int index = Integer.parseInt(button.getId());
 						if(index < gridIndex || (index%12 < gridIndex%12)){
 							panes[gridIndex].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+							rateSchedules.get(ratesScheduleIndex).setPaneColor(gridIndex,"burlywood");
 						}else{
 
 							int col1 = gridIndex%12;
@@ -701,31 +713,32 @@ public class SceneController extends AnchorPane{
 							for(int x = gridIndex; x<=index; x++){
 								if(x%12 >= col1 && x%12 <= col2){
 									panes[x].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
+									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,r.getColor());
 									if(ratesAllWeekBtn.isSelected()){
 										panes[x].setMaxWidth(50);
 										panes[x].setPrefWidth(40);
 										panes[x].setMinWidth(40);
-										if(pp[x]){
+										if(rateSchedules.get(ratesScheduleIndex).getPanePlacement(x) == 2){
 											panes[x].setTranslateX(0);
-											pp[x] = false;
+											rateSchedules.get(ratesScheduleIndex).setPanePlacement(x, 0);
 										}
 									}
 									if(ratesWeekdayBtn.isSelected()){
 										panes[x].setMaxWidth(29);
 										panes[x].setPrefWidth(29);
 										panes[x].setMinWidth(29);
-										if(pp[x]){
+										if(rateSchedules.get(ratesScheduleIndex).getPanePlacement(x) == 2){
 											panes[x].setTranslateX(0);
-											pp[x] = false;
+											rateSchedules.get(ratesScheduleIndex).setPanePlacement(x, 1);
 										}
 									}
 									if(ratesWeekendBtn.isSelected()){
 										panes[x].setMaxWidth(11);
 										panes[x].setPrefWidth(11);
 										panes[x].setMinWidth(11);
-										if(!pp[x]){
+										if(!(rateSchedules.get(ratesScheduleIndex).getPanePlacement(x) == 2)){
 											panes[x].setTranslateX(30);
-											pp[x] = true;
+											rateSchedules.get(ratesScheduleIndex).setPanePlacement(x, 2);
 										}
 									}
 								}
@@ -738,6 +751,7 @@ public class SceneController extends AnchorPane{
 					if(r != null){
 						int index = Integer.parseInt(button.getId());
 						panes[index].setStyle("-fx-background-color:gray;-fx-border-color:black;");
+						rateSchedules.get(ratesScheduleIndex).setPaneColor(index,"gray");
 						gridIndex = index;
 						gridToggle = true;
 					}
@@ -833,7 +847,7 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rateSchedules.add(text1.getText());
+					rateTitles.add(text1.getText());
 				}
 				return null;
 			}
@@ -861,7 +875,7 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rateSchedules.add(text1.getText());
+					rateTitles.add(text1.getText());
 				}
 				return null;
 			}
@@ -891,12 +905,14 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesAddClicked(ActionEvent event) {
-		//rateList.add(new Rate("Enter Name","","","",colors.get(rateList.size())));
+		RateSchedule rs = rateSchedules.get(ratesScheduleIndex);
+		rs.addRate(new Rate("Enter Name","","","",colors.get(rs.getRates().size())));
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesRemoveClicked(ActionEvent event) {
 		try{
+			ObservableList<Rate> rateList = rateSchedules.get(ratesScheduleIndex).getRates();
 			rateList.remove(rateTable.getSelectionModel().getSelectedItem());
 			for(int x = 0; x < rateList.size(); x++){
 				rateList.get(x).setColor(colors.get(x));
@@ -1075,12 +1091,54 @@ public class SceneController extends AnchorPane{
 		ratesNameTB.setText(ratesScheduleCB.getSelectionModel().getSelectedItem().toString());
 		rateScheduleLabel.setText(ratesScheduleCB.getSelectionModel().getSelectedItem().toString());
 		ratesScheduleIndex = ratesScheduleCB.getSelectionModel().getSelectedIndex();
+		RateSchedule rs = rateSchedules.get(ratesScheduleIndex);
+		switch(rs.getMeter()){
+			case 0:{
+				ratesNoNetRadio.setSelected(true);
+				break;
+			}
+			case 1:{
+				ratesMonthlyRadio.setSelected(true);
+				break;
+			}
+			case 2:{
+				ratesAnnualRadio.setSelected(true);
+				break;
+			}
+		}
+		rateTable.setItems(rs.getRates());
+		for(int x = 0; x < GRID_COLUMNS*GRID_ROWS; x++){
+			panes[x].setStyle("-fx-background-color:"+rs.getPaneColor(x)+";-fx-border-color:black;");
+			switch(rs.getPanePlacement(x)){
+				case 0:{
+					panes[x].setMaxWidth(50);
+					panes[x].setPrefWidth(40);
+					panes[x].setMinWidth(40);
+					panes[x].setTranslateX(0);
+					break;
+				}
+				case 1:{
+					panes[x].setMaxWidth(29);
+					panes[x].setPrefWidth(29);
+					panes[x].setMinWidth(29);
+					panes[x].setTranslateX(0);
+				}
+				case 2:{
+					panes[x].setMaxWidth(11);
+					panes[x].setPrefWidth(11);
+					panes[x].setMinWidth(11);
+					panes[x].setTranslateX(30);
+				}
+			}
+		}
+		ratesOverprodTB.setText(Double.toString(rs.getCredit()));
+		ratesInterconTB.setText(Double.toString(rs.getCharge()));
 	}
 	// Event Listener on TextField[#ratesNameTB].onKeyReleased
 	@FXML
 	public void onRateNameChanged(KeyEvent event) {
 		int tmp = ratesScheduleIndex;
-		rateSchedules.set(ratesScheduleIndex, ratesNameTB.getText());
+		rateTitles.set(ratesScheduleIndex, ratesNameTB.getText());
 		ratesScheduleIndex = tmp;
 		ratesScheduleCB.getSelectionModel().select(ratesScheduleIndex);
 		ratesNameTB.positionCaret(ratesNameTB.getLength());
@@ -1109,6 +1167,19 @@ public class SceneController extends AnchorPane{
 		RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
 		System.out.println(rpGroupIndex);
 		rpg.setNum(rpNoCustTB.getText());
+	}
+	@FXML
+	public void onNoNetChange(ActionEvent event) {
+		rateSchedules.get(ratesScheduleIndex).setMeter(0);
+	}
+	@FXML
+	public void onMonthlyChange(ActionEvent event) {
+		rateSchedules.get(ratesScheduleIndex).setMeter(1);
+	}
+	@FXML
+	public void onAnnualChange(ActionEvent event) {
+		rateSchedules.get(ratesScheduleIndex).setMeter(2);
+		
 	}
 	// Event Listener on ComboBox[#gridStrataCB].onAction
 	@FXML

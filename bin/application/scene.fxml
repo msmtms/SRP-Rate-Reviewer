@@ -80,7 +80,7 @@
                               <RadioButton fx:id="solarWestRadio" layoutX="291.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="West" toggleGroup="$solarthree" />
                               <TextField fx:id="solarLatTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="62.0" prefHeight="25.0" prefWidth="115.0" text="33.45" />
                               <TextField fx:id="solarLonTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="97.0" prefHeight="25.0" prefWidth="115.0" text="112.07" />
-                              <ComboBox fx:id="solarTimeCB" layoutX="58.0" layoutY="150.0" prefWidth="150.0" promptText="GMT-7:00" />
+                              <ComboBox fx:id="solarTimeCB" layoutX="58.0" layoutY="150.0" prefWidth="150.0" promptText="Select A Timezone" />
                               <CheckBox fx:id="solarDaylightSavingsCB" layoutX="236.0" layoutY="154.0" mnemonicParsing="false" selected="true" text="Enable Daylight Savings Time" />
                               <DatePicker fx:id="solarStartDP" layoutX="218.0" layoutY="190.0" prefHeight="25.0" prefWidth="112.0" />
                               <DatePicker fx:id="solarEndDP" layoutX="413.0" layoutY="190.0" prefHeight="25.0" prefWidth="109.0" />
@@ -139,13 +139,13 @@
                               <Pane layoutX="11.0" layoutY="55.0" prefHeight="171.0" prefWidth="361.0" styleClass="subpanes">
                                  <children>
                                     <Label layoutX="10.0" layoutY="4.0" styleClass="subsubs" text="Net Metering and Overproduction Credit" />
-                                    <RadioButton fx:id="ratesNoNetRadio" layoutX="23.0" layoutY="45.0" mnemonicParsing="false" selected="true" text="No Net Metering">
+                                    <RadioButton fx:id="ratesNoNetRadio" layoutX="23.0" layoutY="45.0" mnemonicParsing="false" onAction="#onNoNetChange" selected="true" text="No Net Metering">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="netmetering" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton fx:id="ratesMonthlyRadio" layoutX="23.0" layoutY="69.0" mnemonicParsing="false" text="Monthly Net Metering" toggleGroup="$netmetering" />
-                                    <RadioButton fx:id="ratesAnnualRadio" layoutX="23.0" layoutY="94.0" mnemonicParsing="false" text="Annual Net Metering" toggleGroup="$netmetering" />
+                                    <RadioButton fx:id="ratesMonthlyRadio" layoutX="23.0" layoutY="69.0" mnemonicParsing="false" onAction="#onMonthlyChange" text="Monthly Net Metering" toggleGroup="$netmetering" />
+                                    <RadioButton fx:id="ratesAnnualRadio" layoutX="23.0" layoutY="94.0" mnemonicParsing="false" onAction="#onAnnualChange" text="Annual Net Metering" toggleGroup="$netmetering" />
                                     <Label layoutX="23.0" layoutY="136.0" text="Overproduction Credit:" />
                                     <TextField fx:id="ratesOverprodTB" alignment="CENTER" layoutX="160.0" layoutY="132.0" prefHeight="25.0" prefWidth="113.0" text="0.03" />
                                     <Label layoutX="293.0" layoutY="136.0" text="\$/kWh" />
@@ -160,10 +160,10 @@
                                              <children>
                                                 <TableView fx:id="rateTable" editable="true" layoutY="-1.0" prefHeight="215.0" prefWidth="413.0">
                                                   <columns>
-                                                    <TableColumn fx:id="rateColumn" prefWidth="107.0" styleClass="columnheaders" text="Rate" />
-                                                    <TableColumn fx:id="priceColumn" prefWidth="73.0" styleClass="columnheaders" text="Price ($/kWh)" />
-                                                      <TableColumn fx:id="feedInColumn" prefWidth="84.0" styleClass="columnheaders" text="Feed-in ($/kWh)" />
-                                                      <TableColumn fx:id="demandColumn" prefWidth="101.0" styleClass="columnheaders" text="Demand ($/kW/mo)" />
+                                                    <TableColumn fx:id="rateColumn" prefWidth="107.0" sortable="false" styleClass="columnheaders" text="Rate" />
+                                                    <TableColumn fx:id="priceColumn" prefWidth="73.0" sortable="false" styleClass="columnheaders" text="Price ($/kWh)" />
+                                                      <TableColumn fx:id="feedInColumn" prefWidth="84.0" sortable="false" styleClass="columnheaders" text="Feed-in ($/kWh)" />
+                                                      <TableColumn fx:id="demandColumn" prefWidth="101.0" sortable="false" styleClass="columnheaders" text="Demand ($/kW/mo)" />
                                                       <TableColumn fx:id="colorColumn" editable="false" prefWidth="47.0" sortable="false" text="Color" />
                                                   </columns>
                                                 </TableView>
