@@ -2,6 +2,9 @@ package application;
 
 import java.util.Hashtable;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class Session {
 	private String author;
 	private String notes;
@@ -14,8 +17,8 @@ public class Session {
 	private boolean daySave;
 	private long solarStart;
 	private long solarEnd;
-	private Hashtable<String,Rate> rateSchedules;
-	private Hashtable<String,Rate> rpGroups;
+	private ObservableList<RateSchedule> rateSchedules;
+	private ObservableList<RatepayerGroup> rpGroups;
 	
 	
 	public Session() {
@@ -30,14 +33,14 @@ public class Session {
 		this.daySave = true;
 		this.solarStart = System.currentTimeMillis();
 		this.solarEnd = System.currentTimeMillis();
-		this.rateSchedules = new Hashtable();
-		this.rpGroups = new Hashtable();
+		this.rateSchedules = FXCollections.observableArrayList();
+		this.rpGroups = FXCollections.observableArrayList();
 	}
 	public Session(String author, String notes, String[] gHI, String lat,
 			String lon, boolean north, boolean east, int timezone,
 			boolean daySave, long solarStart, long solarEnd,
-			Hashtable<String, Rate> rateSchedules,
-			Hashtable<String, Rate> rpGroups) {
+			ObservableList<RateSchedule> rateSchedules,
+			ObservableList<RatepayerGroup> rpGroups) {
 		this.author = author;
 		this.notes = notes;
 		GHI = gHI;
@@ -118,16 +121,17 @@ public class Session {
 	public void setSolarEnd(long solarEnd) {
 		this.solarEnd = solarEnd;
 	}
-	public Hashtable<String, Rate> getRateSchedules() {
+	public ObservableList<RateSchedule> getRateSchedules() {
 		return rateSchedules;
 	}
-	public void setRateSchedules(Hashtable<String, Rate> rateSchedules) {
+	public void setRateSchedules(ObservableList<RateSchedule> rateSchedules) {
 		this.rateSchedules = rateSchedules;
 	}
-	public Hashtable<String, Rate> getRpGroups() {
+	public ObservableList<RatepayerGroup> getRpGroups() {
 		return rpGroups;
 	}
-	public void setRpGroups(Hashtable<String, Rate> rpGroups) {
+	public void setRpGroups(ObservableList<RatepayerGroup> rpGroups) {
 		this.rpGroups = rpGroups;
 	}
+
 }

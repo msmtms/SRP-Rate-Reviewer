@@ -97,4 +97,7 @@ public class RateSchedule {
 	public String getPaneColor(int paneIndex){
 		return paneColors[paneIndex];
 	}
+	public int[] getPanePlacementList(){
+		return panePlacement;
+	}
 }

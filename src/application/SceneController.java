@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -17,7 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableList; 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -38,6 +40,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
@@ -270,7 +273,7 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private TextField rpEVEndTimeTB;
 	@FXML
-	private TextField rpEVChargStratTB;
+	private ComboBox rpEVChargeStratCB;
 	@FXML
 	private TextField rpEVStartTimeTB;
 	@FXML
@@ -331,11 +334,14 @@ public class SceneController extends AnchorPane{
 	private TableColumn colorColumn;
 	@FXML
 	private Label rateScheduleLabel;
+	@FXML
+	private CheckBox rpDRDeferCB;
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
 	private boolean gridToggle,rpSolarToggle,rpInvertToggle,rpBSToggle,rpEVToggle,rpDRToggle;
 	private int gridIndex,rateCount,ratesScheduleIndex,rpGroupIndex;
+	private Pattern p;
 	private Pane[] panes;
 	private boolean[] pp;
 	private String[][] series;
@@ -357,6 +363,7 @@ public class SceneController extends AnchorPane{
 		rpEVToggle = true;
 		rpDRToggle = true;
 		sessionFileName = "";
+		p = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
 		session = new Session();
 
 		populateColors();
@@ -385,17 +392,25 @@ public class SceneController extends AnchorPane{
 	@SuppressWarnings("unchecked")
 	private void initRatepayers(){
 		rpGroups = FXCollections.observableArrayList();
+		session.setRpGroups(rpGroups);
 		rpGroupList = FXCollections.observableArrayList();
-		rpGroups.add(new RatepayerGroup("Strata 1","15000"));
-		rpGroups.add(new RatepayerGroup("Strata 2","20000"));
+		rpGroups.add(new RatepayerGroup("Strata 1","15000",new double[3],new double[2],new double[4],new double[8],new double[2]));
+		rpGroups.add(new RatepayerGroup("Strata 2","20000",new double[3],new double[2],new double[4],new double[8],new double[2]));
 		rpGroupList.addAll("Strata 1", "Strata 2");
 		rpGroupIndex = -1;
 		rpStrataCB.setItems(rpGroupList);
 		gridStrataCB.setItems(rpGroupList);
+		ObservableList<String> l1 = FXCollections.observableArrayList();
+		l1.addAll("Level 1", "Level 2", "Level 3");
+		rpEVChargerCB.setItems(l1);
+		ObservableList<String> l2 = FXCollections.observableArrayList();
+		l2.addAll("1", "2");
+		rpEVChargeStratCB.setItems(l2);
 	}
 	@SuppressWarnings("unchecked")
 	private void initRates(){
 		rateSchedules = FXCollections.observableArrayList();
+		session.setRateSchedules(rateSchedules);
 		rateTitles = FXCollections.observableArrayList();
 		RateSchedule rs1 = new RateSchedule();
 		RateSchedule rs2 = new RateSchedule();
@@ -404,7 +419,7 @@ public class SceneController extends AnchorPane{
 		rs2.setName("TOU 4-7");
 		rateTitles.add("TOU 4-7");
 		rateSchedules.addAll(rs1,rs2);
-		
+
 		ratesScheduleIndex = -1;
 		ratesScheduleCB.setItems(rateTitles);
 		rateGrid.setStyle("-fx-background-color:burlywood;");
@@ -946,7 +961,7 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
+					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),new double[3],new double[2],new double[4],new double[8],new double[2]));
 					rpGroupList.add(text1.getText());
 				}
 				return null;
@@ -980,7 +995,7 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText()));
+					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),new double[3],new double[2],new double[4],new double[8],new double[2]));
 					rpGroupList.add(text1.getText());
 				}
 				return null;
@@ -1018,7 +1033,11 @@ public class SceneController extends AnchorPane{
 	// Event Listener on CheckBox.onAction
 	@FXML
 	public void rpDRDeferClicked(ActionEvent event) {
-
+		if(rpDRDeferCB.isSelected()){
+			session.getRpGroups().get(rpGroupIndex).setDRItem(0, 0);
+		}else{
+			session.getRpGroups().get(rpGroupIndex).setDRItem(0, 1);
+		}
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
@@ -1093,42 +1112,42 @@ public class SceneController extends AnchorPane{
 		ratesScheduleIndex = ratesScheduleCB.getSelectionModel().getSelectedIndex();
 		RateSchedule rs = rateSchedules.get(ratesScheduleIndex);
 		switch(rs.getMeter()){
-			case 0:{
-				ratesNoNetRadio.setSelected(true);
-				break;
-			}
-			case 1:{
-				ratesMonthlyRadio.setSelected(true);
-				break;
-			}
-			case 2:{
-				ratesAnnualRadio.setSelected(true);
-				break;
-			}
+		case 0:{
+			ratesNoNetRadio.setSelected(true);
+			break;
+		}
+		case 1:{
+			ratesMonthlyRadio.setSelected(true);
+			break;
+		}
+		case 2:{
+			ratesAnnualRadio.setSelected(true);
+			break;
+		}
 		}
 		rateTable.setItems(rs.getRates());
 		for(int x = 0; x < GRID_COLUMNS*GRID_ROWS; x++){
 			panes[x].setStyle("-fx-background-color:"+rs.getPaneColor(x)+";-fx-border-color:black;");
 			switch(rs.getPanePlacement(x)){
-				case 0:{
-					panes[x].setMaxWidth(50);
-					panes[x].setPrefWidth(40);
-					panes[x].setMinWidth(40);
-					panes[x].setTranslateX(0);
-					break;
-				}
-				case 1:{
-					panes[x].setMaxWidth(29);
-					panes[x].setPrefWidth(29);
-					panes[x].setMinWidth(29);
-					panes[x].setTranslateX(0);
-				}
-				case 2:{
-					panes[x].setMaxWidth(11);
-					panes[x].setPrefWidth(11);
-					panes[x].setMinWidth(11);
-					panes[x].setTranslateX(30);
-				}
+			case 0:{
+				panes[x].setMaxWidth(50);
+				panes[x].setPrefWidth(40);
+				panes[x].setMinWidth(40);
+				panes[x].setTranslateX(0);
+				break;
+			}
+			case 1:{
+				panes[x].setMaxWidth(29);
+				panes[x].setPrefWidth(29);
+				panes[x].setMinWidth(29);
+				panes[x].setTranslateX(0);
+			}
+			case 2:{
+				panes[x].setMaxWidth(11);
+				panes[x].setPrefWidth(11);
+				panes[x].setMinWidth(11);
+				panes[x].setTranslateX(30);
+			}
 			}
 		}
 		ratesOverprodTB.setText(Double.toString(rs.getCredit()));
@@ -1150,6 +1169,33 @@ public class SceneController extends AnchorPane{
 		RatepayerGroup rpg = rpGroups.get(rpStrataCB.getSelectionModel().getSelectedIndex());
 		rpNameTB.setText(rpg.getName());
 		rpNoCustTB.setText(rpg.getNum());
+		RatepayerGroup rg = session.getRpGroups().get(rpGroupIndex);
+		rpSolarCapTB.setText(Double.toString(rg.getSolarPVItem(0)));
+		rpSolarAzTB.setText(Double.toString(rg.getSolarPVItem(1)));
+		rpSolarSlopeTB.setText(Double.toString(rg.getSolarPVItem(2)));
+		rpInvertCapTB.setText(Double.toString(rg.getInvertItem(0)));
+		rpInvertEfficiencyTB.setText(Double.toString(rg.getInvertItem(1)));
+		rpBSCapTB.setText(Double.toString(rg.getBSItem(0)));
+		rpBSRoundEffTB.setText(Double.toString(rg.getBSItem(1)));
+		rpBSMinSOCTB.setText(Double.toString(rg.getBSItem(2)));
+		rpBSMaxCTB.setText(Double.toString(rg.getBSItem(3)));
+		rpEVBatteryCapTB.setText(Double.toString(rg.getEVItem(0)));
+		rpEVChargerCB.getSelectionModel().select((int)rg.getEVItem(1));
+		rpEVChargeEffTB.setText(Double.toString(rg.getEVItem(2)));
+		rpEVStartSOCTB.setText(Double.toString(rg.getEVItem(3)));
+		rpEVEndSOCTB.setText(Double.toString(rg.getEVItem(4)));
+		String[] s = Double.toString(rg.getEVItem(5)).split(".");
+		rpEVBatteryCapTB.setText(s[0] + ":" + s[1]);
+		String[] e = Double.toString(rg.getEVItem(6)).split(".");
+		rpEVBatteryCapTB.setText(e[0] + ":" + e[1]);
+		rpEVChargeStratCB.getSelectionModel().select((int)rg.getEVItem(7));
+		rpDRPercentContTB.setText(Double.toString(rg.getDRItem(0)));
+		int d = (int) rg.getDRItem(1);
+		if(d == 0){
+			rpDRDeferCB.setSelected(false);
+		}else{
+			rpDRDeferCB.setSelected(true);
+		}
 	}
 	// Event Listener on TextField[#rpNameTB].onKeyReleased
 	@FXML
@@ -1179,12 +1225,51 @@ public class SceneController extends AnchorPane{
 	@FXML
 	public void onAnnualChange(ActionEvent event) {
 		rateSchedules.get(ratesScheduleIndex).setMeter(2);
-		
+
 	}
 	// Event Listener on ComboBox[#gridStrataCB].onAction
 	@FXML
 	public void onGridSummaryCBChange(ActionEvent event) {
 
+	}
+	@FXML
+	public void onCreditChanged(KeyEvent event) {
+		String text = ratesOverprodTB.getText();
+		if(ratesScheduleIndex >=0 ){
+			try{
+				rateSchedules.get(ratesScheduleIndex).setCredit(Double.parseDouble(text));
+			}catch(Exception e){
+				if(text.length()>0){
+					showInvalidInputDialog();
+				}
+			}
+		}
+	}
+	@FXML
+	public void onChargeChanged(KeyEvent event) {
+		String text = ratesInterconTB.getText();
+		if(ratesScheduleIndex >=0 || !(text.length()>0)){
+			try{
+				rateSchedules.get(ratesScheduleIndex).setCredit(Double.parseDouble(text));
+			}catch(Exception e){
+				if(text.length()>0){
+					showInvalidInputDialog();
+				}
+			}
+		}
+	}
+	private void showInvalidInputDialog(){
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Invalid Input");
+		alert.setHeaderText("Your input was invalid.");
+		alert.show();
+	}
+	private void showInvalidInputDialog(String msg){
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Invalid Input");
+		alert.setHeaderText("Your input was invalid.");
+		alert.setContentText(msg);
+		alert.show();
 	}
 	private void save(){
 		FileChooser fc = new FileChooser();
@@ -1197,15 +1282,17 @@ public class SceneController extends AnchorPane{
 		writeToFile();
 	}
 	private void clear(){
-		
+
 	}
 	private void writeToFile(){
 		File file = new File(System.getProperty("user.dir")+File.separator+sessionFileName);
 		String d = ",";
 		String n = "\n";
+		ObservableList<RateSchedule> rs = session.getRateSchedules();
+		ObservableList<RatepayerGroup> rp = session.getRpGroups();
 		try {
 			FileWriter fr = new FileWriter(file);
-			fr.write(authorTB.getText()+d+notesTB.getText()+n);
+			fr.write(authorTB.getText()+n+notesTB.getText()+n);
 			ObservableList<SolarMonthly> l = solarTable.getItems();
 			for(int x = 0; x < (l.size()); x++){
 				fr.write(l.get(x).getGHI());
@@ -1213,14 +1300,390 @@ public class SceneController extends AnchorPane{
 					fr.write(d);
 				}
 			}
-			//fr.write(solarLatTB.getText()+d+solarLonTB.getText()+d+solarNorthRadio.isSelected()+d+
-			//		solarEastRadio.isSelected()+d+solarTimeCB.getSelectionModel().getSelectedIndex()+d+
-			//		solarDaylightSavingsCB.isSelected()+d+solarStartDP.getValue().);
-			fr.write(authorTB.getText()+d+notesTB.getText());
-			fr.write(authorTB.getText()+d+notesTB.getText());
-			fr.write(authorTB.getText()+d+notesTB.getText());
+			RateSchedule r;
+			String[] p;
+			int[] pp;
+			ObservableList<Rate> ra;
+			Rate rl;
+			for(int x = 0; x < rs.size(); x++){
+				r = rs.get(x);
+				p = r.getPaneColors();
+				pp = r.getPanePlacementList();
+				ra = r.getRates();
+				fr.write(r.getName() + d + r.getMeter() + d + r.getCredit() + d + r.getCharge() + n);
+
+				for(int y = 0; y < p.length; y++){
+					fr.write(p[y]);
+					if(!(y+1==p.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+				for(int y = 0; y < pp.length; y++){
+					fr.write(pp[y]);
+					if(!(y+1==pp.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+				for(int y = 0; y < ra.size(); y++){
+					rl = ra.get(y);
+					fr.write(rl.getRate() + d + rl.getPrice() + d +rl.getFeedin() + d + rl.getDemand() + d + rl.getColor());
+					fr.write(n);
+				}
+			}
+			ObservableList<RatepayerGroup> rpgs = session.getRpGroups();
+			RatepayerGroup rpg;
+			double[] solarPV;
+			double[] inverter;
+			double[] batteryStorage;
+			double[] electricVehicle;
+			double[] demandResponse;
+			for(int x = 0; x < rpgs.size(); x++){
+				rpg = rpgs.get(x);
+				solarPV = rpg.getSolarPV();
+				inverter = rpg.getInverter();
+				batteryStorage = rpg.getBatteryStorage();
+				electricVehicle = rpg.getElectricVehicle();
+				demandResponse = rpg.getDemandResponse();
+				fr.write(rpg.getName() + d + rpg.getNum() + n);
+				for(int y = 0; y < solarPV.length; y++){
+					fr.write(Double.toString(solarPV[y]));
+					if(!(y+1==solarPV.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+				for(int y = 0; y < inverter.length; y++){
+					fr.write(Double.toString(inverter[y]));
+					if(!(y+1==inverter.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+				for(int y = 0; y < batteryStorage.length; y++){
+					fr.write(Double.toString(batteryStorage[y]));
+					if(!(y+1==batteryStorage.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+				for(int y = 0; y < electricVehicle.length; y++){
+					fr.write(Double.toString(electricVehicle[y]));
+					if(!(y+1==electricVehicle.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+				for(int y = 0; y < demandResponse.length; y++){
+					fr.write(Double.toString(demandResponse[y]));
+					if(!(y+1==demandResponse.length)){
+						fr.write(d);
+					}
+				}
+				fr.write(n);
+			}
+			fr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	@FXML
+	public void onSolarCapChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpSolarCapTB.getText().length() > 0){
+					double value = Double.parseDouble(rpSolarCapTB.getText());
+					if(value < 0){
+						showInvalidInputDialog("Value must be 0 or positive.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setSolarPVItem(0, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onSolarAziChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpSolarAzTB.getText().length() > 0){
+					double value = Double.parseDouble(rpSolarAzTB.getText());
+					if(value < -180 || value > 180){
+						showInvalidInputDialog("Value must be between -180 and 180.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setSolarPVItem(1, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onSolarSlopeChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpSolarSlopeTB.getText().length() > 0){
+					double value = Double.parseDouble(rpSolarSlopeTB.getText());
+					if(value < 0 || value > 90){
+						showInvalidInputDialog("Value must be between 0 and 90.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setSolarPVItem(2, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onInvertCapChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpInvertCapTB.getText().length() > 0){
+					double value = Double.parseDouble(rpInvertCapTB.getText());
+					if(value < 0){
+						showInvalidInputDialog("Value must be 0 or positive.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setInvertItem(0, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onInvertEffChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpInvertEfficiencyTB.getText().length() > 0){
+					double value = Double.parseDouble(rpInvertEfficiencyTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setInvertItem(1, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onBSCapChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpBSCapTB.getText().length() > 0){
+					double value = Double.parseDouble(rpBSCapTB.getText());
+					if(value < 0){
+						showInvalidInputDialog("Value must be 0 or positive.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(0, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onBSRoundChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpBSRoundEffTB.getText().length() > 0){
+					double value = Double.parseDouble(rpBSRoundEffTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(1, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onBSMinSOCChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpBSMinSOCTB.getText().length() > 0){
+					double value = Double.parseDouble(rpBSMinSOCTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(2, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onBSMaxCChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpBSMaxCTB.getText().length() > 0){
+					double value = Double.parseDouble(rpBSMaxCTB.getText());
+					if(value <= 0){
+						showInvalidInputDialog("Value must be greater than 0.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(3, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVBattChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpEVBatteryCapTB.getText().length() > 0){
+					double value = Double.parseDouble(rpEVBatteryCapTB.getText());
+					if(value < 0){
+						showInvalidInputDialog("Value must be 0 or positive.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(0, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVChargerCBChanged(ActionEvent event){
+		if(rpGroupIndex >= 0){
+			session.getRpGroups().get(rpGroupIndex).setBSItem(1, rpEVChargerCB.getSelectionModel().getSelectedIndex());
+		}
+	}
+	@FXML
+	public void onEVChargeEffChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpEVChargeEffTB.getText().length() > 0){
+					double value = Double.parseDouble(rpEVChargeEffTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(2, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVStartSOCChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpEVStartSOCTB.getText().length() > 0){
+					double value = Double.parseDouble(rpEVStartSOCTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setBSItem(3, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVEndSOCChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpEVEndSOCTB.getText().length() > 0){
+					double value = Double.parseDouble(rpEVEndSOCTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setEVItem(4, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVStartTimeChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpEVStartTimeTB.getText().length() > 0){
+					String[] value = rpEVStartTimeTB.getText().split(":");
+					if(value.length != 2){
+						showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+					}else{
+						int hrs = Integer.parseInt(value[0]);
+						int min = Integer.parseInt(value[1]);
+						if(hrs < 0 || hrs > 23 || min < 0 || min > 59){
+							showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+						}else{
+							String v = hrs+"."+min;
+							session.getRpGroups().get(rpGroupIndex).setEVItem(5, Double.parseDouble(v));
+						}
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVEndTimeChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpEVEndTimeTB.getText().length() > 0){
+					String[] value = rpEVEndTimeTB.getText().split(":");
+					if(value.length != 2){
+						showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+					}else{
+						int hrs = Integer.parseInt(value[0]);
+						int min = Integer.parseInt(value[1]);
+						if(hrs < 0 || hrs > 23 || min < 0 || min > 59){
+							showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+						}else{
+							String v = hrs+"."+min;
+							session.getRpGroups().get(rpGroupIndex).setEVItem(6, Double.parseDouble(v));
+						}
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
+		}
+	}
+	@FXML
+	public void onEVChargeStratChanged(ActionEvent event) {
+		if(rpGroupIndex >= 0){
+			session.getRpGroups().get(rpGroupIndex).setBSItem(7, rpEVChargeStratCB.getSelectionModel().getSelectedIndex());
+		}
+	}
+	@FXML
+	public void onDRPercentChanged(KeyEvent event) {
+		if(rpGroupIndex >= 0){
+			try{
+				if(rpDRPercentContTB.getText().length() > 0){
+					double value = Double.parseDouble(rpDRPercentContTB.getText());
+					if(value < 0 || value > 100){
+						showInvalidInputDialog("Value must be between 0 and 100.");
+					}else{
+						session.getRpGroups().get(rpGroupIndex).setDRItem(0, value);
+					}
+				}
+			}catch(Exception e){
+				showInvalidInputDialog();
+			}
 		}
 	}
 }
