@@ -47,7 +47,10 @@
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="importHourlyDataRadio" layoutX="79.0" layoutY="96.0" mnemonicParsing="false" onAction="#importHourlyDataSelected" text="Import Hourly Data" toggleGroup="$solarone" />
+                              <RadioButton fx:id="importHourlyDataRadio" layoutX="79.0" layoutY="96.0" mnemonicParsing="false" onAction="#importHourlyDataSelected" text="Import Hourly Data" toggleGroup="$solarone">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font></RadioButton>
                               <TextField fx:id="hourlyDataFileTB" disable="true" layoutX="163.0" layoutY="130.0" />
                               <Button fx:id="solarBrowseBtn" disable="true" layoutX="79.0" layoutY="130.0" mnemonicParsing="false" onAction="#hourlyDataFileButton" text="Browse..." />
                               <Label layoutX="34.0" layoutY="16.0" styleClass="panesubs" text="Solar Radiation Data">
@@ -66,22 +69,37 @@
                               </Label>
                               <Label layoutX="35.0" layoutY="66.0" text="Latitude:" />
                               <Label layoutX="31.0" layoutY="101.0" text="Longitude" />
-                              <RadioButton fx:id="solarNorthRadio" layoutX="230.0" layoutY="66.0" mnemonicParsing="false" selected="true" text="North">
+                              <RadioButton fx:id="solarNorthRadio" layoutX="230.0" layoutY="66.0" mnemonicParsing="false" onKeyReleased="#solarNorthChanged" selected="true" text="North">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="solartwo" />
                                  </toggleGroup>
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
                               </RadioButton>
-                              <RadioButton fx:id="solarSouthRadio" layoutX="291.0" layoutY="66.0" mnemonicParsing="false" text="South" toggleGroup="$solartwo" />
-                              <RadioButton fx:id="solarEastRadio" layoutX="230.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="East">
+                              <RadioButton fx:id="solarSouthRadio" layoutX="291.0" layoutY="66.0" mnemonicParsing="false" onAction="#solarSouthChanged" text="South" toggleGroup="$solartwo">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font></RadioButton>
+                              <RadioButton fx:id="solarEastRadio" layoutX="230.0" layoutY="101.0" mnemonicParsing="false" onAction="#solarEastChanged" selected="true" text="East">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="solarthree" />
                                  </toggleGroup>
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
                               </RadioButton>
-                              <RadioButton fx:id="solarWestRadio" layoutX="291.0" layoutY="101.0" mnemonicParsing="false" selected="true" text="West" toggleGroup="$solarthree" />
-                              <TextField fx:id="solarLatTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="62.0" prefHeight="25.0" prefWidth="115.0" text="33.45" />
-                              <TextField fx:id="solarLonTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="97.0" prefHeight="25.0" prefWidth="115.0" text="112.07" />
-                              <ComboBox fx:id="solarTimeCB" layoutX="58.0" layoutY="150.0" prefWidth="150.0" promptText="Select A Timezone" />
-                              <CheckBox fx:id="solarDaylightSavingsCB" layoutX="236.0" layoutY="154.0" mnemonicParsing="false" selected="true" text="Enable Daylight Savings Time" />
+                              <RadioButton fx:id="solarWestRadio" layoutX="291.0" layoutY="101.0" mnemonicParsing="false" onAction="#solarWestChanged" selected="true" text="West" toggleGroup="$solarthree">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font></RadioButton>
+                              <TextField fx:id="solarLatTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="62.0" onKeyReleased="#solarLatChanged" prefHeight="25.0" prefWidth="115.0" text="33.45" />
+                              <TextField fx:id="solarLonTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="97.0" onKeyReleased="#solarLonChanged" prefHeight="25.0" prefWidth="115.0" text="112.07" />
+                              <ComboBox fx:id="solarTimeCB" layoutX="58.0" layoutY="150.0" onAction="#solarTimezoneChanged" prefWidth="150.0" promptText="Select A Timezone" />
+                              <CheckBox fx:id="solarDaylightSavingsCB" layoutX="236.0" layoutY="154.0" mnemonicParsing="false" onAction="#solarDaySaveChanged" selected="true" text="Enable Daylight Savings Time">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font></CheckBox>
                               <DatePicker fx:id="solarStartDP" layoutX="218.0" layoutY="190.0" prefHeight="25.0" prefWidth="112.0" />
                               <DatePicker fx:id="solarEndDP" layoutX="413.0" layoutY="190.0" prefHeight="25.0" prefWidth="109.0" />
                               <Label layoutX="180.0" layoutY="194.0" text="Start:" />
@@ -1133,7 +1151,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Pane layoutX="69.0" layoutY="55.0" prefHeight="147.0" prefWidth="281.0" styleClass="solarbg">
+                        <Pane layoutX="72.0" layoutY="31.0" prefHeight="147.0" prefWidth="281.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Simulate" />
                               <Button layoutX="38.0" layoutY="54.0" mnemonicParsing="false" onAction="#onRunClicked" prefHeight="57.0" prefWidth="207.0" text="Run Simulation">
@@ -1143,9 +1161,9 @@
                               </Button>
                            </children>
                         </Pane>
-                        <Pane layoutX="376.0" layoutY="55.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
+                        <Pane layoutX="379.0" layoutY="31.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
                            <children>
-                              <ComboBox fx:id="gridStrataCB" layoutX="38.0" layoutY="50.0" onAction="#onGridSummaryCBChange" prefWidth="150.0" promptText="Strata 1" />
+                              <ComboBox fx:id="gridStrataCB" layoutX="38.0" layoutY="50.0" onAction="#onGridSummaryCBChange" prefWidth="150.0" promptText="Select A Group" />
                               <TextField fx:id="gridPeakLoadTB" editable="false" layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="102,000" />
                               <TextField fx:id="gridAvgLoadTB" editable="false" layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="30,600" />
                               <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">
@@ -1209,7 +1227,7 @@
                               </Label>
                            </children>
                         </Pane>
-                        <Pane layoutX="69.0" layoutY="239.0" prefHeight="463.0" prefWidth="1137.0" styleClass="solarbg">
+                        <Pane layoutX="72.0" layoutY="194.0" prefHeight="508.0" prefWidth="1137.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Time Series" />
                               <CheckBox fx:id="tieredRateCB" layoutX="976.0" layoutY="79.0" mnemonicParsing="false" selected="true" text="Tiered Rate">
@@ -1266,6 +1284,23 @@
                                  </font>
                               </Button>
                               <Pane fx:id="gridGraphPane" layoutX="31.0" layoutY="50.0" prefHeight="392.0" prefWidth="908.0" />
+                              <Slider fx:id="gridBeginSlider" layoutX="116.0" layoutY="450.0" onMouseReleased="#onBeginDrag" prefHeight="14.0" prefWidth="811.0" />
+                              <Slider fx:id="gridEndSlider" layoutX="116.0" layoutY="474.0" onMouseReleased="#onEndDrag" prefHeight="14.0" prefWidth="811.0" value="100.0" />
+                              <Label layoutX="38.0" layoutY="449.0" text="Begin Date:" textAlignment="RIGHT">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="47.0" layoutY="474.0" text="End Date:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="gridChartLabel" alignment="CENTER" layoutX="428.0" layoutY="27.0" text="Mar. 29, 2015 - Mar. 30, 2015">
+                                 <font>
+                                    <Font name="Arial Bold" size="14.0" />
+                                 </font>
+                              </Label>
                            </children>
                         </Pane>
                      </children></AnchorPane>

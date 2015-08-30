@@ -29,9 +29,10 @@ public class RateSchedule {
 		rates = FXCollections.observableArrayList();
 	}
 	
-	public RateSchedule(int meter, double credit, double charge, String[] colors,
+	public RateSchedule(String name, int meter, double credit, double charge, String[] colors,
 			ObservableList<Rate> rates) {
 		super();
+		this.name = name;
 		this.meter = meter;
 		this.credit = credit;
 		this.charge = charge;
