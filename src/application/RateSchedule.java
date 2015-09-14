@@ -8,28 +8,31 @@ public class RateSchedule {
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
+	private static final int GRID_PANES = 4;
 	private String name;
 	private int meter;
 	private double credit;
 	private double charge;
-	private String[] paneColors;
-	private int[] panePlacement;
+	private String[][] paneColors;
 	private ObservableList<Rate> rates;
-	
+
 	public RateSchedule(){
 		this.meter = 0;
 		this.credit = 0;
 		this.charge = 0;
-		paneColors = new String[GRID_ROWS*GRID_COLUMNS];
-		panePlacement = new int[GRID_ROWS*GRID_COLUMNS];
+		paneColors = new String[GRID_ROWS*GRID_COLUMNS][GRID_PANES];
 		for(int x = 0; x < paneColors.length; x++){
-			paneColors[x] = "burlywood";
-			panePlacement[x] = 0;
+			for(int y = 0; y < paneColors[0].length; y++){
+				paneColors[x][y] = "burlywood";
+				if(y == 3){
+					paneColors[x][y] = "gray";
+				}
+			}
 		}
 		rates = FXCollections.observableArrayList();
 	}
-	
-	public RateSchedule(String name, int meter, double credit, double charge, String[] colors,
+
+	public RateSchedule(String name, int meter, double credit, double charge, String[][] colors,
 			ObservableList<Rate> rates) {
 		super();
 		this.name = name;
@@ -39,7 +42,7 @@ public class RateSchedule {
 		this.paneColors = colors;
 		this.rates = rates;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -66,10 +69,10 @@ public class RateSchedule {
 	public void setCharge(double charge) {
 		this.charge = charge;
 	}
-	public String[] getPaneColors() {
+	public String[][] getPaneColors() {
 		return paneColors;
 	}
-	public void setPaneColors(String[] paneColors) {
+	public void setPaneColors(String[][] paneColors) {
 		this.paneColors = paneColors;
 	}
 	public ObservableList<Rate> getRates() {
@@ -84,21 +87,10 @@ public class RateSchedule {
 	public void removeRate(Rate rate){
 		rates.remove(rate);
 	}
-
-	public int getPanePlacement(int paneIndex) {
-		return panePlacement[paneIndex];
+	public void setPaneColor(int paneIndex, int pane, String color){
+		paneColors[paneIndex][pane] = color;
 	}
-
-	public void setPanePlacement(int paneIndex, int pos) {
-		panePlacement[paneIndex] = pos;
-	}
-	public void setPaneColor(int paneIndex, String color){
-		paneColors[paneIndex] = color;
-	}
-	public String getPaneColor(int paneIndex){
-		return paneColors[paneIndex];
-	}
-	public int[] getPanePlacementList(){
-		return panePlacement;
+	public String getPaneColor(int paneIndex, int pane){
+		return paneColors[paneIndex][pane];
 	}
 }

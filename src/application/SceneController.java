@@ -354,11 +354,11 @@ public class SceneController extends AnchorPane{
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
+	private static final int GRID_PANES = 4;
 	private boolean gridToggle,rpSolarToggle,rpInvertToggle,rpBSToggle,rpEVToggle,rpDRToggle;
 	private int gridIndex,rateCount,ratesScheduleIndex,rpGroupIndex;
 	private Pattern p;
-	private Pane[] panes;
-	private boolean[] pp;
+	private Pane[][] panes;
 	private String[][] series;
 	private ArrayList<String> colors = new ArrayList();
 	private ObservableList<RateSchedule> rateSchedules;
@@ -424,10 +424,10 @@ public class SceneController extends AnchorPane{
 		rpStrataCB.setItems(rpGroupList);
 		gridStrataCB.setItems(rpGroupList);
 		ObservableList<String> l1 = FXCollections.observableArrayList();
-		l1.addAll("Level 1", "Level 2", "Level 3");
+		l1.addAll("Level 1", "Level 2");
 		rpEVChargerCB.setItems(l1);
 		ObservableList<String> l2 = FXCollections.observableArrayList();
-		l2.addAll("1", "2");
+		l2.addAll("Max Charge Rate", "Min Charge Rate");
 		rpEVChargeStratCB.setItems(l2);
 	}
 	@SuppressWarnings("unchecked")
@@ -529,22 +529,47 @@ public class SceneController extends AnchorPane{
 			rateList.add(rate);
 		}
 		int count = 0;
-		panes = new Pane[GRID_ROWS*GRID_COLUMNS];
-		pp = new boolean[GRID_ROWS*GRID_COLUMNS];
+		panes = new Pane[GRID_ROWS*GRID_COLUMNS][GRID_PANES];
 		GridListener gl = new GridListener();
 		for(int x = 0; x< GRID_ROWS; x++){
 			for(int y = 0; y< GRID_COLUMNS; y++){
-				pp[count] = false;
 				Pane pane = new Pane();
 				pane.setMinSize(40, 10);
 				pane.setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+				Pane pane1 = new Pane();
+				pane1.setMinSize(29, 10);
+				pane1.setMinSize(29, 10);
+				pane1.setMaxWidth(29);
+				pane1.setPrefWidth(29);
+				pane1.setMinWidth(29);
+				pane1.setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+				pane1.setVisible(false);
+				Pane pane2 = new Pane();
+				pane2.setMinSize(11, 10);
+				pane2.setMaxWidth(11);
+				pane2.setPrefWidth(11);
+				pane2.setMinWidth(11);
+				pane2.setTranslateX(29);
+				pane2.setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+				pane2.setVisible(false);
+				Pane pane3 = new Pane();
+				pane3.setMinSize(40, 10);
+				pane3.setMinSize(40, 10);
+				pane3.setStyle("-fx-background-color:gray;-fx-border-color:black;");
+				pane3.setVisible(false);
+				panes[count][0] = pane;
+				panes[count][1] = pane1;
+				panes[count][2] = pane2;
+				panes[count][3] = pane3;
 				Button button = new Button();
 				button.setId(Integer.toString(count));
 				button.setMinSize(40, 10);
 				button.setOpacity(0);
 				button.setOnMouseReleased(gl);
-				panes[count] = pane;
 				rateGrid.add(pane, y, x);
+				rateGrid.add(pane1, y, x);
+				rateGrid.add(pane2, y, x);
+				rateGrid.add(pane3, y, x);
 				rateGrid.add(button, y, x);
 				count++;
 			}
@@ -678,6 +703,11 @@ public class SceneController extends AnchorPane{
 		timeZones.add("UTC-6:00 CST");
 		timeZones.add("UTC-5:00 EST");
 		solarTimeCB.setItems(timeZones);
+
+		LocalDate date = LocalDate.of(2015, 1, 1);
+		solarStartDP.setValue(date);
+		date = LocalDate.of(2015, 12, 31);
+		solarEndDP.setValue(date);
 	}
 
 	@FXML
@@ -722,44 +752,38 @@ public class SceneController extends AnchorPane{
 					Rate r = rateTable.getSelectionModel().getSelectedItem();
 					if(r != null){
 						int index = Integer.parseInt(button.getId());
-						if(index < gridIndex || (index%12 < gridIndex%12)){
-							panes[gridIndex].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
-							rateSchedules.get(ratesScheduleIndex).setPaneColor(gridIndex,"burlywood");
-						}else{
+						if(index < gridIndex){
+							int temp = index;
+							index = gridIndex;
+							gridIndex = temp;
+						}
+						if (index%12 < gridIndex%12){
+							int end = gridIndex%12;
+							int start = index %12;
+							index += end - start;
+							gridIndex -= end - start;	
+						}
+						int col1 = gridIndex%12;
+						int col2 = index%12;
+						panes[gridIndex][3].setVisible(false);
+						for(int x = gridIndex; x<=index; x++){
+							if(x%12 >= col1 && x%12 <= col2){
+								if(ratesAllWeekBtn.isSelected()){
+									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,0,r.getColor());
+									panes[x][0].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
+									panes[x][1].setVisible(false);
+									panes[x][2].setVisible(false);
+								}
+								if(ratesWeekdayBtn.isSelected()){
+									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,1,r.getColor());
+									panes[x][1].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
+									panes[x][1].setVisible(true);
+								}
+								if(ratesWeekendBtn.isSelected()){
+									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,2,r.getColor());
+									panes[x][2].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
+									panes[x][2].setVisible(true);
 
-							int col1 = gridIndex%12;
-							int col2 = index%12;
-							for(int x = gridIndex; x<=index; x++){
-								if(x%12 >= col1 && x%12 <= col2){
-									panes[x].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
-									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,r.getColor());
-									if(ratesAllWeekBtn.isSelected()){
-										panes[x].setMaxWidth(50);
-										panes[x].setPrefWidth(40);
-										panes[x].setMinWidth(40);
-										if(rateSchedules.get(ratesScheduleIndex).getPanePlacement(x) == 2){
-											panes[x].setTranslateX(0);
-										}
-										rateSchedules.get(ratesScheduleIndex).setPanePlacement(x, 0);
-									}
-									if(ratesWeekdayBtn.isSelected()){
-										panes[x].setMaxWidth(29);
-										panes[x].setPrefWidth(29);
-										panes[x].setMinWidth(29);
-										if(rateSchedules.get(ratesScheduleIndex).getPanePlacement(x) == 2){
-											panes[x].setTranslateX(0);
-										}
-										rateSchedules.get(ratesScheduleIndex).setPanePlacement(x, 1);
-									}
-									if(ratesWeekendBtn.isSelected()){
-										panes[x].setMaxWidth(11);
-										panes[x].setPrefWidth(11);
-										panes[x].setMinWidth(11);
-										if(!(rateSchedules.get(ratesScheduleIndex).getPanePlacement(x) == 2)){
-											panes[x].setTranslateX(30);
-										}
-										rateSchedules.get(ratesScheduleIndex).setPanePlacement(x, 2);
-									}
 								}
 							}
 						}
@@ -769,8 +793,7 @@ public class SceneController extends AnchorPane{
 					Rate r = rateTable.getSelectionModel().getSelectedItem();
 					if(r != null){
 						int index = Integer.parseInt(button.getId());
-						panes[index].setStyle("-fx-background-color:gray;-fx-border-color:black;");
-						rateSchedules.get(ratesScheduleIndex).setPaneColor(index,"gray");
+						panes[index][3].setVisible(true);
 						gridIndex = index;
 						gridToggle = true;
 					}
@@ -857,12 +880,18 @@ public class SceneController extends AnchorPane{
 				rs.setCharge(Double.parseDouble(split[2]));
 				input = fr.readLine();
 				split = input.split(",");
-				rs.setPaneColors(split);
+				String[][] c = new String[GRID_ROWS * GRID_COLUMNS][GRID_PANES];
+				int count = 0;
+				for(int x = 0; x < split.length; x+=4){
+					c[count][0] = split[x];
+					c[count][1] = split[x+1];
+					c[count][2] = split[x+2];
+					c[count][2] = split[x+3];
+					count++;
+				}
+				rs.setPaneColors(c);
 				input = fr.readLine();
 				split = input.split(",");
-				for(int x = 0; x < split.length; x++){
-					rs.setPanePlacement(x, Integer.parseInt(split[x]));
-				}
 				input = fr.readLine();
 				split = input.split(",");
 				while(split.length == 5){
@@ -941,17 +970,19 @@ public class SceneController extends AnchorPane{
 	public void monthlyAveragesSelected(ActionEvent event) {
 		solarBrowseBtn.setDisable(true);
 		hourlyDataFileTB.setDisable(true);
+		solarTable.setDisable(false);
 	}
 	// Event Listener on RadioButton[#importHourlyDataRadio].onAction
 	@FXML
 	public void importHourlyDataSelected(ActionEvent event) {
 		solarBrowseBtn.setDisable(false);
 		hourlyDataFileTB.setDisable(false);
+		solarTable.setDisable(true);
 	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void hourlyDataFileButton(ActionEvent event) {
-
+		// TODO
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -1237,6 +1268,7 @@ public class SceneController extends AnchorPane{
 		}
 		}
 		rateTable.setItems(rs.getRates());
+		/*
 		for(int x = 0; x < GRID_COLUMNS*GRID_ROWS; x++){
 			panes[x].setStyle("-fx-background-color:"+rs.getPaneColor(x)+";-fx-border-color:black;");
 			switch(rs.getPanePlacement(x)){
@@ -1261,6 +1293,7 @@ public class SceneController extends AnchorPane{
 			}
 			}
 		}
+		*/
 		ratesOverprodTB.setText(Double.toString(rs.getCredit()));
 		ratesInterconTB.setText(Double.toString(rs.getCharge()));
 	}
@@ -1581,6 +1614,8 @@ public class SceneController extends AnchorPane{
 				}
 			}
 			fr.write(n);
+			fr.write(session.getLat()+d);
+			fr.write(session.getLon()+d);			
 			if(session.isNorth()){
 				fr.write("0");
 			}else{
@@ -1593,40 +1628,32 @@ public class SceneController extends AnchorPane{
 				fr.write("1");
 			}
 			fr.write(d);
-			fr.write(session.getTimezone());
+			fr.write(Integer.toString(session.getTimezone()));
 			fr.write(d);
 			if(session.isDaySave()){
 				fr.write("0");
 			}else{
 				fr.write("1");
 			}
+			fr.write(d);
 			fr.write(session.getSolarStart() + d + session.getSolarEnd());
 			fr.write(n);
 			RateSchedule r;
-			String[] p;
-			int[] pp;
+			String[][] p;
 			ObservableList<Rate> ra;
 			Rate rl;
 			for(int x = 0; x < rs.size(); x++){
 				r = rs.get(x);
 				p = r.getPaneColors();
-				pp = r.getPanePlacementList();
 				ra = r.getRates();
+				String c = new String();
 				fr.write(r.getName() + d + r.getMeter() + d + r.getCredit() + d + r.getCharge() + n);
-
 				for(int y = 0; y < p.length; y++){
-					fr.write(p[y]);
-					if(!(y+1==p.length)){
-						fr.write(d);
+					for(int z = 0; z < p[0].length; z++){
+						c +=p[y][z]+d;
 					}
 				}
-				fr.write(n);
-				for(int y = 0; y < pp.length; y++){
-					fr.write(Integer.toString(pp[y]));
-					if(!(y+1==pp.length)){
-						fr.write(d);
-					}
-				}
+				fr.write(c.substring(0,c.length()-1));
 				fr.write(n);
 				for(int y = 0; y < ra.size(); y++){
 					rl = ra.get(y);
@@ -2093,7 +2120,7 @@ public class SceneController extends AnchorPane{
 	}
 	@FXML
 	public void onEndDrag(MouseEvent event){
-		
+
 		try{
 			int begin = (int)gridBeginSlider.getValue();
 			int end = (int)gridEndSlider.getValue();
