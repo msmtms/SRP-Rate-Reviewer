@@ -778,10 +778,12 @@ public class SceneController extends AnchorPane{
 									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,1,r.getColor());
 									panes[x][1].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
 									panes[x][1].setVisible(true);
+									panes[x][2].setVisible(true);
 								}
 								if(ratesWeekendBtn.isSelected()){
 									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,2,r.getColor());
 									panes[x][2].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
+									panes[x][1].setVisible(true);
 									panes[x][2].setVisible(true);
 
 								}
