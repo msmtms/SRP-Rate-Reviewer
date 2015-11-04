@@ -31,7 +31,7 @@
                      <children>
                         <Pane layoutX="26.0" layoutY="14.0" prefHeight="692.0" prefWidth="478.0" styleClass="solarbg">
                            <children>
-                              <TableView fx:id="solarTable" editable="true" layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
+                              <TableView fx:id="solarTable" disable="true" editable="true" layoutX="14.0" layoutY="169.0" prefHeight="501.0" prefWidth="450.0">
                                 <columns>
                                     <TableColumn fx:id="solarMonthColumn" editable="false" prefWidth="106.0" sortable="false" styleClass="monthcolumn" text="Month" />
                                   <TableColumn fx:id="solarGHIColumn" prefWidth="114.0" sortable="false" styleClass="solartablecolumns" text="GHI (kWh/m2/d)" />
@@ -47,12 +47,12 @@
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </RadioButton>
-                              <RadioButton fx:id="importHourlyDataRadio" layoutX="79.0" layoutY="96.0" mnemonicParsing="false" onAction="#importHourlyDataSelected" text="Import Hourly Data" toggleGroup="$solarone">
+                              <RadioButton fx:id="importHourlyDataRadio" layoutX="79.0" layoutY="96.0" mnemonicParsing="false" onAction="#importHourlyDataSelected" selected="true" text="Import Hourly Data" toggleGroup="$solarone">
                                  <font>
                                     <Font name="Arial" size="12.0" />
                                  </font></RadioButton>
-                              <TextField fx:id="hourlyDataFileTB" disable="true" layoutX="163.0" layoutY="130.0" />
-                              <Button fx:id="solarBrowseBtn" disable="true" layoutX="79.0" layoutY="130.0" mnemonicParsing="false" onAction="#hourlyDataFileButton" text="Browse..." />
+                              <TextField fx:id="hourlyDataFileTB" layoutX="163.0" layoutY="130.0" />
+                              <Button fx:id="solarBrowseBtn" layoutX="79.0" layoutY="130.0" mnemonicParsing="false" onAction="#hourlyDataFileButton" text="Browse..." />
                               <Label layoutX="34.0" layoutY="16.0" styleClass="panesubs" text="Solar Radiation Data">
                                  <font>
                                     <Font name="System Bold" size="22.0" />
@@ -93,8 +93,8 @@
                                  <font>
                                     <Font name="Arial" size="12.0" />
                                  </font></RadioButton>
-                              <TextField fx:id="solarLatTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="62.0" onKeyReleased="#solarLatChanged" prefHeight="25.0" prefWidth="115.0" text="33.45" />
-                              <TextField fx:id="solarLonTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="97.0" onKeyReleased="#solarLonChanged" prefHeight="25.0" prefWidth="115.0" text="112.07" />
+                              <TextField fx:id="solarLatTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="62.0" onKeyReleased="#solarLatChanged" prefHeight="25.0" prefWidth="115.0" promptText="-90 - 90" />
+                              <TextField fx:id="solarLonTB" alignment="CENTER_RIGHT" layoutX="93.0" layoutY="97.0" onKeyReleased="#solarLonChanged" prefHeight="25.0" prefWidth="115.0" promptText="-180 - 180" />
                               <ComboBox fx:id="solarTimeCB" layoutX="58.0" layoutY="150.0" onAction="#solarTimezoneChanged" prefWidth="150.0" promptText="Select A Timezone" />
                               <CheckBox fx:id="solarDaylightSavingsCB" layoutX="236.0" layoutY="154.0" mnemonicParsing="false" onAction="#solarDaySaveChanged" selected="true" text="Enable Daylight Savings Time">
                                  <font>
@@ -393,11 +393,11 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpSolarEOTB" editable="false" styleClass="textoutput" text="1.4" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpSolarEODayTB" editable="false" styleClass="textoutput" text="33.6" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpSolarEOYearTB" editable="false" styleClass="textoutput" text="12264" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpCapFactorTB" editable="false" styleClass="textoutput" text="20.5" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <TextField fx:id="rpSolarPVPenTB" editable="false" styleClass="textoutput" text="68.6" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <TextField fx:id="rpSolarEOTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpSolarEODayTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpSolarEOYearTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpCapFactorTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpSolarPVPenTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                 <Label text="kW" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -452,9 +452,9 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpSolarCapTB" alignment="CENTER" onKeyReleased="#onSolarCapChanged" prefHeight="25.0" prefWidth="100.0" text="5.5" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpSolarAzTB" alignment="CENTER" onKeyReleased="#onSolarAziChanged" prefWidth="100.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpSolarSlopeTB" alignment="CENTER" onKeyReleased="#onSolarSlopeChanged" prefWidth="100.0" text="33.45" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpSolarCapTB" alignment="CENTER" onKeyReleased="#onSolarCapChanged" prefHeight="25.0" prefWidth="100.0" promptText="0.0+" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpSolarAzTB" alignment="CENTER" onKeyReleased="#onSolarAziChanged" prefWidth="100.0" promptText="-180 - 180" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpSolarSlopeTB" alignment="CENTER" onKeyReleased="#onSolarSlopeChanged" prefWidth="100.0" promptText="0 - 90" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                 <Label text="kW" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -534,11 +534,11 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpPeakLoadTB" editable="false" styleClass="textoutput" text="6.8" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpAverageLoadTB" editable="false" styleClass="textoutput" text="2.04" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpEUDayTB" editable="false" styleClass="textoutput" text="49.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpEUYearTB" editable="false" styleClass="textoutput" text="17870" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <TextField fx:id="rpLoadFactorTB" editable="false" styleClass="textoutput" text="0.3" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <TextField fx:id="rpPeakLoadTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpAverageLoadTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpEUDayTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpEUYearTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpLoadFactorTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                 <Label text="kW" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -599,10 +599,10 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpInterconChargesTB" editable="false" styleClass="textoutput" text="420.00" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpEnergyChargesTB" editable="false" styleClass="textoutput" text="202.50" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpDemandChargesTB" editable="false" styleClass="textoutput" text="0.00" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpTotalChargesTB" editable="false" styleClass="textoutput" text="622.50" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpInterconChargesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpEnergyChargesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpDemandChargesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpTotalChargesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <Label text="\$/y" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -657,9 +657,9 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpEnergyPurchasedTB" editable="false" styleClass="textoutput" text="13500" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpEnergySoldTB" editable="false" styleClass="textoutput" text="12000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpNetPurchasesTB" editable="false" styleClass="textoutput" text="1500" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpEnergyPurchasedTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpEnergySoldTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpNetPurchasesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                 <Label text="kWh/y" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -716,10 +716,10 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpInvertEnergyInTB" editable="false" styleClass="textoutput" text="12264" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpInvertEnergyOutTB" editable="false" styleClass="textoutput" text="11650" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpInvertLossesTB" editable="false" styleClass="textoutput" text="614" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpInvertCapFactorTB" editable="false" styleClass="textoutput" text="18.6" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpInvertEnergyInTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpInvertEnergyOutTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpInvertLossesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpInvertCapFactorTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <Label text="kWh/y" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -758,7 +758,7 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpInvertCapTB" alignment="CENTER" onKeyReleased="#onInvertCapChanged" prefHeight="25.0" prefWidth="100.0" text="5" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpInvertCapTB" alignment="CENTER" onKeyReleased="#onInvertCapChanged" prefHeight="25.0" prefWidth="100.0" promptText="0.0+" GridPane.columnIndex="1" />
                                                 <Label text="kWh" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -769,7 +769,7 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpInvertEfficiencyTB" alignment="CENTER" onKeyReleased="#onInvertEffChanged" prefWidth="100.0" styleClass="ratesinput" text="95" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpInvertEfficiencyTB" alignment="CENTER" onKeyReleased="#onInvertEffChanged" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <Label text="\%" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -816,10 +816,10 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpBSEnergyInTB" editable="false" styleClass="textoutput" text="2453" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpBSEnergyOutTB" editable="false" styleClass="textoutput" text="2208" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpBSLossesTB" editable="false" styleClass="textoutput" text="245" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpBSAutonomyTB" editable="false" styleClass="textoutput" text="4.9" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpBSEnergyInTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpBSEnergyOutTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpBSLossesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpBSAutonomyTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <Label text="kWh/y" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -875,10 +875,10 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpBSCapTB" alignment="CENTER" onKeyReleased="#onBSCapChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="10" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpBSRoundEffTB" alignment="CENTER" onKeyReleased="#onBSRoundChanged" prefWidth="100.0" styleClass="ratesinput" text="90" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpBSMinSOCTB" alignment="CENTER" onAction="#onBSMinSOCChanged" onKeyReleased="#onBSMinSOCChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpBSMaxCTB" alignment="CENTER" onKeyReleased="#onBSMaxCChanged" prefWidth="100.0" styleClass="ratesinput" text="1" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpBSCapTB" alignment="CENTER" onKeyReleased="#onBSCapChanged" prefHeight="25.0" prefWidth="100.0" promptText="0.0+" styleClass="ratesinput" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpBSRoundEffTB" alignment="CENTER" onKeyReleased="#onBSRoundChanged" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpBSMinSOCTB" alignment="CENTER" onAction="#onBSMinSOCChanged" onKeyReleased="#onBSMinSOCChanged" prefHeight="25.0" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpBSMaxCTB" alignment="CENTER" onKeyReleased="#onBSMaxCChanged" prefWidth="100.0" promptText="0+" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <Label text="kWh" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -928,7 +928,7 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpDRPercentContTB" alignment="CENTER" onKeyReleased="#onDRPercentChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="10" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpDRPercentContTB" alignment="CENTER" onKeyReleased="#onDRPercentChanged" prefHeight="25.0" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" />
                                                 <CheckBox fx:id="rpDRDeferCB" mnemonicParsing="false" onAction="#rpDRDeferClicked" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                                                 <Label text="\%" GridPane.columnIndex="2">
                                                    <font>
@@ -958,8 +958,8 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpDRDemandContTB" editable="false" styleClass="textoutput" text="625" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpDRCapFactorTB" editable="false" styleClass="textoutput" text="35" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpDRDemandContTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpDRCapFactorTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <Label text="kWh/y" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -1035,13 +1035,13 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpEVBatteryCapTB" alignment="CENTER" onKeyReleased="#onEVBattChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="24" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpEVBatteryCapTB" alignment="CENTER" onKeyReleased="#onEVBattChanged" prefHeight="25.0" prefWidth="100.0" promptText="0.0+" styleClass="ratesinput" GridPane.columnIndex="1" />
                                                 <ComboBox fx:id="rpEVChargerCB" onAction="#onEVChargerCBChanged" prefHeight="25.0" prefWidth="119.0" promptText="Select Level" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpEVChargeEffTB" alignment="CENTER" onKeyReleased="#onEVChargeEffChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="95" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpEVStartSOCTB" alignment="CENTER" onKeyReleased="#onEVStartSOCChanged" prefWidth="100.0" styleClass="ratesinput" text="50" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <TextField fx:id="rpEVEndSOCTB" alignment="CENTER" onKeyReleased="#onEVEndSOCChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="100" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                <TextField fx:id="rpEVStartTimeTB" alignment="CENTER" onKeyReleased="#onEVStartTimeChanged" prefWidth="100.0" styleClass="ratesinput" text="20:00" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                                <TextField fx:id="rpEVEndTimeTB" alignment="CENTER" onKeyReleased="#onEVEndTimeChanged" prefHeight="25.0" prefWidth="100.0" styleClass="ratesinput" text="4:00" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <TextField fx:id="rpEVChargeEffTB" alignment="CENTER" onKeyReleased="#onEVChargeEffChanged" prefHeight="25.0" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpEVStartSOCTB" alignment="CENTER" onKeyReleased="#onEVStartSOCChanged" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpEVEndSOCTB" alignment="CENTER" onKeyReleased="#onEVEndSOCChanged" prefHeight="25.0" prefWidth="100.0" promptText="0 - 100" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <TextField fx:id="rpEVStartTimeTB" alignment="CENTER" onKeyReleased="#onEVStartTimeChanged" prefWidth="100.0" promptText="00:00 - 23:59" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                <TextField fx:id="rpEVEndTimeTB" alignment="CENTER" onKeyReleased="#onEVEndTimeChanged" prefHeight="25.0" prefWidth="100.0" promptText="00:00 - 23:59" styleClass="ratesinput" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                                 <Label text="kWh" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -1107,10 +1107,10 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <TextField fx:id="rpEVEInDayTB" editable="false" styleClass="textoutput" text="12.6" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpEVEInYearTB" editable="false" styleClass="textoutput" text="4611" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpEVLossesTB" editable="false" styleClass="textoutput" text="231" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpEVLoadPercentTB" editable="false" styleClass="textoutput" text="20.5" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpEVEInDayTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpEVEInYearTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpEVLossesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpEVLoadPercentTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                 <Label text="kWh/d" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -1164,8 +1164,8 @@
                         <Pane layoutX="379.0" layoutY="31.0" prefHeight="147.0" prefWidth="829.0" styleClass="solarbg">
                            <children>
                               <ComboBox fx:id="gridStrataCB" layoutX="38.0" layoutY="50.0" onAction="#onGridSummaryCBChange" prefWidth="150.0" promptText="Select A Group" />
-                              <TextField fx:id="gridPeakLoadTB" editable="false" layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="102,000" />
-                              <TextField fx:id="gridAvgLoadTB" editable="false" layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="30,600" />
+                              <TextField fx:id="gridPeakLoadTB" editable="false" layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="0.0" />
+                              <TextField fx:id="gridAvgLoadTB" editable="false" layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="0.0" />
                               <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -1197,9 +1197,9 @@
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="gridEUseYearTB" editable="false" layoutX="626.0" layoutY="62.0" styleClass="textoutput" text="268,056,000" />
-                              <TextField fx:id="gridEUseDayTB" editable="false" layoutX="626.0" layoutY="20.0" styleClass="textoutput" text="734,400" />
-                              <TextField fx:id="gridLoadFactorTB" editable="false" layoutX="626.0" layoutY="104.0" styleClass="textoutput" text="0.3" />
+                              <TextField fx:id="gridEUseYearTB" editable="false" layoutX="626.0" layoutY="62.0" styleClass="textoutput" text="0.0" />
+                              <TextField fx:id="gridEUseDayTB" editable="false" layoutX="626.0" layoutY="20.0" styleClass="textoutput" text="0.0" />
+                              <TextField fx:id="gridLoadFactorTB" editable="false" layoutX="626.0" layoutY="104.0" styleClass="textoutput" text="0.0" />
                               <Label layoutX="540.0" layoutY="109.0" text="Load Factor:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
@@ -1230,51 +1230,23 @@
                         <Pane layoutX="72.0" layoutY="194.0" prefHeight="508.0" prefWidth="1137.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Time Series" />
-                              <CheckBox fx:id="tieredRateCB" layoutX="976.0" layoutY="79.0" mnemonicParsing="false" selected="true" text="Tiered Rate">
+                              <CheckBox fx:id="tieredRateCB" layoutX="976.0" layoutY="79.0" mnemonicParsing="false" selected="true" text="Net Load">
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
-                              <CheckBox fx:id="timeOfUseCB" layoutX="976.0" layoutY="102.0" mnemonicParsing="false" selected="true" text="Time-of-Use">
+                              <CheckBox fx:id="timeOfUseCB" layoutX="976.0" layoutY="102.0" mnemonicParsing="false" selected="true" text="Load">
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
-                              <CheckBox fx:id="criticalPeakCB" layoutX="976.0" layoutY="125.0" mnemonicParsing="false" selected="true" text="Critical Peak">
+                              <CheckBox fx:id="criticalPeakCB" layoutX="976.0" layoutY="125.0" mnemonicParsing="false" selected="true" text="Solar PV">
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
-                              <CheckBox fx:id="pvPowerCB" layoutX="976.0" layoutY="196.0" mnemonicParsing="false" text="PV Power">
+                              <CheckBox fx:id="netGridNonSolarCB" layoutX="976.0" layoutY="173.0" mnemonicParsing="false" selected="true" text="Battery">
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
-                              <CheckBox fx:id="netGridNonSolarCB" layoutX="976.0" layoutY="173.0" mnemonicParsing="false" selected="true" text="Net Grid (without Solar)">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="netGridSolarCB" layoutX="976.0" layoutY="150.0" mnemonicParsing="false" selected="true" text="Net Grid (with Solar)">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="invertInputCB" layoutX="976.0" layoutY="264.0" mnemonicParsing="false" text="Inverter Input Power">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="gridSalesCB" layoutX="976.0" layoutY="241.0" mnemonicParsing="false" text="Grid Sales">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="gridPurchasesCB" layoutX="976.0" layoutY="218.0" mnemonicParsing="false" text="Grid Purchases">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="invertOutputCB" layoutX="976.0" layoutY="288.0" mnemonicParsing="false" text="Inverter Output Power">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="rectInputCB" layoutX="976.0" layoutY="311.0" mnemonicParsing="false" text="Rectifier Input Power">
-                                 <font>
-                                    <Font name="Arial Bold" size="12.0" />
-                                 </font></CheckBox>
-                              <CheckBox fx:id="rectOutputCB" layoutX="976.0" layoutY="337.0" mnemonicParsing="false" text="Rectifier Output Power">
+                              <CheckBox fx:id="netGridSolarCB" layoutX="976.0" layoutY="150.0" mnemonicParsing="false" selected="true" text="Inverter AC">
                                  <font>
                                     <Font name="Arial Bold" size="12.0" />
                                  </font></CheckBox>
@@ -1301,6 +1273,11 @@
                                     <Font name="Arial Bold" size="14.0" />
                                  </font>
                               </Label>
+                              <CheckBox fx:id="netGridNonSolarCB1" layoutX="977.0" layoutY="197.0" mnemonicParsing="false" selected="true" text="Electric Vehicle">
+                                 <font>
+                                    <Font name="Arial Bold" size="12.0" />
+                                 </font>
+                              </CheckBox>
                            </children>
                         </Pane>
                      </children></AnchorPane>

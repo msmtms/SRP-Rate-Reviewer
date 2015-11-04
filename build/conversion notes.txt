@@ -1,0 +1,1 @@
+I'm converting all vectors to array lists as they are treated very similar in Java (dynamic growth and syntax).

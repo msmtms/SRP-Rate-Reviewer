@@ -1,0 +1,3 @@
+Capacity	2.0
+Slope	40.0
+Azimuth	30.0

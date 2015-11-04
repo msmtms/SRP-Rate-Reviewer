@@ -1,0 +1,2 @@
+NumHeliostats 1000
+AvgOpticalEfficiency 0.57

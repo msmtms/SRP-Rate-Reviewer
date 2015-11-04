@@ -5,6 +5,7 @@ import javafx.scene.text.Font;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -316,6 +317,8 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private CheckBox netGridSolarCB;
 	@FXML
+	private CheckBox netGridSolarCB1;
+	@FXML
 	private CheckBox invertInputCB;
 	@FXML
 	private CheckBox gridSalesCB;
@@ -370,7 +373,6 @@ public class SceneController extends AnchorPane{
 	private LineChart<Date,Number> gridChart;
 
 	public void init(Main app){
-		new RateReviewerProxy("blah");
 		this.app = app;
 		gridIndex = 0;
 		gridToggle = false;
@@ -578,15 +580,9 @@ public class SceneController extends AnchorPane{
 	}
 	private void initGrid(){
 		gridStrataCB.setItems(rateTitles);
-		InputStream is;
 		try {
-
-			is = this.getClass().getResourceAsStream("/srpweek.xlsx");
-			XSSFWorkbook wb = new XSSFWorkbook(is);
-
-			XSSFSheet sheet = wb.getSheetAt(0);
-			series = new String[sheet.getPhysicalNumberOfRows()][sheet.getRow(0).getPhysicalNumberOfCells()];
-
+			
+			/*
 			for(int x = 1; x < sheet.getPhysicalNumberOfRows(); x++){
 				XSSFRow row = sheet.getRow(x);
 
@@ -601,22 +597,18 @@ public class SceneController extends AnchorPane{
 					}
 				}
 			}
+			
 			gridBeginSlider.setMax(series.length);
 			gridEndSlider.setMax(series.length-1);
 			gridEndSlider.setValue(series.length-1);
 			fillGridLineChart(0, series.length-1);
+			*/
 			tieredRateCB.setStyle("-fx-text-fill:"+colors.get(0)+";");
 			timeOfUseCB.setStyle("-fx-text-fill:"+colors.get(1)+";");
 			criticalPeakCB.setStyle("-fx-text-fill:"+colors.get(2)+";");
 			netGridNonSolarCB.setStyle("-fx-text-fill:"+colors.get(3)+";");
 			netGridSolarCB.setStyle("-fx-text-fill:"+colors.get(4)+";");
-			pvPowerCB.setStyle("-fx-text-fill:"+colors.get(5)+";");
-			gridPurchasesCB.setStyle("-fx-text-fill:"+colors.get(6)+";");
-			gridSalesCB.setStyle("-fx-text-fill:"+colors.get(7)+";");
-			invertInputCB.setStyle("-fx-text-fill:"+colors.get(8)+";");
-			invertOutputCB.setStyle("-fx-text-fill:"+colors.get(9)+";");
-			rectInputCB.setStyle("-fx-text-fill:"+colors.get(10)+";");
-			rectOutputCB.setStyle("-fx-text-fill:"+colors.get(11)+";");
+			netGridSolarCB1.setStyle("-fx-text-fill:"+colors.get(5)+";");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -984,7 +976,12 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void hourlyDataFileButton(ActionEvent event) {
-		// TODO
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		file = fc.showOpenDialog(app.getStage());
+		hourlyDataFileTB.setText(file.getAbsolutePath());
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -1172,7 +1169,12 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpLoadDataClicked(ActionEvent event) {
-		//TODO
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		file = fc.showOpenDialog(app.getStage());
+		rpLoadDataTB.setText(file.getAbsolutePath());
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
@@ -1241,7 +1243,76 @@ public class SceneController extends AnchorPane{
 	// Event Listener on Button.onAction
 	@FXML
 	public void onRunClicked(ActionEvent event) {
-		//TODO
+		try {
+			String nl = System.lineSeparator();
+			File file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Location.txt");
+			FileWriter fr = new FileWriter(file);
+			fr.write("Lat\t" + session.getLat());
+			fr.write(nl);
+			fr.write("Long\t" + session.getLon());
+			fr.write(nl);
+			fr.write("TZ\t" + (session.getTimezone()-10));
+			fr.close();
+			
+			RatepayerGroup rpg = session.getRpGroups().get(rpGroupIndex);
+			
+			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "SolarPV.txt");
+			fr = new FileWriter(file);
+			fr.write("Capacity\t" + rpg.getSolarPVItem(0));
+			fr.write(nl);
+			fr.write("Slope\t" + rpg.getSolarPVItem(2));
+			fr.write(nl);
+			fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
+			fr.close();
+			
+			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Inverter.txt");
+			fr = new FileWriter(file);
+			fr.write("Capacity\t" + rpg.getInvertItem(0));
+			fr.write(nl);
+			fr.write("Efficiency\t" + rpg.getInvertItem(1));
+			fr.close();
+			
+			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Battery.txt");
+			fr = new FileWriter(file);
+			fr.write("Capacity\t" + rpg.getBSItem(0));
+			fr.write(nl);
+			fr.write("Efficiency\t" + rpg.getBSItem(1));
+			fr.write(nl);
+			fr.write("MinSOC\t" + rpg.getBSItem(2));
+			fr.write(nl);
+			fr.write("MaxCRate\t" + rpg.getBSItem(3));
+			fr.close();
+			
+			//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
+			//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
+			
+			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "ElectricVehicle.txt");
+			fr = new FileWriter(file);
+			fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
+			fr.write(nl);
+			fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
+			fr.write(nl);
+			fr.write("Capacity\t" + rpg.getEVItem(0));
+			fr.write(nl);
+			fr.write("Efficiency\t" + rpg.getEVItem(2));
+			fr.write(nl);			
+			fr.write("StartingSOC\t" + rpg.getEVItem(3));
+			fr.write(nl);
+			fr.write("EndingSOC\t" + rpg.getEVItem(4));
+			fr.write(nl);
+			fr.write("StartTime\t" + (int)rpg.getEVItem(5));
+			fr.write(nl);
+			fr.write("EndTime \t" + (int)rpg.getEVItem(6));
+			fr.close();
+			
+			RateReviewerProxy rrp = new RateReviewerProxy("pfft", this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -1405,7 +1476,6 @@ public class SceneController extends AnchorPane{
 	@FXML
 	public void onRPNumChanged(KeyEvent event) {
 		RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
-		System.out.println(rpGroupIndex);
 		rpg.setNum(rpNoCustTB.getText());
 	}
 	@FXML
@@ -1440,9 +1510,10 @@ public class SceneController extends AnchorPane{
 		if(ratesScheduleIndex >=0 ){
 			try{
 				rateSchedules.get(ratesScheduleIndex).setCredit(Double.parseDouble(text));
+				ratesOverprodTB.setStyle("-fx-text-fill:black;");
 			}catch(Exception e){
 				if(text.length()>0){
-					showInvalidInputDialog();
+					ratesOverprodTB.setStyle("-fx-text-fill:red;");
 				}
 			}
 		}
@@ -1453,9 +1524,10 @@ public class SceneController extends AnchorPane{
 		if(ratesScheduleIndex >=0 || !(text.length()>0)){
 			try{
 				rateSchedules.get(ratesScheduleIndex).setCredit(Double.parseDouble(text));
+				ratesInterconTB.setStyle("-fx-text-fill:black;");
 			}catch(Exception e){
 				if(text.length()>0){
-					showInvalidInputDialog();
+					ratesInterconTB.setStyle("-fx-text-fill:red;");
 				}
 			}
 		}
@@ -1509,8 +1581,8 @@ public class SceneController extends AnchorPane{
 		ObservableList<String> rs = ratesScheduleCB.getItems();
 		rs.removeAll(rs);
 		ratesNameTB.setText("");
-		ratesOverprodTB.setText("0.0");
-		ratesInterconTB.setText("0.0");
+		ratesOverprodTB.setText("");
+		ratesInterconTB.setText("");
 		ObservableList<Rate> r = rateTable.getItems();
 		r.removeAll(r);
 		ObservableList<String> rpgs = rpStrataCB.getItems();
@@ -1518,54 +1590,54 @@ public class SceneController extends AnchorPane{
 		rpNameTB.setText("");
 		rpNoCustTB.setText("");
 		rpLoadDataTB.setText("");
-		rpSolarCapTB.setText("0.0");
-		rpSolarAzTB.setText("0.0");
-		rpSolarSlopeTB.setText("0.0");
-		rpPeakLoadTB.setText("0.0");
-		rpAverageLoadTB.setText("0.0");
-		rpEUDayTB.setText("0.0");
-		rpEUYearTB.setText("0.0");
-		rpLoadFactorTB.setText("0.0");
-		rpDemandChargesTB.setText("0.0");
-		rpEnergyChargesTB.setText("0.0");
-		rpInterconChargesTB.setText("0.0");
-		rpTotalChargesTB.setText("0.0");
-		rpNetPurchasesTB.setText("0.0");
-		rpEnergySoldTB.setText("0.0");
-		rpEnergyPurchasedTB.setText("0.0");
-		rpInvertEnergyInTB.setText("0.0");
-		rpInvertEnergyOutTB.setText("0.0");
-		rpInvertLossesTB.setText("0.0");
-		rpInvertCapFactorTB.setText("0.0");
-		rpInvertCapTB.setText("0.0");
-		rpInvertEfficiencyTB.setText("0.0");
-		rpBSEnergyInTB.setText("0.0");
-		rpBSEnergyOutTB.setText("0.0");
-		rpBSLossesTB.setText("0.0");
-		rpBSAutonomyTB.setText("0.0");
-		rpBSCapTB.setText("0.0");
-		rpBSRoundEffTB.setText("0.0");
-		rpBSMaxCTB.setText("0.0");
-		rpBSMinSOCTB.setText("0.0");
-		rpDRDemandContTB.setText("0.0");
-		rpDRCapFactorTB.setText("0.0");
-		rpDRPercentContTB.setText("0.0");
-		rpEVEInDayTB.setText("0.0");
-		rpEVEInYearTB.setText("0.0");
-		rpEVLossesTB.setText("0.0");
-		rpEVLoadPercentTB.setText("0.0");
-		rpEVBatteryCapTB.setText("0.0");
-		rpEVStartSOCTB.setText("0.0");
-		rpEVChargeEffTB.setText("0.0");
-		rpEVEndTimeTB.setText("00:00");
-		rpEVStartTimeTB.setText("00:00");
-		rpEVEndSOCTB.setText("0.0");
-		gridPeakLoadTB.setText("0.0");
-		gridAvgLoadTB.setText("0.0");
-		noCustLabel.setText("0");
-		gridEUseYearTB.setText("0.0");
-		gridEUseDayTB.setText("0.0");
-		gridLoadFactorTB.setText("0.0");
+		rpSolarCapTB.setText("");
+		rpSolarAzTB.setText("");
+		rpSolarSlopeTB.setText("");
+		rpPeakLoadTB.setText("");
+		rpAverageLoadTB.setText("");
+		rpEUDayTB.setText("");
+		rpEUYearTB.setText("");
+		rpLoadFactorTB.setText("");
+		rpDemandChargesTB.setText("");
+		rpEnergyChargesTB.setText("");
+		rpInterconChargesTB.setText("");
+		rpTotalChargesTB.setText("");
+		rpNetPurchasesTB.setText("");
+		rpEnergySoldTB.setText("");
+		rpEnergyPurchasedTB.setText("");
+		rpInvertEnergyInTB.setText("");
+		rpInvertEnergyOutTB.setText("");
+		rpInvertLossesTB.setText("");
+		rpInvertCapFactorTB.setText("");
+		rpInvertCapTB.setText("");
+		rpInvertEfficiencyTB.setText("");
+		rpBSEnergyInTB.setText("");
+		rpBSEnergyOutTB.setText("");
+		rpBSLossesTB.setText("");
+		rpBSAutonomyTB.setText("");
+		rpBSCapTB.setText("");
+		rpBSRoundEffTB.setText("");
+		rpBSMaxCTB.setText("");
+		rpBSMinSOCTB.setText("");
+		rpDRDemandContTB.setText("");
+		rpDRCapFactorTB.setText("");
+		rpDRPercentContTB.setText("");
+		rpEVEInDayTB.setText("");
+		rpEVEInYearTB.setText("");
+		rpEVLossesTB.setText("");
+		rpEVLoadPercentTB.setText("");
+		rpEVBatteryCapTB.setText("");
+		rpEVStartSOCTB.setText("");
+		rpEVChargeEffTB.setText("");
+		rpEVEndTimeTB.setText("");
+		rpEVStartTimeTB.setText("");
+		rpEVEndSOCTB.setText("");
+		gridPeakLoadTB.setText("");
+		gridAvgLoadTB.setText("");
+		noCustLabel.setText("");
+		gridEUseYearTB.setText("");
+		gridEUseDayTB.setText("");
+		gridLoadFactorTB.setText("");
 	}
 	private void populate(){
 		authorTB.setText(session.getAuthor());
@@ -1726,13 +1798,14 @@ public class SceneController extends AnchorPane{
 				if(rpSolarCapTB.getText().length() > 0){
 					double value = Double.parseDouble(rpSolarCapTB.getText());
 					if(value < 0){
-						showInvalidInputDialog("Value must be 0 or positive.");
+						rpSolarCapTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setSolarPVItem(0, value);
+						rpSolarCapTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpSolarCapTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1743,13 +1816,14 @@ public class SceneController extends AnchorPane{
 				if(rpSolarAzTB.getText().length() > 0){
 					double value = Double.parseDouble(rpSolarAzTB.getText());
 					if(value < -180 || value > 180){
-						showInvalidInputDialog("Value must be between -180 and 180.");
+						rpSolarAzTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setSolarPVItem(1, value);
+						rpSolarAzTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpSolarAzTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1760,13 +1834,14 @@ public class SceneController extends AnchorPane{
 				if(rpSolarSlopeTB.getText().length() > 0){
 					double value = Double.parseDouble(rpSolarSlopeTB.getText());
 					if(value < 0 || value > 90){
-						showInvalidInputDialog("Value must be between 0 and 90.");
+						rpSolarAzTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setSolarPVItem(2, value);
+						rpSolarAzTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpSolarAzTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1777,13 +1852,14 @@ public class SceneController extends AnchorPane{
 				if(rpInvertCapTB.getText().length() > 0){
 					double value = Double.parseDouble(rpInvertCapTB.getText());
 					if(value < 0){
-						showInvalidInputDialog("Value must be 0 or positive.");
+						rpInvertCapTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setInvertItem(0, value);
+						rpInvertCapTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpInvertCapTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1794,13 +1870,14 @@ public class SceneController extends AnchorPane{
 				if(rpInvertEfficiencyTB.getText().length() > 0){
 					double value = Double.parseDouble(rpInvertEfficiencyTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpInvertEfficiencyTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setInvertItem(1, value);
+						rpInvertEfficiencyTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpInvertEfficiencyTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1811,13 +1888,14 @@ public class SceneController extends AnchorPane{
 				if(rpBSCapTB.getText().length() > 0){
 					double value = Double.parseDouble(rpBSCapTB.getText());
 					if(value < 0){
-						showInvalidInputDialog("Value must be 0 or positive.");
+						rpBSCapTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setBSItem(0, value);
+						rpBSCapTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpBSCapTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1828,13 +1906,14 @@ public class SceneController extends AnchorPane{
 				if(rpBSRoundEffTB.getText().length() > 0){
 					double value = Double.parseDouble(rpBSRoundEffTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpBSRoundEffTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setBSItem(1, value);
+						rpBSRoundEffTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpBSRoundEffTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1845,13 +1924,14 @@ public class SceneController extends AnchorPane{
 				if(rpBSMinSOCTB.getText().length() > 0){
 					double value = Double.parseDouble(rpBSMinSOCTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpBSMinSOCTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setBSItem(2, value);
+						rpBSMinSOCTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpBSMinSOCTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1862,13 +1942,14 @@ public class SceneController extends AnchorPane{
 				if(rpBSMaxCTB.getText().length() > 0){
 					double value = Double.parseDouble(rpBSMaxCTB.getText());
 					if(value <= 0){
-						showInvalidInputDialog("Value must be greater than 0.");
+						rpBSMaxCTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setBSItem(3, value);
+						rpBSMaxCTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpBSMaxCTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1879,20 +1960,21 @@ public class SceneController extends AnchorPane{
 				if(rpEVBatteryCapTB.getText().length() > 0){
 					double value = Double.parseDouble(rpEVBatteryCapTB.getText());
 					if(value < 0){
-						showInvalidInputDialog("Value must be 0 or positive.");
+						rpEVBatteryCapTB.setStyle("-fx-text-fill:red;");
 					}else{
-						session.getRpGroups().get(rpGroupIndex).setBSItem(0, value);
+						session.getRpGroups().get(rpGroupIndex).setEVItem(0, value);
+						rpEVBatteryCapTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpEVBatteryCapTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
 	@FXML
 	public void onEVChargerCBChanged(ActionEvent event){
 		if(rpGroupIndex >= 0){
-			session.getRpGroups().get(rpGroupIndex).setBSItem(1, rpEVChargerCB.getSelectionModel().getSelectedIndex());
+			session.getRpGroups().get(rpGroupIndex).setEVItem(1, rpEVChargerCB.getSelectionModel().getSelectedIndex());
 		}
 	}
 	@FXML
@@ -1902,13 +1984,14 @@ public class SceneController extends AnchorPane{
 				if(rpEVChargeEffTB.getText().length() > 0){
 					double value = Double.parseDouble(rpEVChargeEffTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpEVChargeEffTB.setStyle("-fx-text-fill:red;");
 					}else{
-						session.getRpGroups().get(rpGroupIndex).setBSItem(2, value);
+						session.getRpGroups().get(rpGroupIndex).setEVItem(2, value);
+						rpEVChargeEffTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpEVChargeEffTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1919,13 +2002,14 @@ public class SceneController extends AnchorPane{
 				if(rpEVStartSOCTB.getText().length() > 0){
 					double value = Double.parseDouble(rpEVStartSOCTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpEVStartSOCTB.setStyle("-fx-text-fill:red;");
 					}else{
-						session.getRpGroups().get(rpGroupIndex).setBSItem(3, value);
+						session.getRpGroups().get(rpGroupIndex).setEVItem(3, value);
+						rpEVStartSOCTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpEVStartSOCTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1936,13 +2020,14 @@ public class SceneController extends AnchorPane{
 				if(rpEVEndSOCTB.getText().length() > 0){
 					double value = Double.parseDouble(rpEVEndSOCTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpEVEndSOCTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setEVItem(4, value);
+						rpEVEndSOCTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpEVEndSOCTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1956,22 +2041,23 @@ public class SceneController extends AnchorPane{
 						String[] value = in.split(":");
 						if(value.length != 2){
 							if(!(event.getCode() == KeyCode.ENTER)){
-								showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+								rpEVStartTimeTB.setStyle("-fx-text-fill:red;");
 							}
 						}else{
 							int hrs = Integer.parseInt(value[0]);
 							int min = Integer.parseInt(value[1]);
 							if(hrs < 0 || hrs > 23 || min < 0 || min > 59){
-								showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+								rpEVStartTimeTB.setStyle("-fx-text-fill:red;");
 							}else{
 								String v = hrs+"."+min;
 								session.getRpGroups().get(rpGroupIndex).setEVItem(5, Double.parseDouble(v));
+								rpEVStartTimeTB.setStyle("-fx-text-fill:black;");
 							}
 						}
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpEVStartTimeTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -1985,22 +2071,23 @@ public class SceneController extends AnchorPane{
 						String[] value = rpEVEndTimeTB.getText().split(":");
 						if(value.length != 2){
 							if(!(event.getCode() == KeyCode.ENTER)){
-								showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+								rpEVEndTimeTB.setStyle("-fx-text-fill:red;");
 							}
 						}else{
 							int hrs = Integer.parseInt(value[0]);
 							int min = Integer.parseInt(value[1]);
 							if(hrs < 0 || hrs > 23 || min < 0 || min > 59){
-								showInvalidInputDialog("Value must be in the format HH:MM.\nHours: 0-23. Min: 0-59.");
+								rpEVEndTimeTB.setStyle("-fx-text-fill:red;");
 							}else{
 								String v = hrs+"."+min;
 								session.getRpGroups().get(rpGroupIndex).setEVItem(6, Double.parseDouble(v));
+								rpEVEndTimeTB.setStyle("-fx-text-fill:black;");
 							}
 						}
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpEVEndTimeTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -2017,13 +2104,14 @@ public class SceneController extends AnchorPane{
 				if(rpDRPercentContTB.getText().length() > 0){
 					double value = Double.parseDouble(rpDRPercentContTB.getText());
 					if(value < 0 || value > 100){
-						showInvalidInputDialog("Value must be between 0 and 100.");
+						rpDRPercentContTB.setStyle("-fx-text-fill:red;");
 					}else{
 						session.getRpGroups().get(rpGroupIndex).setDRItem(0, value);
+						rpDRPercentContTB.setStyle("-fx-text-fill:black;");
 					}
 				}
 			}catch(Exception e){
-				showInvalidInputDialog();
+				rpDRPercentContTB.setStyle("-fx-text-fill:red;");
 			}
 		}
 	}
@@ -2034,9 +2122,10 @@ public class SceneController extends AnchorPane{
 			if(in.length() > 0){
 				double value = Double.parseDouble(in);
 				if(value < -90 || value > 90){
-					showInvalidInputDialog("Value must be between -90 and 90.");
+					solarLatTB.setStyle("-fx-text-fill:red;");
 				}else{
 					session.setLat(in);
+					solarLatTB.setStyle("-fx-text-fill:black;");
 				}
 			}
 		}catch(Exception e){
@@ -2050,9 +2139,10 @@ public class SceneController extends AnchorPane{
 			if(in.length() > 0){
 				double value = Double.parseDouble(in);
 				if(value < -180 || value > 180){
-					showInvalidInputDialog("Value must be between -180 and 180.");
+					solarLonTB.setStyle("-fx-text-fill:red;");
 				}else{
 					session.setLon(in);
+					solarLonTB.setStyle("-fx-text-fill:black;");
 				}
 			}
 		}catch(Exception e){
@@ -2085,6 +2175,7 @@ public class SceneController extends AnchorPane{
 	}
 	@FXML
 	public void solarTimezoneChanged(ActionEvent event) {
+		session.setTimezone(solarTimeCB.getSelectionModel().getSelectedIndex());
 	}
 	@FXML
 	public void solarDaySaveChanged(ActionEvent event) {
@@ -2136,8 +2227,8 @@ public class SceneController extends AnchorPane{
 		}
 	}
 	public void fillGridLineChart(int begin, int end){
-		Date b = new Date(Long.parseLong(series[begin+1][0]));
-		Date e = new Date(Long.parseLong(series[end-1][0]));
+		Date b = new Date(1044000000);
+		Date e = new Date(1104480000);
 		SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
 		gridChartLabel.setText(df.format(b)+ " - " + df.format(e));
 		gridGraphPane.getChildren().removeAll(gridGraphPane.getChildren());
@@ -2145,15 +2236,17 @@ public class SceneController extends AnchorPane{
 		for(int x = 1; x < 6; x++){
 			ObservableList<XYChart.Data<Date, Number>> ss = FXCollections.observableArrayList();
 			Date date = null; 
+			int count = 0;
 			for(int y = begin + 1; y < end; y++){
-				if(series[y][0] != null){
-					date = new Date(Long.parseLong(series[y][0]));
-				}
+				
+				date = new Date(1044000000 + (count * 3600000));
+				
 				if(series[y][x] != null && date != null){
 					ss.add(new XYChart.Data<Date,Number>(date,Double.parseDouble(series[y][x])));
 				}else{
 					break;
 				}
+				count++;
 			}
 			s.add(new XYChart.Series<>("",ss));
 		}
@@ -2171,6 +2264,215 @@ public class SceneController extends AnchorPane{
 		gridGraphPane.getChildren().add(gridChart);
 		for(int x = 0; x<s.size();x++){
 			s.get(x).nodeProperty().get().setStyle("-fx-stroke: "+colors.get(x)+";");
+		}
+	}
+	public void populateOutput(){
+		try {
+			RatepayerGroup rpg = session.getRpGroups().get(rpGroupIndex);
+			File file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Battery.txt");
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String input;
+			int count = 0;
+			String[] tmp;
+			String[] values = new String[4];
+			while((input = br.readLine()) != null){
+				if(count > 4 && count < 9){
+					tmp = input.split(" ");
+					try{
+						values[count - 5] = tmp[tmp.length-1];
+					}catch (Exception e){
+						values[count - 5] = "0.0";
+					}
+				}
+				count++;
+			}
+			
+			rpBSEnergyInTB.setText(values[0]);
+			rpBSEnergyOutTB.setText(values[1]);
+			rpBSLossesTB.setText(values[2]);
+			rpBSAutonomyTB.setText(values[3]);
+			
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Converter.txt");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			while((input = br.readLine()) != null){
+				if(count > 4 && count < 9){
+					tmp = input.split(" ");
+					try{
+						values[count - 5] = tmp[tmp.length-1];
+					}catch (Exception e){
+						values[count - 5] = "0.0";
+					}
+				}
+				count++;
+			}
+			
+			rpInvertEnergyInTB.setText(values[0]);
+			rpInvertEnergyOutTB.setText(values[1]);
+			rpInvertLossesTB.setText(values[2]);
+			rpInvertCapFactorTB.setText(values[3]);
+			
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "ElectricVehicle.txt");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			while((input = br.readLine()) != null){
+				if(count > 4 && count < 9){
+					tmp = input.split(" ");
+					try{
+						values[count - 5] = tmp[tmp.length-1];
+					}catch (Exception e){
+						values[count - 5] = "0.0";
+					}
+				}
+				count++;
+			}
+			
+			rpEVEInDayTB.setText(values[0]);
+			rpEVEInYearTB.setText(values[1]);
+			rpEVLossesTB.setText(values[2]);
+			rpEVLoadPercentTB.setText(values[3]);
+			
+			values = new String[6];
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Load.txt");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			while((input = br.readLine()) != null){
+				if(count > 3 && count < 10){
+					tmp = input.split(" ");
+					try{
+						values[count - 4] = tmp[tmp.length-1];
+					}catch (Exception e){
+						values[count - 4] = "0.0";
+					}
+				}
+				count++;
+			}
+			
+			rpPeakLoadTB.setText(values[0]);
+			rpAverageLoadTB.setText(values[2]);
+			rpEUDayTB.setText(values[3]);
+			rpEUYearTB.setText(values[4]);
+			rpLoadFactorTB.setText(values[5]);
+			gridPeakLoadTB.setText(values[0]);
+			gridAvgLoadTB.setText(values[2]);
+			gridEUseDayTB.setText(values[3]);
+			gridEUseYearTB.setText(values[4]);
+			gridLoadFactorTB.setText(values[5]);
+			
+			
+			values = new String[8];
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "SolarPV.txt");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			while((input = br.readLine()) != null){
+				if(count > 4 && count < 13){
+					tmp = input.split(" ");
+					try{
+						values[count - 5] = tmp[tmp.length-1];
+					}catch (Exception e){
+						values[count - 5] = "0.0";
+					}
+				}
+				count++;
+			}
+			
+			rpSolarEOTB.setText(values[2]);
+			rpSolarEOYearTB.setText(values[3]);
+			rpSolarEODayTB.setText(values[4]);
+			rpCapFactorTB.setText(values[5]);
+			rpSolarPVPenTB.setText(values[7]);
+			
+			ObservableList<SolarMonthly> sm = solarTable.getItems();
+			
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "SolarResource.txt");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			while((input = br.readLine()) != null){
+				if(count > 5 && count < 18){
+					tmp = input.split("\t");
+					sm.get(count-6).setGHI(tmp[1]);
+					sm.get(count-6).setDNI(tmp[2]);
+					sm.get(count-6).setClearness(tmp[3]);
+				}
+				count++;
+			}
+			
+			ObservableList<SolarMonthly> copy = FXCollections.observableArrayList(); 
+			copy.addAll(sm);
+			sm.removeAll(sm);
+			sm.addAll(copy);
+			solarGraph.getData().clear();
+			ObservableList<XYChart.Series<String, Number>> s = FXCollections.observableArrayList();
+			ObservableList<XYChart.Data<String, Number>> ss = FXCollections.observableArrayList();
+			for(int x = 0; x < sm.size(); x++){
+				ss.add(new XYChart.Data<String,Number>(sm.get(x).getMonth(),Double.parseDouble(sm.get(x).getGHI())));
+			}
+			s.add(new XYChart.Series<>("GHI",ss));
+			ss = FXCollections.observableArrayList();
+			for(int x = 0; x < sm.size(); x++){
+				ss.add(new XYChart.Data<String,Number>(sm.get(x).getMonth(),Double.parseDouble(sm.get(x).getDNI())));
+			}
+			s.add(new XYChart.Series<>("DNI",ss));
+			solarGraph.setData(s);
+			
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "GridInterconnection.txt");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			while((input = br.readLine()) != null){
+				if(count < 3){
+					tmp = input.split(" ");
+					try{
+						values[count] = tmp[tmp.length-1];
+					}catch (Exception e){
+						values[count] = "0.0";
+					}
+				}
+				count++;
+			}
+			
+			rpEnergyPurchasedTB.setText(values[0]);
+			rpEnergySoldTB.setText(values[1]);
+			rpNetPurchasesTB.setText(values[2]);
+			
+			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "time_series_simple.csv");
+			br = new BufferedReader(new FileReader(file));
+			count = 0;
+			ArrayList<String[]> ts = new ArrayList();
+			
+			while((input = br.readLine()) != null){
+				ts.add(input.split(","));
+				count++;
+			}
+			
+			series = new String[ts.size()][ts.get(0).length];
+			
+			for(int x = 1; x < ts.size(); x++ ){
+				series[x] = ts.get(x);
+			}
+			
+			fillGridLineChart(2898, 3066);
+			
+			/*
+			for(int x = 1; x < sheet.getPhysicalNumberOfRows(); x++){
+				XSSFRow row = sheet.getRow(x);
+
+				for(int y = 0; y < row.getPhysicalNumberOfCells(); y++){
+					if(row.getCell(y).getCellType() == XSSFCell.CELL_TYPE_FORMULA){
+						series[x][y] = Double.toString(row.getCell(y).getNumericCellValue());
+					}else{
+						Date date = row.getCell(0).getDateCellValue();
+						if(date!= null){
+							series[x][y] = Long.toString(date.getTime());
+						}
+					}
+				}
+			}
+			*/
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

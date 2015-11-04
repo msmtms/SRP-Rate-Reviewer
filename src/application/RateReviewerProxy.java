@@ -11,8 +11,9 @@ public class RateReviewerProxy {
 		}
 	}
 	
-	RateReviewerProxy(String fileName){
+	RateReviewerProxy(String fileName, SceneController app){
 		System.out.println(initInterface(fileName));
+		app.populateOutput();
 	}
 	private native String initInterface(String fileName);
 	
