@@ -3,7 +3,7 @@ Object type: Electric vehicle
 Object ID: 0
 
 Total capacity [kWh]: 24
-Energy in [kWh/day]: 13.3151
-Energy in [kWh/period]: 4860
-Losses [kWh/period]: 486
-Percentage of total load [%]: 26.1003
+Energy in [kWh/day]: 0
+Energy in [kWh/period]: 0
+Losses [kWh/period]: 0
+Percentage of total load [%]: 0

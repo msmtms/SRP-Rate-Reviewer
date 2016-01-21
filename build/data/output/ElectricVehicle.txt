@@ -2,7 +2,7 @@ Object name: ElectricVehicle
 Object type: Electric vehicle
 Object ID: 0
 
-Total capacity [kWh]: 6.95206e-310
+Total capacity [kWh]: 24
 Energy in [kWh/day]: 0
 Energy in [kWh/period]: 0
 Losses [kWh/period]: 0

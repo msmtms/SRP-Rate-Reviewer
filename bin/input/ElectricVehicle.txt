@@ -1,8 +1,8 @@
 ChargerType	0
-ChargingStrategy	1
+ChargingStrategy	0
 Capacity	24.0
-Efficiency	90.0
+Efficiency	95.0
 StartingSOC	50.0
 EndingSOC	100.0
-StartTime	20
-EndTime 	4
+StartTime	0
+EndTime 	0

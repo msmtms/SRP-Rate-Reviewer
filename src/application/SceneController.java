@@ -305,32 +305,6 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private TextField gridLoadFactorTB;
 	@FXML
-	private CheckBox tieredRateCB;
-	@FXML
-	private CheckBox timeOfUseCB;
-	@FXML
-	private CheckBox criticalPeakCB;
-	@FXML
-	private CheckBox pvPowerCB;
-	@FXML
-	private CheckBox netGridNonSolarCB;
-	@FXML
-	private CheckBox netGridSolarCB;
-	@FXML
-	private CheckBox netGridSolarCB1;
-	@FXML
-	private CheckBox invertInputCB;
-	@FXML
-	private CheckBox gridSalesCB;
-	@FXML
-	private CheckBox gridPurchasesCB;
-	@FXML
-	private CheckBox invertOutputCB;
-	@FXML
-	private CheckBox rectInputCB;
-	@FXML
-	private CheckBox rectOutputCB;
-	@FXML
 	private Pane gridGraphPane;
 	@FXML
 	private CheckBox rpSolarCB;
@@ -354,6 +328,8 @@ public class SceneController extends AnchorPane{
 	private Slider gridEndSlider;
 	@FXML
 	private Label gridChartLabel;
+	@FXML
+	private GridPane checkBoxGrid;
 
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
@@ -363,6 +339,7 @@ public class SceneController extends AnchorPane{
 	private Pattern p;
 	private Pane[][] panes;
 	private String[][] series;
+	private boolean[] gridChartCBBool;
 	private ArrayList<String> colors = new ArrayList();
 	private ObservableList<RateSchedule> rateSchedules;
 	private ObservableList<String> rateTitles,rpGroupList;
@@ -397,11 +374,11 @@ public class SceneController extends AnchorPane{
 		colors.add("blue");
 		colors.add("purple");
 		colors.add("red");
-		colors.add("aquamarine");
+		colors.add("gold");
 		colors.add("beige");
 		colors.add("brown");
 		colors.add("forestgreen");
-		colors.add("gold");
+		colors.add("aquamarine");
 		colors.add("grey");
 		colors.add("lime");
 		colors.add("yellow");
@@ -581,7 +558,7 @@ public class SceneController extends AnchorPane{
 	private void initGrid(){
 		gridStrataCB.setItems(rateTitles);
 		try {
-			
+
 			/*
 			for(int x = 1; x < sheet.getPhysicalNumberOfRows(); x++){
 				XSSFRow row = sheet.getRow(x);
@@ -597,18 +574,13 @@ public class SceneController extends AnchorPane{
 					}
 				}
 			}
-			
+
 			gridBeginSlider.setMax(series.length);
 			gridEndSlider.setMax(series.length-1);
 			gridEndSlider.setValue(series.length-1);
 			fillGridLineChart(0, series.length-1);
-			*/
-			tieredRateCB.setStyle("-fx-text-fill:"+colors.get(0)+";");
-			timeOfUseCB.setStyle("-fx-text-fill:"+colors.get(1)+";");
-			criticalPeakCB.setStyle("-fx-text-fill:"+colors.get(2)+";");
-			netGridNonSolarCB.setStyle("-fx-text-fill:"+colors.get(3)+";");
-			netGridSolarCB.setStyle("-fx-text-fill:"+colors.get(4)+";");
-			netGridSolarCB1.setStyle("-fx-text-fill:"+colors.get(5)+";");
+			 */
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1253,9 +1225,9 @@ public class SceneController extends AnchorPane{
 			fr.write(nl);
 			fr.write("TZ\t" + (session.getTimezone()-10));
 			fr.close();
-			
+
 			RatepayerGroup rpg = session.getRpGroups().get(rpGroupIndex);
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "SolarPV.txt");
 			fr = new FileWriter(file);
 			fr.write("Capacity\t" + rpg.getSolarPVItem(0));
@@ -1264,14 +1236,14 @@ public class SceneController extends AnchorPane{
 			fr.write(nl);
 			fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
 			fr.close();
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Inverter.txt");
 			fr = new FileWriter(file);
 			fr.write("Capacity\t" + rpg.getInvertItem(0));
 			fr.write(nl);
 			fr.write("Efficiency\t" + rpg.getInvertItem(1));
 			fr.close();
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Battery.txt");
 			fr = new FileWriter(file);
 			fr.write("Capacity\t" + rpg.getBSItem(0));
@@ -1282,10 +1254,10 @@ public class SceneController extends AnchorPane{
 			fr.write(nl);
 			fr.write("MaxCRate\t" + rpg.getBSItem(3));
 			fr.close();
-			
+
 			//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
 			//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "ElectricVehicle.txt");
 			fr = new FileWriter(file);
 			fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
@@ -1304,15 +1276,15 @@ public class SceneController extends AnchorPane{
 			fr.write(nl);
 			fr.write("EndTime \t" + (int)rpg.getEVItem(6));
 			fr.close();
-			
+
 			RateReviewerProxy rrp = new RateReviewerProxy("pfft", this);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+
+
+
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -1366,7 +1338,7 @@ public class SceneController extends AnchorPane{
 			}
 			}
 		}
-		*/
+		 */
 		ratesOverprodTB.setText(Double.toString(rs.getCredit()));
 		ratesInterconTB.setText(Double.toString(rs.getCharge()));
 	}
@@ -1414,13 +1386,6 @@ public class SceneController extends AnchorPane{
 			rpEVEndTimeTB.setText("00:00");
 		}
 		rpEVChargeStratCB.getSelectionModel().select((int)rg.getEVItem(7));
-		rpDRPercentContTB.setText(Double.toString(rg.getDRItem(0)));
-		int d = (int) rg.getDRItem(1);
-		if(d == 0){
-			rpDRDeferCB.setSelected(false);
-		}else{
-			rpDRDeferCB.setSelected(true);
-		}
 		// Outputs
 		double[] loadOut = rpg.getLoadOut();
 		rpPeakLoadTB.setText(Double.toString(loadOut[0]));
@@ -1449,9 +1414,6 @@ public class SceneController extends AnchorPane{
 		rpEVEInYearTB.setText(Double.toString(evOut[1]));
 		rpEVLossesTB.setText(Double.toString(evOut[2]));
 		rpEVLoadPercentTB.setText(Double.toString(evOut[3]));
-		double[] drOut = rpg.getDrOut();
-		rpDRDemandContTB.setText(Double.toString(drOut[0]));
-		rpDRCapFactorTB.setText(Double.toString(drOut[1]));
 		double[] interconOut = rpg.getInterconOut();
 		rpEnergyPurchasedTB.setText(Double.toString(interconOut[0]));
 		rpEnergySoldTB.setText(Double.toString(interconOut[1]));
@@ -2227,28 +2189,34 @@ public class SceneController extends AnchorPane{
 		}
 	}
 	public void fillGridLineChart(int begin, int end){
-		Date b = new Date(1044000000);
-		Date e = new Date(1104480000);
+		long jan1 = 1451631600000l;
+		long dec31 = 1483253999000l;
+		long oneHour = 3600000;
+		long beginTime = jan1 + (begin*oneHour);
+		long endTime = dec31 - (end*oneHour);
+		Date b = new Date(beginTime);
+		Date e = new Date(endTime);
 		SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
 		gridChartLabel.setText(df.format(b)+ " - " + df.format(e));
 		gridGraphPane.getChildren().removeAll(gridGraphPane.getChildren());
 		ObservableList<XYChart.Series<Date, Number>> s = FXCollections.observableArrayList();
-		for(int x = 1; x < 6; x++){
-			ObservableList<XYChart.Data<Date, Number>> ss = FXCollections.observableArrayList();
-			Date date = null; 
-			int count = 0;
-			for(int y = begin + 1; y < end; y++){
-				
-				date = new Date(1044000000 + (count * 3600000));
-				
-				if(series[y][x] != null && date != null){
-					ss.add(new XYChart.Data<Date,Number>(date,Double.parseDouble(series[y][x])));
-				}else{
-					break;
+		for(int x = 1; x < series[0].length; x++){
+			if(gridChartCBBool[x-1]){
+				ObservableList<XYChart.Data<Date, Number>> ss = FXCollections.observableArrayList();
+				Date date = null; 
+				int count = 0;
+				for(int y = begin + 1; y < end; y++){
+
+					date = new Date(beginTime + (count * oneHour));
+					if(series[y][x] != null && date != null){
+						ss.add(new XYChart.Data<Date,Number>(date,Double.parseDouble(series[y][x])));
+					}else{
+						break;
+					}
+					count++;
 				}
-				count++;
+				s.add(new XYChart.Series<>("",ss));
 			}
-			s.add(new XYChart.Series<>("",ss));
 		}
 		DateAxis dateAxis = new DateAxis();
 		NumberAxis numberAxis = new NumberAxis();
@@ -2262,12 +2230,17 @@ public class SceneController extends AnchorPane{
 		gridChart.setMinHeight(392);
 		gridChart.setMinWidth(908);
 		gridGraphPane.getChildren().add(gridChart);
-		for(int x = 0; x<s.size();x++){
-			s.get(x).nodeProperty().get().setStyle("-fx-stroke: "+colors.get(x)+";");
+		int count = 0;
+		for(int x = 1; x<series[0].length;x++){
+			if(gridChartCBBool[x-1]){
+				s.get(count).nodeProperty().get().setStyle("-fx-stroke: "+colors.get(x-1)+";");
+				count++;
+			}
 		}
 	}
 	public void populateOutput(){
 		try {
+			gridStrataCB.getSelectionModel().select(0);
 			RatepayerGroup rpg = session.getRpGroups().get(rpGroupIndex);
 			File file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Battery.txt");
 			BufferedReader br = new BufferedReader(new FileReader(file));
@@ -2286,12 +2259,12 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			rpBSEnergyInTB.setText(values[0]);
 			rpBSEnergyOutTB.setText(values[1]);
 			rpBSLossesTB.setText(values[2]);
 			rpBSAutonomyTB.setText(values[3]);
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Converter.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
@@ -2306,12 +2279,12 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			rpInvertEnergyInTB.setText(values[0]);
 			rpInvertEnergyOutTB.setText(values[1]);
 			rpInvertLossesTB.setText(values[2]);
 			rpInvertCapFactorTB.setText(values[3]);
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "ElectricVehicle.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
@@ -2326,12 +2299,12 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			rpEVEInDayTB.setText(values[0]);
 			rpEVEInYearTB.setText(values[1]);
 			rpEVLossesTB.setText(values[2]);
 			rpEVLoadPercentTB.setText(values[3]);
-			
+
 			values = new String[6];
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Load.txt");
 			br = new BufferedReader(new FileReader(file));
@@ -2347,7 +2320,7 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			rpPeakLoadTB.setText(values[0]);
 			rpAverageLoadTB.setText(values[2]);
 			rpEUDayTB.setText(values[3]);
@@ -2358,8 +2331,8 @@ public class SceneController extends AnchorPane{
 			gridEUseDayTB.setText(values[3]);
 			gridEUseYearTB.setText(values[4]);
 			gridLoadFactorTB.setText(values[5]);
-			
-			
+
+
 			values = new String[8];
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "SolarPV.txt");
 			br = new BufferedReader(new FileReader(file));
@@ -2375,15 +2348,15 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			rpSolarEOTB.setText(values[2]);
 			rpSolarEOYearTB.setText(values[3]);
 			rpSolarEODayTB.setText(values[4]);
 			rpCapFactorTB.setText(values[5]);
 			rpSolarPVPenTB.setText(values[7]);
-			
+
 			ObservableList<SolarMonthly> sm = solarTable.getItems();
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "SolarResource.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
@@ -2396,7 +2369,7 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			ObservableList<SolarMonthly> copy = FXCollections.observableArrayList(); 
 			copy.addAll(sm);
 			sm.removeAll(sm);
@@ -2414,7 +2387,7 @@ public class SceneController extends AnchorPane{
 			}
 			s.add(new XYChart.Series<>("DNI",ss));
 			solarGraph.setData(s);
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "GridInterconnection.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
@@ -2429,48 +2402,61 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-			
+
 			rpEnergyPurchasedTB.setText(values[0]);
 			rpEnergySoldTB.setText(values[1]);
 			rpNetPurchasesTB.setText(values[2]);
-			
+
 			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "time_series_simple.csv");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			ArrayList<String[]> ts = new ArrayList();
-			
+
 			while((input = br.readLine()) != null){
 				ts.add(input.split(","));
 				count++;
 			}
-			
+
 			series = new String[ts.size()][ts.get(0).length];
-			
+			gridChartCBBool = new boolean[series[0].length-1];
+
+			for(int x =0; x< gridChartCBBool.length; x++){
+				gridChartCBBool[x] = true;
+			}
+
 			for(int x = 1; x < ts.size(); x++ ){
 				series[x] = ts.get(x);
 			}
+			int may1_0 = 2904;
+			int may7_24 = 3070;
 			
-			fillGridLineChart(2898, 3066);
-			
-			/*
-			for(int x = 1; x < sheet.getPhysicalNumberOfRows(); x++){
-				XSSFRow row = sheet.getRow(x);
+			fillGridLineChart(may1_0, may7_24);
+			gridBeginSlider.setValue(may1_0);
+			gridEndSlider.setValue(may7_24);
 
-				for(int y = 0; y < row.getPhysicalNumberOfCells(); y++){
-					if(row.getCell(y).getCellType() == XSSFCell.CELL_TYPE_FORMULA){
-						series[x][y] = Double.toString(row.getCell(y).getNumericCellValue());
-					}else{
-						Date date = row.getCell(0).getDateCellValue();
-						if(date!= null){
-							series[x][y] = Long.toString(date.getTime());
+			for(int x = 1; x < series[0].length; x++){
+				CheckBox cb = new CheckBox();
+				cb.setId(Integer.toString(x-1));
+				cb.setText(ts.get(0)[x]);
+				cb.setStyle("-fx-text-fill:"+colors.get(x-1)+";");
+				cb.setSelected(true);
+				cb.setOnAction(new OnGridCBChangeListener(){
+					@Override
+					public void handle(ActionEvent arg0) {
+						CheckBox cbNew = (CheckBox)arg0.getSource();
+						for(int x = 0; x < gridChartCBBool.length; x++){
+							if(x == Integer.parseInt(cbNew.getId())){
+								gridChartCBBool[x] = gridChartCBBool[x] ? false : true;
+								int begin = (int)gridBeginSlider.getValue();
+								int end = (int)gridEndSlider.getValue();
+								fillGridLineChart(begin, end);
+							}
 						}
 					}
-				}
+				});
+				checkBoxGrid.add(cb, 0, x-1);
 			}
-			*/
-			
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -3,8 +3,8 @@ Object type: Converter
 Object ID: 0
 
 Total capacity [kW]: 5
-Total input [kWh/period]: 1988.16
-Total output [kWh/period]: 1888.76
-Total losses [kWh/period]: 99.4082
-Capacity factor [%]: 4.53919
-Operating time [timesteps/period]: 2952
+Total input [kWh/period]: 10949
+Total output [kWh/period]: 10344.2
+Total losses [kWh/period]: 604.808
+Capacity factor [%]: 24.9978
+Operating time [timesteps/period]: 3432
