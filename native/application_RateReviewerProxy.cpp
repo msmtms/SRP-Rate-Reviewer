@@ -18,33 +18,53 @@
 #include "EnergySystem.h"
 #include "Converter.h"
 
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+	std::stringstream ss(s);
+	std::string item;
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+	return elems;
+}
+
+
+std::vector<std::string> split(const std::string &s, char delim) {
+	std::vector<std::string> elems;
+	split(s, delim, elems);
+	return elems;
+}
+
 // Implementation of native method sayHello() of HelloJNI class
 JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIEnv *env, jobject thisObj, jstring in){
 	const char *input = env->GetStringUTFChars(in, NULL);
+	std::string s(input);
 	if (input == NULL){
 		return NULL;
 	}
 
+	std::vector<std::string> x = split(s, ',');
+
 	unsigned int numTimesteps = 8760;
-	EnergySystem energySystem;
+	EnergySystem energySystem(0, x[0]);
 
 	// Step 1: add objects to energy system
-	ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput(std::string("./data/input/Load.txt"));
+	ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput(x[1]);
 	energySystem.AddImmediateLoad(loadData);
 
-	SolarResourceData dataSolarResource = ESDELoader::LoadSolarResourceInput(std::string("./data/input/Location.txt"), std::string("./data/input/SolarResource.txt"));
+	SolarResourceData dataSolarResource = ESDELoader::LoadSolarResourceInput(std::string("./data/Location.txt"), x[2]);
 	energySystem.AddSolarResource(dataSolarResource);
 
-	SolarPVData dataSolarPV = ESDELoader::LoadSolarPVInput(std::string("./data/input/SolarPV.txt"));
+	SolarPVData dataSolarPV = ESDELoader::LoadSolarPVInput(std::string("./data/" + x[0] + "/input/SolarPV.txt"));
 	energySystem.AddSolarPV(dataSolarPV);
 
-	ConverterData dataConverter = ESDELoader::LoadConverterInput(std::string("./data/input/Inverter.txt"));
+	ConverterData dataConverter = ESDELoader::LoadConverterInput(std::string("./data/" + x[0] + "/input/Inverter.txt"));
 	energySystem.AddConverter(dataConverter);
 
-	BatteryData dataBattery = ESDELoader::LoadBatteryInput(std::string("./data/input/Battery.txt"));
+	BatteryData dataBattery = ESDELoader::LoadBatteryInput(std::string("./data/" + x[0] + "/input/Battery.txt"));
 	energySystem.AddBattery(dataBattery);
 
-	ElectricVehicleData dataElectricVehicle = ESDELoader::LoadElectricVehicleInput(std::string("./data/input/ElectricVehicle.txt"));
+	ElectricVehicleData dataElectricVehicle = ESDELoader::LoadElectricVehicleInput(std::string("./data/" + x[0] + "/input/ElectricVehicle.txt"));
 	energySystem.AddElectricVehicle(dataElectricVehicle);
 
 	// Step 2: init energy system and all objects
@@ -60,7 +80,7 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 	energySystem.OutputSummaryDataToFile();
 
 	
-	const char *out = "complete";
+	const char *out = input;
 	jstring output = env->NewStringUTF(out);
 	return output;
 }

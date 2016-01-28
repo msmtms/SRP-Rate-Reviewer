@@ -1,0 +1,10 @@
+Object name: Converter
+Object type: Converter
+Object ID: 0
+
+Total capacity [kW]: 6
+Total input [kWh/period]: 9117.71
+Total output [kWh/period]: 8661.82
+Total losses [kWh/period]: 455.885
+Capacity factor [%]: 17.3472
+Operating time [timesteps/period]: 3273

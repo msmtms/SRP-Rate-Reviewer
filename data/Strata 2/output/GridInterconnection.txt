@@ -1,0 +1,3 @@
+Energy purchased [kWh/period]: 12837.6
+Energy sold [kWh/period]: 3320.53
+Net purchases [kWh/period]: 9517.11

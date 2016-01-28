@@ -1216,8 +1216,15 @@ public class SceneController extends AnchorPane{
 	@FXML
 	public void onRunClicked(ActionEvent event) {
 		try {
+			File file = new File("." + File.separator + "data");
+			if(!file.exists()){
+				file.mkdirs();
+			}
 			String nl = System.lineSeparator();
-			File file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Location.txt");
+			file = new File("." + File.separator + "data" + File.separator + "Location.txt");
+			if(!file.exists()){
+				file.createNewFile();
+			}
 			FileWriter fr = new FileWriter(file);
 			fr.write("Lat\t" + session.getLat());
 			fr.write(nl);
@@ -1226,64 +1233,88 @@ public class SceneController extends AnchorPane{
 			fr.write("TZ\t" + (session.getTimezone()-10));
 			fr.close();
 
-			RatepayerGroup rpg = session.getRpGroups().get(rpGroupIndex);
+			ObservableList<RatepayerGroup> rpgs = session.getRpGroups();
+			for(int x = 0; x < rpgs.size(); x++){
+				RatepayerGroup rpg = rpgs.get(x);
 
-			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "SolarPV.txt");
-			fr = new FileWriter(file);
-			fr.write("Capacity\t" + rpg.getSolarPVItem(0));
-			fr.write(nl);
-			fr.write("Slope\t" + rpg.getSolarPVItem(2));
-			fr.write(nl);
-			fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
-			fr.close();
+				
+				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input");
+				if(!file.exists()){
+					file.mkdirs();
+				}
+				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output");
+				if(!file.exists()){
+					file.mkdirs();
+				}
 
-			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Inverter.txt");
-			fr = new FileWriter(file);
-			fr.write("Capacity\t" + rpg.getInvertItem(0));
-			fr.write(nl);
-			fr.write("Efficiency\t" + rpg.getInvertItem(1));
-			fr.close();
+				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+				fr = new FileWriter(file);
+				fr.write("Capacity\t" + rpg.getSolarPVItem(0));
+				fr.write(nl);
+				fr.write("Slope\t" + rpg.getSolarPVItem(2));
+				fr.write(nl);
+				fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
+				fr.close();
 
-			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "Battery.txt");
-			fr = new FileWriter(file);
-			fr.write("Capacity\t" + rpg.getBSItem(0));
-			fr.write(nl);
-			fr.write("Efficiency\t" + rpg.getBSItem(1));
-			fr.write(nl);
-			fr.write("MinSOC\t" + rpg.getBSItem(2));
-			fr.write(nl);
-			fr.write("MaxCRate\t" + rpg.getBSItem(3));
-			fr.close();
+				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+				fr = new FileWriter(file);
+				fr.write("Capacity\t" + rpg.getInvertItem(0));
+				fr.write(nl);
+				fr.write("Efficiency\t" + rpg.getInvertItem(1));
+				fr.close();
 
-			//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
-			//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
+				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+				fr = new FileWriter(file);
+				fr.write("Capacity\t" + rpg.getBSItem(0));
+				fr.write(nl);
+				fr.write("Efficiency\t" + rpg.getBSItem(1));
+				fr.write(nl);
+				fr.write("MinSOC\t" + rpg.getBSItem(2));
+				fr.write(nl);
+				fr.write("MaxCRate\t" + rpg.getBSItem(3));
+				fr.close();
 
-			file = new File("." + File.separator + "data" + File.separator + "input" + File.separator + "ElectricVehicle.txt");
-			fr = new FileWriter(file);
-			fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
-			fr.write(nl);
-			fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
-			fr.write(nl);
-			fr.write("Capacity\t" + rpg.getEVItem(0));
-			fr.write(nl);
-			fr.write("Efficiency\t" + rpg.getEVItem(2));
-			fr.write(nl);			
-			fr.write("StartingSOC\t" + rpg.getEVItem(3));
-			fr.write(nl);
-			fr.write("EndingSOC\t" + rpg.getEVItem(4));
-			fr.write(nl);
-			fr.write("StartTime\t" + (int)rpg.getEVItem(5));
-			fr.write(nl);
-			fr.write("EndTime \t" + (int)rpg.getEVItem(6));
-			fr.close();
+				//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
+				//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
 
-			RateReviewerProxy rrp = new RateReviewerProxy("pfft", this);
+				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+				fr = new FileWriter(file);
+				fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
+				fr.write(nl);
+				fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
+				fr.write(nl);
+				fr.write("Capacity\t" + rpg.getEVItem(0));
+				fr.write(nl);
+				fr.write("Efficiency\t" + rpg.getEVItem(2));
+				fr.write(nl);			
+				fr.write("StartingSOC\t" + rpg.getEVItem(3));
+				fr.write(nl);
+				fr.write("EndingSOC\t" + rpg.getEVItem(4));
+				fr.write(nl);
+				fr.write("StartTime\t" + (int)rpg.getEVItem(5));
+				fr.write(nl);
+				fr.write("EndTime \t" + (int)rpg.getEVItem(6));
+				fr.close();
+
+				CalcProcess cp = new CalcProcess(rpg.getName() + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() , this);
+				cp.run();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
 
 	}
 	// Event Listener on Button.onAction
@@ -1374,13 +1405,25 @@ public class SceneController extends AnchorPane{
 		rpEVStartSOCTB.setText(Double.toString(rg.getEVItem(3)));
 		rpEVEndSOCTB.setText(Double.toString(rg.getEVItem(4)));
 		if(rg.getEVItem(5)>0){
-			String[] s = Double.toString(rg.getEVItem(5)).split(".");
+			String[] s = Double.toString(rg.getEVItem(5)).split("\\.");
+			if(s[0].length() == 1){
+				s[0] = "0" + s[0];
+			}
+			if(s[1].length() == 1){
+				s[1] += "0";
+			}
 			rpEVStartTimeTB.setText(s[0] + ":" + s[1]);
 		}else{
 			rpEVStartTimeTB.setText("00:00");
 		}
 		if(rg.getEVItem(6)>0){
-			String[] e = Double.toString(rg.getEVItem(6)).split(".");
+			String[] e = Double.toString(rg.getEVItem(6)).split("\\.");
+			if(e[0].length() == 1){
+				e[0] = "0" + e[0];
+			}
+			if(e[1].length() == 1){
+				e[1] += "0";
+			}
 			rpEVEndTimeTB.setText(e[0] + ":" + e[1]);
 		}else{
 			rpEVEndTimeTB.setText("00:00");
@@ -1465,6 +1508,7 @@ public class SceneController extends AnchorPane{
 		gridEUseDayTB.setText(Double.toString(loadOut[2]));
 		gridEUseYearTB.setText(Double.toString(loadOut[3]));
 		gridLoadFactorTB.setText(Double.toString(loadOut[4]));
+		loadTimeSeries(index);
 	}
 	@FXML
 	public void onCreditChanged(KeyEvent event) {
@@ -2193,7 +2237,7 @@ public class SceneController extends AnchorPane{
 		long dec31 = 1483253999000l;
 		long oneHour = 3600000;
 		long beginTime = jan1 + (begin*oneHour);
-		long endTime = dec31 - (end*oneHour);
+		long endTime = jan1 + (end*oneHour);
 		Date b = new Date(beginTime);
 		Date e = new Date(endTime);
 		SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
@@ -2238,11 +2282,23 @@ public class SceneController extends AnchorPane{
 			}
 		}
 	}
-	public void populateOutput(){
+	public void populateOutput(String ret){
 		try {
-			gridStrataCB.getSelectionModel().select(0);
-			RatepayerGroup rpg = session.getRpGroups().get(rpGroupIndex);
-			File file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Battery.txt");
+			String[] fileName = ret.split(",");
+			ObservableList<RatepayerGroup> rpgs = session.getRpGroups();
+			RatepayerGroup rpg = null;
+			int index = 0;
+			for(int x = 0; x < rpgs.size(); x++){
+				if(rpgs.get(x).getName().equals(fileName[0])){
+					rpg = rpgs.get(x);
+					index = x;
+				}
+			}
+
+			File file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Battery.txt");
+			if(!file.exists()){
+				System.out.println("Output error");
+			}
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String input;
 			int count = 0;
@@ -2265,7 +2321,15 @@ public class SceneController extends AnchorPane{
 			rpBSLossesTB.setText(values[2]);
 			rpBSAutonomyTB.setText(values[3]);
 
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Converter.txt");
+			double[] dValues = new double[4];
+
+			for(int x = 0; x < dValues.length; x++){
+				dValues[x] = Double.parseDouble(values[x]);
+			}
+
+			rpg.setBsOut(dValues);
+
+			file = new File("." + File.separator + "data"+ File.separator + rpg.getName() + File.separator + "output" + File.separator + "Converter.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2285,7 +2349,15 @@ public class SceneController extends AnchorPane{
 			rpInvertLossesTB.setText(values[2]);
 			rpInvertCapFactorTB.setText(values[3]);
 
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "ElectricVehicle.txt");
+			dValues = new double[4];
+
+			for(int x = 0; x < dValues.length; x++){
+				dValues[x] = Double.parseDouble(values[x]);
+			}
+
+			rpg.setInvertOut(dValues);
+
+			file = new File("." + File.separator + "data"+ File.separator + rpg.getName() + File.separator + "output" + File.separator + "ElectricVehicle.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2305,8 +2377,16 @@ public class SceneController extends AnchorPane{
 			rpEVLossesTB.setText(values[2]);
 			rpEVLoadPercentTB.setText(values[3]);
 
+			dValues = new double[4];
+
+			for(int x = 0; x < dValues.length; x++){
+				dValues[x] = Double.parseDouble(values[x]);
+			}
+
+			rpg.setEvOut(dValues);
+
 			values = new String[6];
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "Load.txt");
+			file = new File("." + File.separator + "data"+ File.separator + rpg.getName() + File.separator + "output" + File.separator + "Load.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2332,9 +2412,19 @@ public class SceneController extends AnchorPane{
 			gridEUseYearTB.setText(values[4]);
 			gridLoadFactorTB.setText(values[5]);
 
+			dValues = new double[5];
+
+			dValues[0] = Double.parseDouble(values[0]);
+			dValues[1] = Double.parseDouble(values[2]);
+			dValues[2] = Double.parseDouble(values[3]);
+			dValues[3] = Double.parseDouble(values[4]);
+			dValues[4] = Double.parseDouble(values[5]);
+
+			rpg.setLoadOut(dValues);
+
 
 			values = new String[8];
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "SolarPV.txt");
+			file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarPV.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2355,9 +2445,19 @@ public class SceneController extends AnchorPane{
 			rpCapFactorTB.setText(values[5]);
 			rpSolarPVPenTB.setText(values[7]);
 
+			dValues = new double[5];
+
+			dValues[0] = Double.parseDouble(values[2]);
+			dValues[1] = Double.parseDouble(values[3]);
+			dValues[2] = Double.parseDouble(values[4]);
+			dValues[3] = Double.parseDouble(values[5]);
+			dValues[4] = Double.parseDouble(values[7]);
+
+			rpg.setSolarOut(dValues);
+
 			ObservableList<SolarMonthly> sm = solarTable.getItems();
 
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "SolarResource.txt");
+			file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarResource.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2388,7 +2488,7 @@ public class SceneController extends AnchorPane{
 			s.add(new XYChart.Series<>("DNI",ss));
 			solarGraph.setData(s);
 
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "GridInterconnection.txt");
+			file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnection.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2407,10 +2507,33 @@ public class SceneController extends AnchorPane{
 			rpEnergySoldTB.setText(values[1]);
 			rpNetPurchasesTB.setText(values[2]);
 
-			file = new File("." + File.separator + "data" + File.separator + "output" + File.separator + "time_series_simple.csv");
-			br = new BufferedReader(new FileReader(file));
-			count = 0;
+			dValues = new double[3];
+
+			dValues[0] = Double.parseDouble(values[0]);
+			dValues[1] = Double.parseDouble(values[1]);
+			dValues[2] = Double.parseDouble(values[2]);
+
+			rpg.setInterconOut(dValues);
+
+			if(rpgs.get(0).getName().equals(rpg.getName())){
+				gridStrataCB.getSelectionModel().select(0);
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void loadTimeSeries(int index){
+		try{
+			RatepayerGroup rpg = session.getRpGroups().get(index);
+
+			File file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "time_series_simple.csv");
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			int count = 0;
 			ArrayList<String[]> ts = new ArrayList();
+			String input = "";
 
 			while((input = br.readLine()) != null){
 				ts.add(input.split(","));
@@ -2429,7 +2552,7 @@ public class SceneController extends AnchorPane{
 			}
 			int may1_0 = 2904;
 			int may7_24 = 3070;
-			
+
 			fillGridLineChart(may1_0, may7_24);
 			gridBeginSlider.setValue(may1_0);
 			gridEndSlider.setValue(may7_24);
@@ -2456,8 +2579,7 @@ public class SceneController extends AnchorPane{
 				});
 				checkBoxGrid.add(cb, 0, x-1);
 			}
-
-		} catch (Exception e) {
+		}catch (Exception e){
 			e.printStackTrace();
 		}
 	}

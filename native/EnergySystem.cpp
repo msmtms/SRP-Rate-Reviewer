@@ -69,9 +69,9 @@ EnergySystem::EnergySystem( unsigned int id, std::string inputDir ) {
     }
     s = tempToken; // just in case there is a "/" at end of input dir, which there should be
 
-    m_outputDir = std::string("./data/output/");
-    m_outputDir.append( s.c_str() );
-    m_outputDir.append( "/" );
+    m_outputDir = std::string("./data/");
+    m_outputDir.append( inputDir );
+    m_outputDir.append( "/output/" );
 }
 
 /**

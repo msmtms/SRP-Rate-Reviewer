@@ -1,3 +1,0 @@
-Lat	
-Long	
-TZ	-10
