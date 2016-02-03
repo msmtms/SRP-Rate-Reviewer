@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +26,8 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList; 
 import javafx.event.ActionEvent;
@@ -33,6 +36,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -58,6 +63,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -451,6 +457,166 @@ public class SceneController extends AnchorPane{
 				return cell;
 			}
 		};
+		
+		Callback<TableColumn<Rate, String>, TableCell<Rate, String>> priceFactory =
+				new Callback<TableColumn<Rate, String>, TableCell<Rate, String>>() {
+		            public TableCell call(TableColumn p) {
+		                TableCell cell = new TableCell<Rate, String>() {
+		                    @Override
+		                    public void updateItem(String item, boolean empty) {
+		                    	if (item == null || empty) {
+									setText(null);
+									setStyle("");
+								} 
+		                    }
+		                };
+
+		                cell.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		                    @Override
+		                    public void handle(MouseEvent event) {
+		                        if (event.getClickCount() > 1) {
+		                            TableCell c = (TableCell) event.getSource();
+		                            // Build the Dialog
+		                            Dialog<String> dialog = new Dialog<>();
+		                            dialog.setTitle("Set Price Data");
+		                            ButtonType done = new ButtonType("Done", ButtonData.OK_DONE);
+		                            dialog.getDialogPane().getButtonTypes().addAll(done, ButtonType.CANCEL);
+		                            
+		                            // Pane for holding all children in the dialog
+		                            AnchorPane pane = new AnchorPane();
+		                            pane.setPrefSize(300, 100);
+		                            
+		                            // Grid for radio buttons
+		                            GridPane grid = new GridPane();
+		                            grid.setHgap(10);
+		                            grid.setVgap(10);
+		                            grid.setPadding(new Insets(20, 150, 10, 10));
+		                            
+		                            // Radio buttons
+		                            RadioButton single = new RadioButton();
+		                            single.setText("Single Rate");
+		                            RadioButton tiered = new RadioButton();
+		                            tiered.setText("Tiered Rate");
+		                            
+		                            // Group for radio buttons
+		                            ToggleGroup group = new ToggleGroup();
+		                            single.setToggleGroup(group);
+		                            tiered.setToggleGroup(group);
+		                            single.setSelected(true);
+		                            
+		                            // Price grid for single price
+		                            GridPane priceGrid = new GridPane();
+		                            grid.setHgap(10);
+		                            grid.setVgap(10);
+		                            grid.setPadding(new Insets(20, 150, 10, 10));
+		                            
+		                            // Text field and label added to grid
+		                            TextField price = new TextField(cell.getText());
+		                            priceGrid.add(new Label("Price: "), 0, 0);
+		                            priceGrid.add(price, 1, 0);
+		                            
+		                            // Table for tiered prices
+		                            TableView<Price> tieredTable = new TableView<Price>();
+		                            
+		                            // Controlling the size of the table
+		                            tieredTable.setEditable(true);
+		                            tieredTable.setPrefSize(170, 120);
+		                            
+		                            // Set columns and ability to change value
+		                            TableColumn priceCol = new TableColumn("Price");
+		                            priceCol.setCellValueFactory(new PropertyValueFactory<Price, String>("value"));
+		                            priceCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		                    		priceCol.setOnEditCommit(
+		                    				new EventHandler<CellEditEvent<Price, String>>() {
+		                    					@Override
+		                    					public void handle(CellEditEvent<Price, String> t) {
+		                    						((Price) t.getTableView().getItems().get(
+		                    								t.getTablePosition().getRow())
+		                    								).setValue(t.getNewValue());
+		                    					}
+		                    				}
+		                    				);
+		                    		
+		                            TableColumn threshCol = new TableColumn("Threshold");
+		                            threshCol.setCellValueFactory(new PropertyValueFactory<Price, String>("threshold"));
+		                            threshCol.setCellFactory(TextFieldTableCell.forTableColumn());
+		                    		threshCol.setOnEditCommit(
+		                    				new EventHandler<CellEditEvent<Price, String>>() {
+		                    					@Override
+		                    					public void handle(CellEditEvent<Price, String> t) {
+		                    						((Price) t.getTableView().getItems().get(
+		                    								t.getTablePosition().getRow())
+		                    								).setThreshold(t.getNewValue());
+		                    					}
+		                    				}
+		                    				);
+		                    		
+		                    		ObservableList<Price> priceList = FXCollections.observableArrayList();
+		                    		priceList.add(new Price("100", "0"));
+		                    		tieredTable.setItems(priceList);
+		                            
+		                    		// Add columns to table
+		                            tieredTable.getColumns().addAll(priceCol, threshCol);
+		                            
+		                            // Listener for radio group that changes view
+		                            group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+		                                public void changed(ObservableValue<? extends Toggle> ov,
+		                                    Toggle old_toggle, Toggle new_toggle) {
+		                                        if (group.getSelectedToggle() != null) {
+		                                        	RadioButton rb = (RadioButton)group.getSelectedToggle();
+		                                        	if(rb.getText().equals("Single Rate")){
+		                                        		pane.getChildren().remove(tieredTable);
+		                                        		pane.getChildren().add(priceGrid);
+		                                        		pane.setBottomAnchor(priceGrid, 0.0);
+		            		                            pane.setLeftAnchor(priceGrid, 20.0);
+		            		                            dialog.setHeight(200);
+		                                        	}else{
+		                                        		pane.getChildren().remove(priceGrid);
+		                                        		pane.getChildren().add(tieredTable);
+		                                        		pane.setTopAnchor(tieredTable, 60.0);
+		            		                            pane.setLeftAnchor(tieredTable, 50.0);
+		            		                            dialog.setHeight(400);
+		                                        	}
+		                                        }                
+		                                    }
+		                            });
+		                            
+		                            grid.add(single, 0, 0);
+		                            grid.add(tiered, 1, 0);
+		                            
+		                            pane.setTopAnchor(grid, 0.0);
+		                            pane.setLeftAnchor(grid, 50.0);
+		                            pane.setBottomAnchor(priceGrid, 0.0);
+		                            pane.setLeftAnchor(priceGrid, 20.0);
+		                            pane.getChildren().addAll(grid,priceGrid);
+		                            
+		                            dialog.getDialogPane().setContent(pane);
+		                            
+		                            dialog.setResultConverter(dialogButton -> {
+		                                if (dialogButton == done) {
+		                                	if(single.isSelected()){
+		                                		return price.getText();
+		                                	}else{
+		                                		return "Tiered..." + tieredTable.getItems().get(0).getValue();
+		                                	}
+		                                }
+		                                return null;
+		                            });
+		                            Optional<String> result = dialog.showAndWait();
+		                            if (result != null){
+		                            	try{
+		                            		c.setText(result.get());
+		                            	}catch(NoSuchElementException e){
+		                            		
+		                            	}
+		                            }
+		                            
+		                        }
+		                    }
+		                });
+		                return cell;
+		            }
+		        };
 
 		rateColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		rateColumn.setOnEditCommit(
@@ -463,17 +629,7 @@ public class SceneController extends AnchorPane{
 					}
 				}
 				);
-		priceColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		priceColumn.setOnEditCommit(
-				new EventHandler<CellEditEvent<Rate, String>>() {
-					@Override
-					public void handle(CellEditEvent<Rate, String> t) {
-						((Rate) t.getTableView().getItems().get(
-								t.getTablePosition().getRow())
-								).setPrice(t.getNewValue());
-					}
-				}
-				);
+		priceColumn.setCellFactory(priceFactory);
 		feedInColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		feedInColumn.setOnEditCommit(
 				new EventHandler<CellEditEvent<Rate, String>>() {
@@ -507,6 +663,8 @@ public class SceneController extends AnchorPane{
 			Rate rate = new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x));
 			rateList.add(rate);
 		}
+		
+		
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS][GRID_PANES];
 		GridListener gl = new GridListener();

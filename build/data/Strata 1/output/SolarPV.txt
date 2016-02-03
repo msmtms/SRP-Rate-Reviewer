@@ -1,0 +1,13 @@
+Object name: SolarPV
+Object type: Solar PV
+Object ID: 0
+
+Total capacity [kW]: 6
+Max power output [kW]: 3.85065
+Min power output [kW]: 0
+Avg power output [kW]: 0.269423
+Total production [kWh/period]: 2360.14
+Avg daily production [kWh/day]: 6.46615
+Capacity factor [%]: 4.49038
+Operating time [timesteps/period]: 2573
+PV penetration [%]: 17.1516
