@@ -490,7 +490,7 @@ public class SceneController extends AnchorPane{
 		                            GridPane grid = new GridPane();
 		                            grid.setHgap(10);
 		                            grid.setVgap(10);
-		                            grid.setPadding(new Insets(20, 150, 10, 10));
+		                            grid.setPadding(new Insets(20, 90, 10, 10));
 		                            
 		                            // Radio buttons
 		                            RadioButton single = new RadioButton();
@@ -508,10 +508,10 @@ public class SceneController extends AnchorPane{
 		                            GridPane priceGrid = new GridPane();
 		                            grid.setHgap(10);
 		                            grid.setVgap(10);
-		                            grid.setPadding(new Insets(20, 150, 10, 10));
+		                            grid.setPadding(new Insets(20, 90, 10, 10));
 		                            
 		                            // Text field and label added to grid
-		                            TextField price = new TextField(cell.getText());
+		                            TextField price = new TextField(rateTable.getSelectionModel().getSelectedItem().getPrice());
 		                            priceGrid.add(new Label("Price: "), 0, 0);
 		                            priceGrid.add(price, 1, 0);
 		                            
@@ -520,10 +520,11 @@ public class SceneController extends AnchorPane{
 		                            
 		                            // Controlling the size of the table
 		                            tieredTable.setEditable(true);
-		                            tieredTable.setPrefSize(170, 120);
+		                            tieredTable.setPrefSize(205, 180);
 		                            
 		                            // Set columns and ability to change value
 		                            TableColumn priceCol = new TableColumn("Price");
+		                            priceCol.setPrefWidth(100);
 		                            priceCol.setCellValueFactory(new PropertyValueFactory<Price, String>("value"));
 		                            priceCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		                    		priceCol.setOnEditCommit(
@@ -538,6 +539,7 @@ public class SceneController extends AnchorPane{
 		                    				);
 		                    		
 		                            TableColumn threshCol = new TableColumn("Threshold");
+		                            threshCol.setPrefWidth(100);
 		                            threshCol.setCellValueFactory(new PropertyValueFactory<Price, String>("threshold"));
 		                            threshCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		                    		threshCol.setOnEditCommit(
@@ -550,13 +552,27 @@ public class SceneController extends AnchorPane{
 		                    					}
 		                    				}
 		                    				);
-		                    		
-		                    		ObservableList<Price> priceList = FXCollections.observableArrayList();
-		                    		priceList.add(new Price("100", "0"));
-		                    		tieredTable.setItems(priceList);
 		                            
 		                    		// Add columns to table
 		                            tieredTable.getColumns().addAll(priceCol, threshCol);
+		                            
+		                            Button add = new Button("Add");
+		                            add.setOnAction(new EventHandler<ActionEvent>(){
+
+										@Override
+										public void handle(ActionEvent arg0) {
+											rateTable.getSelectionModel().getSelectedItem().getPrices().add(new Price("0", "0"));
+										}
+		                            	
+		                            });
+		                            Button remove = new Button("Remove");
+		                            remove.setOnAction(new EventHandler<ActionEvent>(){
+										@Override
+										public void handle(ActionEvent arg0) {
+											rateTable.getSelectionModel().getSelectedItem().getPrices()
+												.remove(tieredTable.getSelectionModel().getSelectedIndex());
+										}
+		                            });
 		                            
 		                            // Listener for radio group that changes view
 		                            group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
@@ -565,17 +581,26 @@ public class SceneController extends AnchorPane{
 		                                        if (group.getSelectedToggle() != null) {
 		                                        	RadioButton rb = (RadioButton)group.getSelectedToggle();
 		                                        	if(rb.getText().equals("Single Rate")){
-		                                        		pane.getChildren().remove(tieredTable);
+		                                        		pane.getChildren().removeAll(tieredTable, add, remove);
 		                                        		pane.getChildren().add(priceGrid);
-		                                        		pane.setBottomAnchor(priceGrid, 0.0);
-		            		                            pane.setLeftAnchor(priceGrid, 20.0);
-		            		                            dialog.setHeight(200);
+		                                        		pane.setTopAnchor(priceGrid, 60.0);
+		            		                            pane.setLeftAnchor(priceGrid, 40.0);
+		            		                            pane.setMinHeight(50);
+		            		                            dialog.setHeight(180);
 		                                        	}else{
 		                                        		pane.getChildren().remove(priceGrid);
+		                                        		pane.getChildren().addAll(add, remove);
 		                                        		pane.getChildren().add(tieredTable);
 		                                        		pane.setTopAnchor(tieredTable, 60.0);
 		            		                            pane.setLeftAnchor(tieredTable, 50.0);
-		            		                            dialog.setHeight(400);
+		            		                            pane.setBottomAnchor(add, 10.0);
+		            		                            pane.setLeftAnchor(add, 70.0);
+		            		                            pane.setBottomAnchor(remove, 10.0);
+		            		                            pane.setLeftAnchor(remove, 130.0);
+		            		                            pane.setMinHeight(200);
+		            		                            dialog.setHeight(375);
+		            		                            ObservableList<Price> prices = rateTable.getSelectionModel().getSelectedItem().getPrices();
+		            		                            tieredTable.setItems(prices);
 		                                        	}
 		                                        }                
 		                                    }
@@ -585,18 +610,52 @@ public class SceneController extends AnchorPane{
 		                            grid.add(tiered, 1, 0);
 		                            
 		                            pane.setTopAnchor(grid, 0.0);
-		                            pane.setLeftAnchor(grid, 50.0);
-		                            pane.setBottomAnchor(priceGrid, 0.0);
-		                            pane.setLeftAnchor(priceGrid, 20.0);
-		                            pane.getChildren().addAll(grid,priceGrid);
+	                            	pane.setLeftAnchor(grid, 50.0);
+	                            	pane.getChildren().add(grid);
+	                            	
+		                            if(rateTable.getSelectionModel().getSelectedItem().isSinglePrice()){
+		                            	single.setSelected(true);
+		                            	pane.setTopAnchor(priceGrid, 60.0);
+		                            	pane.setLeftAnchor(priceGrid, 40.0);
+		                            	try{
+		                            		pane.getChildren().add(priceGrid);
+		                            	}catch(IllegalArgumentException e){}
+		                            	dialog.setHeight(200);
+		                            	price.setText(rateTable.getSelectionModel().getSelectedItem().getPrice());
+		                            }else{
+		                            	tiered.setSelected(true);
+		                            	try{
+		                            		try{
+		                            			pane.getChildren().removeAll(tieredTable, add, remove, priceGrid);
+		                            		}catch(Exception e){
+		                            			e.printStackTrace();
+		                            		}
+		                            		pane.getChildren().addAll(add, remove);
+		                            		pane.getChildren().add(tieredTable);
+		                            	}catch(IllegalArgumentException e){
+		                            		e.printStackTrace();
+		                            	}
+                                		pane.setTopAnchor(tieredTable, 60.0);
+    		                            pane.setLeftAnchor(tieredTable, 50.0);
+    		                            pane.setBottomAnchor(add, 10.0);
+    		                            pane.setLeftAnchor(add, 70.0);
+    		                            pane.setBottomAnchor(remove, 10.0);
+    		                            pane.setLeftAnchor(remove, 130.0);
+    		                            pane.setMinHeight(300);
+    		                            dialog.setHeight(400);
+    		                            ObservableList<Price> prices = rateTable.getSelectionModel().getSelectedItem().getPrices();
+    		                            tieredTable.setItems(prices);
+		                            }
 		                            
 		                            dialog.getDialogPane().setContent(pane);
 		                            
 		                            dialog.setResultConverter(dialogButton -> {
 		                                if (dialogButton == done) {
 		                                	if(single.isSelected()){
+		                                		rateTable.getSelectionModel().getSelectedItem().setSinglePrice(true);
 		                                		return price.getText();
 		                                	}else{
+		                                		rateTable.getSelectionModel().getSelectedItem().setSinglePrice(false);
 		                                		return "Tiered..." + tieredTable.getItems().get(0).getValue();
 		                                	}
 		                                }
@@ -660,7 +719,7 @@ public class SceneController extends AnchorPane{
 		String[] arr3 = {"0.3", "0.3", "0.3"};
 		String[] arr4 = {"0.0", "0.0", "0.0"};
 		for(int x = 0; x < arr1.length; x++){
-			Rate rate = new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x));
+			Rate rate = new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x), true,true,true);
 			rateList.add(rate);
 		}
 		
@@ -1192,7 +1251,7 @@ public class SceneController extends AnchorPane{
 	@FXML
 	public void ratesAddClicked(ActionEvent event) {
 		RateSchedule rs = rateSchedules.get(ratesScheduleIndex);
-		rs.addRate(new Rate("Enter Name","","","",colors.get(rs.getRates().size())));
+		rs.addRate(new Rate("Enter Name","","","",colors.get(rs.getRates().size()), true, true,true));
 	}
 	// Event Listener on Button.onAction
 	@FXML
