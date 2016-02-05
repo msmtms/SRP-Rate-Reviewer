@@ -6,15 +6,21 @@ import javafx.collections.ObservableList;
 public class Rate {
 	private String rate;
 	private String color;
+	private String price;
+	private String feedin;
+	private String demand;
 	private ObservableList<Price> prices;
 	private ObservableList<Feedin> feedins;
 	private ObservableList<Demand> demands;
 	private boolean singlePrice;
 	private boolean singleFeedin;
 	private boolean singleDemand;
-	
+
 	public Rate() {
 		this.rate = "";
+		this.price = "";
+		this.feedin = "";
+		this.demand = "";
 		this.color = "";
 		this.prices = FXCollections.observableArrayList();
 		this.feedins = FXCollections.observableArrayList();
@@ -23,10 +29,13 @@ public class Rate {
 		singleFeedin = true;
 		singleDemand = true;
 	}
-	
+
 	public Rate(String rate, String price, String feedin, String demand,
 			String color, boolean singlePrice, boolean singleFeedin, boolean singleDemand) {
 		this.rate = rate;
+		this.price = price;
+		this.feedin = feedin;
+		this.demand = demand;
 		this.color = color;
 		this.prices = FXCollections.observableArrayList();
 		Price p = new Price(price, "0");
@@ -72,7 +81,11 @@ public class Rate {
 		this.rate = rate;
 	}
 	public String getPrice() {
-		return prices.get(0).getValue();
+		if(isSinglePrice()){
+			return prices.get(0).getValue();
+		}else{
+			return "Tiered..." + prices.get(0).getValue();
+		}
 	}
 	public Price getPrice(int index){
 		return prices.get(index);
@@ -105,7 +118,7 @@ public class Rate {
 	public void setPrice(int index, Price price){
 		prices.set(index, price);
 	}
-	
+
 	public String getFeedin() {
 		return feedins.get(0).getValue();
 	}
