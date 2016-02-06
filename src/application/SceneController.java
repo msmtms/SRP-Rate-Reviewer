@@ -655,6 +655,7 @@ public class SceneController extends AnchorPane{
 								if (dialogButton == done) {
 									if(single.isSelected()){
 										rateTable.getSelectionModel().getSelectedItem().setSinglePrice(true);
+										rateTable.getSelectionModel().getSelectedItem().setPrice(price.getText());
 										return price.getText();
 									}else{
 										rateTable.getSelectionModel().getSelectedItem().setSinglePrice(false);
@@ -668,7 +669,7 @@ public class SceneController extends AnchorPane{
 								try{
 									c.setText(result.get());
 								}catch(NoSuchElementException e){
-
+									e.printStackTrace();
 								}
 							}
 
@@ -697,202 +698,205 @@ public class SceneController extends AnchorPane{
 				cell.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
-						if (event.getClickCount() > 1) {
-							TableCell c = (TableCell) event.getSource();
-							// Build the Dialog
-							Dialog<String> dialog = new Dialog<>();
-							dialog.setTitle("Set Feedin Data");
-							ButtonType done = new ButtonType("Done", ButtonData.OK_DONE);
-							dialog.getDialogPane().getButtonTypes().addAll(done, ButtonType.CANCEL);
+						if(rateSchedules.get(ratesScheduleIndex).getMeter() == 0){
+							if (event.getClickCount() > 1) {
+								TableCell c = (TableCell) event.getSource();
+								// Build the Dialog
+								Dialog<String> dialog = new Dialog<>();
+								dialog.setTitle("Set Feedin Data");
+								ButtonType done = new ButtonType("Done", ButtonData.OK_DONE);
+								dialog.getDialogPane().getButtonTypes().addAll(done, ButtonType.CANCEL);
 
-							// Pane for holding all children in the dialog
-							AnchorPane pane = new AnchorPane();
-							pane.setPrefSize(300, 100);
+								// Pane for holding all children in the dialog
+								AnchorPane pane = new AnchorPane();
+								pane.setPrefSize(300, 100);
 
-							// Grid for radio buttons
-							GridPane grid = new GridPane();
-							grid.setHgap(10);
-							grid.setVgap(10);
-							grid.setPadding(new Insets(20, 90, 10, 10));
+								// Grid for radio buttons
+								GridPane grid = new GridPane();
+								grid.setHgap(10);
+								grid.setVgap(10);
+								grid.setPadding(new Insets(20, 90, 10, 10));
 
-							// Radio buttons
-							RadioButton single = new RadioButton();
-							single.setText("Single Rate");
-							RadioButton tiered = new RadioButton();
-							tiered.setText("Tiered Rate");
+								// Radio buttons
+								RadioButton single = new RadioButton();
+								single.setText("Single Rate");
+								RadioButton tiered = new RadioButton();
+								tiered.setText("Tiered Rate");
 
-							// Group for radio buttons
-							ToggleGroup group = new ToggleGroup();
-							single.setToggleGroup(group);
-							tiered.setToggleGroup(group);
-							single.setSelected(true);
-
-							// Feedin grid for single feedin
-							GridPane feedinGrid = new GridPane();
-							grid.setHgap(10);
-							grid.setVgap(10);
-							grid.setPadding(new Insets(20, 90, 10, 10));
-
-							// Text field and label added to grid
-							TextField feedin = new TextField(rateTable.getSelectionModel().getSelectedItem().getFeedin());
-							feedinGrid.add(new Label("Feedin: "), 0, 0);
-							feedinGrid.add(feedin, 1, 0);
-
-							// Table for tiered feedins
-							TableView<Feedin> tieredTable = new TableView<Feedin>();
-
-							// Controlling the size of the table
-							tieredTable.setEditable(true);
-							tieredTable.setPrefSize(205, 180);
-
-							// Set columns and ability to change value
-							TableColumn feedinCol = new TableColumn("Feedin");
-							feedinCol.setPrefWidth(100);
-							feedinCol.setCellValueFactory(new PropertyValueFactory<Feedin, String>("value"));
-							feedinCol.setCellFactory(TextFieldTableCell.forTableColumn());
-							feedinCol.setOnEditCommit(
-									new EventHandler<CellEditEvent<Feedin, String>>() {
-										@Override
-										public void handle(CellEditEvent<Feedin, String> t) {
-											((Feedin) t.getTableView().getItems().get(
-													t.getTablePosition().getRow())
-													).setValue(t.getNewValue());
-										}
-									}
-									);
-
-							TableColumn threshCol = new TableColumn("Threshold");
-							threshCol.setPrefWidth(100);
-							threshCol.setCellValueFactory(new PropertyValueFactory<Feedin, String>("threshold"));
-							threshCol.setCellFactory(TextFieldTableCell.forTableColumn());
-							threshCol.setOnEditCommit(
-									new EventHandler<CellEditEvent<Feedin, String>>() {
-										@Override
-										public void handle(CellEditEvent<Feedin, String> t) {
-											((Feedin) t.getTableView().getItems().get(
-													t.getTablePosition().getRow())
-													).setThreshold(t.getNewValue());
-										}
-									}
-									);
-
-							// Add columns to table
-							tieredTable.getColumns().addAll(feedinCol, threshCol);
-
-							Button add = new Button("Add");
-							add.setOnAction(new EventHandler<ActionEvent>(){
-
-								@Override
-								public void handle(ActionEvent arg0) {
-									rateTable.getSelectionModel().getSelectedItem().getFeedins().add(new Feedin("0", "0"));
-								}
-
-							});
-							Button remove = new Button("Remove");
-							remove.setOnAction(new EventHandler<ActionEvent>(){
-								@Override
-								public void handle(ActionEvent arg0) {
-									rateTable.getSelectionModel().getSelectedItem().getFeedins()
-									.remove(tieredTable.getSelectionModel().getSelectedIndex());
-								}
-							});
-
-							// Listener for radio group that changes view
-							group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
-								public void changed(ObservableValue<? extends Toggle> ov,
-										Toggle old_toggle, Toggle new_toggle) {
-									if (group.getSelectedToggle() != null) {
-										RadioButton rb = (RadioButton)group.getSelectedToggle();
-										if(rb.getText().equals("Single Rate")){
-											pane.getChildren().removeAll(tieredTable, add, remove);
-											pane.getChildren().add(feedinGrid);
-											pane.setTopAnchor(feedinGrid, 60.0);
-											pane.setLeftAnchor(feedinGrid, 40.0);
-											pane.setMinHeight(50);
-											dialog.setHeight(180);
-										}else{
-											pane.getChildren().remove(feedinGrid);
-											pane.getChildren().addAll(add, remove);
-											pane.getChildren().add(tieredTable);
-											pane.setTopAnchor(tieredTable, 60.0);
-											pane.setLeftAnchor(tieredTable, 50.0);
-											pane.setBottomAnchor(add, 10.0);
-											pane.setLeftAnchor(add, 70.0);
-											pane.setBottomAnchor(remove, 10.0);
-											pane.setLeftAnchor(remove, 130.0);
-											pane.setMinHeight(200);
-											dialog.setHeight(375);
-											ObservableList<Feedin> feedins = rateTable.getSelectionModel().getSelectedItem().getFeedins();
-											tieredTable.setItems(feedins);
-										}
-									}
-								}
-							});
-
-							grid.add(single, 0, 0);
-							grid.add(tiered, 1, 0);
-
-							pane.setTopAnchor(grid, 0.0);
-							pane.setLeftAnchor(grid, 50.0);
-							pane.getChildren().add(grid);
-
-							if(rateTable.getSelectionModel().getSelectedItem().isSingleFeedin()){
+								// Group for radio buttons
+								ToggleGroup group = new ToggleGroup();
+								single.setToggleGroup(group);
+								tiered.setToggleGroup(group);
 								single.setSelected(true);
-								pane.setTopAnchor(feedinGrid, 60.0);
-								pane.setLeftAnchor(feedinGrid, 40.0);
-								try{
-									pane.getChildren().add(feedinGrid);
-								}catch(IllegalArgumentException e){}
-								dialog.setHeight(200);
-								feedin.setText(rateTable.getSelectionModel().getSelectedItem().getFeedin());
-							}else{
-								tiered.setSelected(true);
-								try{
+
+								// Feedin grid for single feedin
+								GridPane feedinGrid = new GridPane();
+								grid.setHgap(10);
+								grid.setVgap(10);
+								grid.setPadding(new Insets(20, 90, 10, 10));
+
+								// Text field and label added to grid
+								TextField feedin = new TextField(rateTable.getSelectionModel().getSelectedItem().getFeedin());
+								feedinGrid.add(new Label("Feedin: "), 0, 0);
+								feedinGrid.add(feedin, 1, 0);
+
+								// Table for tiered feedins
+								TableView<Feedin> tieredTable = new TableView<Feedin>();
+
+								// Controlling the size of the table
+								tieredTable.setEditable(true);
+								tieredTable.setPrefSize(205, 180);
+
+								// Set columns and ability to change value
+								TableColumn feedinCol = new TableColumn("Feedin");
+								feedinCol.setPrefWidth(100);
+								feedinCol.setCellValueFactory(new PropertyValueFactory<Feedin, String>("value"));
+								feedinCol.setCellFactory(TextFieldTableCell.forTableColumn());
+								feedinCol.setOnEditCommit(
+										new EventHandler<CellEditEvent<Feedin, String>>() {
+											@Override
+											public void handle(CellEditEvent<Feedin, String> t) {
+												((Feedin) t.getTableView().getItems().get(
+														t.getTablePosition().getRow())
+														).setValue(t.getNewValue());
+											}
+										}
+										);
+
+								TableColumn threshCol = new TableColumn("Threshold");
+								threshCol.setPrefWidth(100);
+								threshCol.setCellValueFactory(new PropertyValueFactory<Feedin, String>("threshold"));
+								threshCol.setCellFactory(TextFieldTableCell.forTableColumn());
+								threshCol.setOnEditCommit(
+										new EventHandler<CellEditEvent<Feedin, String>>() {
+											@Override
+											public void handle(CellEditEvent<Feedin, String> t) {
+												((Feedin) t.getTableView().getItems().get(
+														t.getTablePosition().getRow())
+														).setThreshold(t.getNewValue());
+											}
+										}
+										);
+
+								// Add columns to table
+								tieredTable.getColumns().addAll(feedinCol, threshCol);
+
+								Button add = new Button("Add");
+								add.setOnAction(new EventHandler<ActionEvent>(){
+
+									@Override
+									public void handle(ActionEvent arg0) {
+										rateTable.getSelectionModel().getSelectedItem().getFeedins().add(new Feedin("0", "0"));
+									}
+
+								});
+								Button remove = new Button("Remove");
+								remove.setOnAction(new EventHandler<ActionEvent>(){
+									@Override
+									public void handle(ActionEvent arg0) {
+										rateTable.getSelectionModel().getSelectedItem().getFeedins()
+										.remove(tieredTable.getSelectionModel().getSelectedIndex());
+									}
+								});
+
+								// Listener for radio group that changes view
+								group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+									public void changed(ObservableValue<? extends Toggle> ov,
+											Toggle old_toggle, Toggle new_toggle) {
+										if (group.getSelectedToggle() != null) {
+											RadioButton rb = (RadioButton)group.getSelectedToggle();
+											if(rb.getText().equals("Single Rate")){
+												pane.getChildren().removeAll(tieredTable, add, remove);
+												pane.getChildren().add(feedinGrid);
+												pane.setTopAnchor(feedinGrid, 60.0);
+												pane.setLeftAnchor(feedinGrid, 40.0);
+												pane.setMinHeight(50);
+												dialog.setHeight(180);
+											}else{
+												pane.getChildren().remove(feedinGrid);
+												pane.getChildren().addAll(add, remove);
+												pane.getChildren().add(tieredTable);
+												pane.setTopAnchor(tieredTable, 60.0);
+												pane.setLeftAnchor(tieredTable, 50.0);
+												pane.setBottomAnchor(add, 10.0);
+												pane.setLeftAnchor(add, 70.0);
+												pane.setBottomAnchor(remove, 10.0);
+												pane.setLeftAnchor(remove, 130.0);
+												pane.setMinHeight(200);
+												dialog.setHeight(375);
+												ObservableList<Feedin> feedins = rateTable.getSelectionModel().getSelectedItem().getFeedins();
+												tieredTable.setItems(feedins);
+											}
+										}
+									}
+								});
+
+								grid.add(single, 0, 0);
+								grid.add(tiered, 1, 0);
+
+								pane.setTopAnchor(grid, 0.0);
+								pane.setLeftAnchor(grid, 50.0);
+								pane.getChildren().add(grid);
+
+								if(rateTable.getSelectionModel().getSelectedItem().isSingleFeedin()){
+									single.setSelected(true);
+									pane.setTopAnchor(feedinGrid, 60.0);
+									pane.setLeftAnchor(feedinGrid, 40.0);
 									try{
-										pane.getChildren().removeAll(tieredTable, add, remove, feedinGrid);
-									}catch(Exception e){
+										pane.getChildren().add(feedinGrid);
+									}catch(IllegalArgumentException e){}
+									dialog.setHeight(200);
+									feedin.setText(rateTable.getSelectionModel().getSelectedItem().getFeedin());
+								}else{
+									tiered.setSelected(true);
+									try{
+										try{
+											pane.getChildren().removeAll(tieredTable, add, remove, feedinGrid);
+										}catch(Exception e){
+											e.printStackTrace();
+										}
+										pane.getChildren().addAll(add, remove);
+										pane.getChildren().add(tieredTable);
+									}catch(IllegalArgumentException e){
 										e.printStackTrace();
 									}
-									pane.getChildren().addAll(add, remove);
-									pane.getChildren().add(tieredTable);
-								}catch(IllegalArgumentException e){
-									e.printStackTrace();
+									pane.setTopAnchor(tieredTable, 60.0);
+									pane.setLeftAnchor(tieredTable, 50.0);
+									pane.setBottomAnchor(add, 10.0);
+									pane.setLeftAnchor(add, 70.0);
+									pane.setBottomAnchor(remove, 10.0);
+									pane.setLeftAnchor(remove, 130.0);
+									pane.setMinHeight(300);
+									dialog.setHeight(400);
+									ObservableList<Feedin> feedins = rateTable.getSelectionModel().getSelectedItem().getFeedins();
+									tieredTable.setItems(feedins);
 								}
-								pane.setTopAnchor(tieredTable, 60.0);
-								pane.setLeftAnchor(tieredTable, 50.0);
-								pane.setBottomAnchor(add, 10.0);
-								pane.setLeftAnchor(add, 70.0);
-								pane.setBottomAnchor(remove, 10.0);
-								pane.setLeftAnchor(remove, 130.0);
-								pane.setMinHeight(300);
-								dialog.setHeight(400);
-								ObservableList<Feedin> feedins = rateTable.getSelectionModel().getSelectedItem().getFeedins();
-								tieredTable.setItems(feedins);
-							}
 
-							dialog.getDialogPane().setContent(pane);
+								dialog.getDialogPane().setContent(pane);
 
-							dialog.setResultConverter(dialogButton -> {
-								if (dialogButton == done) {
-									if(single.isSelected()){
-										rateTable.getSelectionModel().getSelectedItem().setSingleFeedin(true);
-										return feedin.getText();
-									}else{
-										rateTable.getSelectionModel().getSelectedItem().setSingleFeedin(false);
-										return "Tiered..." + tieredTable.getItems().get(0).getValue();
+								dialog.setResultConverter(dialogButton -> {
+									if (dialogButton == done) {
+										if(single.isSelected()){
+											rateTable.getSelectionModel().getSelectedItem().setSingleFeedin(true);
+											rateTable.getSelectionModel().getSelectedItem().setFeedin(feedin.getText());
+											return feedin.getText();
+										}else{
+											rateTable.getSelectionModel().getSelectedItem().setSingleFeedin(false);
+											return "Tiered..." + tieredTable.getItems().get(0).getValue();
+										}
+									}
+									return null;
+								});
+								Optional<String> result = dialog.showAndWait();
+								if (result != null){
+									try{
+										c.setText(result.get());
+									}catch(NoSuchElementException e){
+
 									}
 								}
-								return null;
-							});
-							Optional<String> result = dialog.showAndWait();
-							if (result != null){
-								try{
-									c.setText(result.get());
-								}catch(NoSuchElementException e){
 
-								}
 							}
-
 						}
 					}
 				});
@@ -1097,6 +1101,7 @@ public class SceneController extends AnchorPane{
 								if (dialogButton == done) {
 									if(single.isSelected()){
 										rateTable.getSelectionModel().getSelectedItem().setSingleDemand(true);
+										rateTable.getSelectionModel().getSelectedItem().setDemand(demand.getText());
 										return demand.getText();
 									}else{
 										rateTable.getSelectionModel().getSelectedItem().setSingleDemand(false);
@@ -1148,6 +1153,11 @@ public class SceneController extends AnchorPane{
 		}
 
 
+		resetPanes();
+		rateSchedules.get(0).setRates(rateList);
+	}
+
+	private void resetPanes(){
 		int count = 0;
 		panes = new Pane[GRID_ROWS*GRID_COLUMNS][GRID_PANES];
 		GridListener gl = new GridListener();
@@ -1194,7 +1204,6 @@ public class SceneController extends AnchorPane{
 				count++;
 			}
 		}
-		rateSchedules.get(0).setRates(rateList);
 	}
 	private void initGrid(){
 		gridStrataCB.setItems(rateTitles);
@@ -1375,18 +1384,21 @@ public class SceneController extends AnchorPane{
 							if(x%12 >= col1 && x%12 <= col2){
 								if(ratesAllWeekBtn.isSelected()){
 									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,0,r.getColor());
+									rateSchedules.get(ratesScheduleIndex).setSchedule(x, rateTable.getSelectionModel().getSelectedIndex(), -1);
 									panes[x][0].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
 									panes[x][1].setVisible(false);
 									panes[x][2].setVisible(false);
 								}
 								if(ratesWeekdayBtn.isSelected()){
 									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,1,r.getColor());
+									rateSchedules.get(ratesScheduleIndex).setSchedule(x, rateTable.getSelectionModel().getSelectedIndex(), -2);
 									panes[x][1].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
 									panes[x][1].setVisible(true);
 									panes[x][2].setVisible(true);
 								}
 								if(ratesWeekendBtn.isSelected()){
 									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,2,r.getColor());
+									rateSchedules.get(ratesScheduleIndex).setSchedule(x, -2, rateTable.getSelectionModel().getSelectedIndex());
 									panes[x][2].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
 									panes[x][1].setVisible(true);
 									panes[x][2].setVisible(true);
@@ -1874,21 +1886,108 @@ public class SceneController extends AnchorPane{
 			fr.write("TZ\t" + (session.getTimezone()-10));
 			fr.close();
 
+			ObservableList<RateSchedule> rateSchedules = session.getRateSchedules();
+
+			for(int x = 0; x < rateSchedules.size(); x++){
+				RateSchedule rs = rateSchedules.get(x);
+				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName());
+				if(!file.exists()){
+					file.mkdirs();
+				}
+				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName() + File.separator + "rates.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+
+				fr = new FileWriter(file);
+
+				ObservableList<Rate> rateList = rs.getRates();
+				for(int y = 0; y < rateList.size(); y++){
+					fr.write(rateList.get(y).getRate() + "\t");
+					ObservableList<Price> prices = rateList.get(y).getPrices();
+					for(int z = 0; z < prices.size(); z++){
+						fr.write(prices.get(z).getValue() + ","+ prices.get(z).getThreshold());
+						if(z+1 < prices.size()){
+							fr.write(";");
+						}
+					}
+					fr.write("%");
+					if(rs.getMeter() == 0){
+						ObservableList<Feedin> feedins = rateList.get(y).getFeedins();
+						for(int z = 0; z < feedins.size(); z++){
+							fr.write(feedins.get(z).getValue() + ","+ feedins.get(z).getThreshold());
+							if(z+1 < feedins.size()){
+								fr.write(";");
+							}
+						}
+					}else{
+						fr.write("0,0");
+					}
+					fr.write("%");
+					ObservableList<Demand> demands = rateList.get(y).getDemands();
+					for(int z = 0; z < demands.size(); z++){
+						fr.write(demands.get(z).getValue() + ","+ demands.get(z).getThreshold());
+						if(z+1 < demands.size()){
+							fr.write(";");
+						}
+					}
+					if(y+1 != rateList.size()){
+						fr.write("\n");
+					}
+				}
+				fr.close();
+
+				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName() + File.separator + "monthly.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+
+				fr = new FileWriter(file);
+				int[][] schedule = rs.getSchedule();
+
+				for(int y = 0; y < 12; y++){
+					for(int z = 0; z < 24; z++){
+						fr.write(schedule[(z*12) + y][0] + "," + schedule[(z*12) + y][1]);
+						if(z+1 != 24){
+							fr.write(";");
+						}
+					}
+					if(y+1 != 12){
+						fr.write("\n");
+					}
+				}
+
+				fr.close();
+
+				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName() + File.separator + "meter.txt");
+				if(!file.exists()){
+					file.createNewFile();
+				}
+
+				fr = new FileWriter(file);
+
+				fr.write("Net Metering:\t"+rs.getMeter()+"\n");
+				fr.write("Production Credit:\t"+rs.getCredit()+"\n");
+				fr.write("Interconnection Charge:\t"+rs.getCharge()+"\n");
+
+				fr.close();
+			}
+
 			ObservableList<RatepayerGroup> rpgs = session.getRpGroups();
 			for(int x = 0; x < rpgs.size(); x++){
 				RatepayerGroup rpg = rpgs.get(x);
 
 
-				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input");
+				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input");
 				if(!file.exists()){
 					file.mkdirs();
 				}
-				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output");
+				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output");
 				if(!file.exists()){
 					file.mkdirs();
 				}
 
-				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
+				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}
@@ -1900,7 +1999,7 @@ public class SceneController extends AnchorPane{
 				fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
 				fr.close();
 
-				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
+				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}
@@ -1910,7 +2009,7 @@ public class SceneController extends AnchorPane{
 				fr.write("Efficiency\t" + rpg.getInvertItem(1));
 				fr.close();
 
-				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
+				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}
@@ -1927,7 +2026,7 @@ public class SceneController extends AnchorPane{
 				//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
 				//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
 
-				file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
+				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}
@@ -1949,11 +2048,10 @@ public class SceneController extends AnchorPane{
 				fr.write("EndTime \t" + (int)rpg.getEVItem(6));
 				fr.close();
 
-				CalcProcess cp = new CalcProcess(rpg.getName() + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() , this);
+				CalcProcess cp = new CalcProcess(File.separator + "ratepayers" + File.separator + rpg.getName() + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() , this);
 				cp.run();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -2017,11 +2115,14 @@ public class SceneController extends AnchorPane{
 	// Event Listener on TextField[#ratesNameTB].onKeyReleased
 	@FXML
 	public void onRateNameChanged(KeyEvent event) {
-		int tmp = ratesScheduleIndex;
-		rateTitles.set(ratesScheduleIndex, ratesNameTB.getText());
-		ratesScheduleIndex = tmp;
-		ratesScheduleCB.getSelectionModel().select(ratesScheduleIndex);
-		ratesNameTB.positionCaret(ratesNameTB.getLength());
+		if(ratesScheduleIndex >= 0){
+			int pos = ratesNameTB.getCaretPosition();
+			int tmp = ratesScheduleIndex;
+			rateTitles.set(ratesScheduleIndex, ratesNameTB.getText());
+			ratesScheduleIndex = tmp;
+			ratesScheduleCB.getSelectionModel().select(ratesScheduleIndex);
+			ratesNameTB.positionCaret(pos);
+		}
 	}
 	// Event Listener on ComboBox[#rpStrataCB].onAction
 	@FXML
@@ -2111,13 +2212,16 @@ public class SceneController extends AnchorPane{
 	// Event Listener on TextField[#rpNameTB].onKeyReleased
 	@FXML
 	public void onRPNameChanged(KeyEvent event) {
-		int tmp = rpGroupIndex;
-		RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
-		rpg.setName(rpNameTB.getText());
-		rpGroupList.set(rpGroupIndex, rpNameTB.getText());
-		rpGroupIndex = tmp;
-		rpStrataCB.getSelectionModel().select(rpGroupIndex);
-		rpNameTB.positionCaret(rpNameTB.getLength());
+		if(rpGroupIndex >= 0){
+			int pos = rpNameTB.getCaretPosition();
+			int tmp = rpGroupIndex;
+			RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+			rpg.setName(rpNameTB.getText());
+			rpGroupList.set(rpGroupIndex, rpNameTB.getText());
+			rpGroupIndex = tmp;
+			rpStrataCB.getSelectionModel().select(rpGroupIndex);
+			rpNameTB.positionCaret(pos);
+		}
 	}
 	@FXML
 	public void onRPNumChanged(KeyEvent event) {
@@ -2127,15 +2231,26 @@ public class SceneController extends AnchorPane{
 	@FXML
 	public void onNoNetChange(ActionEvent event) {
 		rateSchedules.get(ratesScheduleIndex).setMeter(0);
+		ratesOverprodTB.setText("0.0");
+		ratesOverprodTB.setDisable(true);
+		rateTable.getColumns().get(2).setEditable(true);
+		rateTable.getColumns().get(2).getStyleClass().remove("celldisable");
 	}
 	@FXML
 	public void onMonthlyChange(ActionEvent event) {
 		rateSchedules.get(ratesScheduleIndex).setMeter(1);
+		ratesOverprodTB.setText(Double.toString(rateSchedules.get(ratesScheduleIndex).getCredit()));
+		ratesOverprodTB.setDisable(false);
+		rateTable.getColumns().get(2).setEditable(false);
+		rateTable.getColumns().get(2).getStyleClass().add("celldisable");
 	}
 	@FXML
 	public void onAnnualChange(ActionEvent event) {
 		rateSchedules.get(ratesScheduleIndex).setMeter(2);
-
+		ratesOverprodTB.setText(Double.toString(rateSchedules.get(ratesScheduleIndex).getCredit()));
+		ratesOverprodTB.setDisable(false);
+		rateTable.getColumns().get(2).setEditable(false);
+		rateTable.getColumns().get(2).getStyleClass().add("celldisable");
 	}
 	// Event Listener on ComboBox[#gridStrataCB].onAction
 	@FXML
@@ -2170,7 +2285,7 @@ public class SceneController extends AnchorPane{
 		String text = ratesInterconTB.getText();
 		if(ratesScheduleIndex >=0 || !(text.length()>0)){
 			try{
-				rateSchedules.get(ratesScheduleIndex).setCredit(Double.parseDouble(text));
+				rateSchedules.get(ratesScheduleIndex).setCharge(Double.parseDouble(text));
 				ratesInterconTB.setStyle("-fx-text-fill:black;");
 			}catch(Exception e){
 				if(text.length()>0){
@@ -2925,18 +3040,18 @@ public class SceneController extends AnchorPane{
 	}
 	public void populateOutput(String ret){
 		try {
-			String[] fileName = ret.split(",");
+			String[] split = ret.split(",")[0].split("\\" + File.separator);
+			String fileName = split[split.length-1];
 			ObservableList<RatepayerGroup> rpgs = session.getRpGroups();
 			RatepayerGroup rpg = null;
 			int index = 0;
 			for(int x = 0; x < rpgs.size(); x++){
-				if(rpgs.get(x).getName().equals(fileName[0])){
+				if(rpgs.get(x).getName().equals(fileName)){
 					rpg = rpgs.get(x);
 					index = x;
 				}
 			}
-
-			File file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Battery.txt");
+			File file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Battery.txt");
 			if(!file.exists()){
 				System.out.println("Output error");
 			}
@@ -2951,26 +3066,32 @@ public class SceneController extends AnchorPane{
 					try{
 						values[count - 5] = tmp[tmp.length-1];
 					}catch (Exception e){
+						e.printStackTrace();
 						values[count - 5] = "0.0";
 					}
 				}
 				count++;
 			}
-
-			rpBSEnergyInTB.setText(values[0]);
-			rpBSEnergyOutTB.setText(values[1]);
-			rpBSLossesTB.setText(values[2]);
-			rpBSAutonomyTB.setText(values[3]);
+			if(rpg.getName().equals(gridStrataCB.getItems().get(0).toString())){
+				rpBSEnergyInTB.setText(values[0]);
+				rpBSEnergyOutTB.setText(values[1]);
+				rpBSLossesTB.setText(values[2]);
+				rpBSAutonomyTB.setText(values[3]);
+			}
 
 			double[] dValues = new double[4];
 
 			for(int x = 0; x < dValues.length; x++){
-				dValues[x] = Double.parseDouble(values[x]);
+				try{
+					dValues[x] = Double.parseDouble(values[x]);
+				}catch(NumberFormatException e){
+
+				}
 			}
 
 			rpg.setBsOut(dValues);
 
-			file = new File("." + File.separator + "data"+ File.separator + rpg.getName() + File.separator + "output" + File.separator + "Converter.txt");
+			file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Converter.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -2984,21 +3105,26 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-
-			rpInvertEnergyInTB.setText(values[0]);
-			rpInvertEnergyOutTB.setText(values[1]);
-			rpInvertLossesTB.setText(values[2]);
-			rpInvertCapFactorTB.setText(values[3]);
+			if(rpg.getName().equals(gridStrataCB.getItems().get(0).toString())){
+				rpInvertEnergyInTB.setText(values[0]);
+				rpInvertEnergyOutTB.setText(values[1]);
+				rpInvertLossesTB.setText(values[2]);
+				rpInvertCapFactorTB.setText(values[3]);
+			}
 
 			dValues = new double[4];
 
 			for(int x = 0; x < dValues.length; x++){
-				dValues[x] = Double.parseDouble(values[x]);
+				try{
+					dValues[x] = Double.parseDouble(values[x]);
+				}catch(NumberFormatException e){
+
+				}
 			}
 
 			rpg.setInvertOut(dValues);
 
-			file = new File("." + File.separator + "data"+ File.separator + rpg.getName() + File.separator + "output" + File.separator + "ElectricVehicle.txt");
+			file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "ElectricVehicle.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -3012,22 +3138,27 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-
-			rpEVEInDayTB.setText(values[0]);
-			rpEVEInYearTB.setText(values[1]);
-			rpEVLossesTB.setText(values[2]);
-			rpEVLoadPercentTB.setText(values[3]);
+			if(rpg.getName().equals(gridStrataCB.getItems().get(0).toString())){
+				rpEVEInDayTB.setText(values[0]);
+				rpEVEInYearTB.setText(values[1]);
+				rpEVLossesTB.setText(values[2]);
+				rpEVLoadPercentTB.setText(values[3]);
+			}
 
 			dValues = new double[4];
 
 			for(int x = 0; x < dValues.length; x++){
-				dValues[x] = Double.parseDouble(values[x]);
+				try{
+					dValues[x] = Double.parseDouble(values[x]);
+				}catch(NumberFormatException e){
+
+				}
 			}
 
 			rpg.setEvOut(dValues);
 
 			values = new String[6];
-			file = new File("." + File.separator + "data"+ File.separator + rpg.getName() + File.separator + "output" + File.separator + "Load.txt");
+			file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Load.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -3041,31 +3172,34 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-
-			rpPeakLoadTB.setText(values[0]);
-			rpAverageLoadTB.setText(values[2]);
-			rpEUDayTB.setText(values[3]);
-			rpEUYearTB.setText(values[4]);
-			rpLoadFactorTB.setText(values[5]);
-			gridPeakLoadTB.setText(values[0]);
-			gridAvgLoadTB.setText(values[2]);
-			gridEUseDayTB.setText(values[3]);
-			gridEUseYearTB.setText(values[4]);
-			gridLoadFactorTB.setText(values[5]);
+			if(rpg.getName().equals(gridStrataCB.getItems().get(0).toString())){
+				rpPeakLoadTB.setText(values[0]);
+				rpAverageLoadTB.setText(values[2]);
+				rpEUDayTB.setText(values[3]);
+				rpEUYearTB.setText(values[4]);
+				rpLoadFactorTB.setText(values[5]);
+				gridPeakLoadTB.setText(values[0]);
+				gridAvgLoadTB.setText(values[2]);
+				gridEUseDayTB.setText(values[3]);
+				gridEUseYearTB.setText(values[4]);
+				gridLoadFactorTB.setText(values[5]);
+			}
 
 			dValues = new double[5];
+			try{
+				dValues[0] = Double.parseDouble(values[0]);
+				dValues[1] = Double.parseDouble(values[2]);
+				dValues[2] = Double.parseDouble(values[3]);
+				dValues[3] = Double.parseDouble(values[4]);
+				dValues[4] = Double.parseDouble(values[5]);
+			}catch(NumberFormatException e){
 
-			dValues[0] = Double.parseDouble(values[0]);
-			dValues[1] = Double.parseDouble(values[2]);
-			dValues[2] = Double.parseDouble(values[3]);
-			dValues[3] = Double.parseDouble(values[4]);
-			dValues[4] = Double.parseDouble(values[5]);
-
+			}
 			rpg.setLoadOut(dValues);
 
 
 			values = new String[8];
-			file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarPV.txt");
+			file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarPV.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -3079,26 +3213,30 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-
-			rpSolarEOTB.setText(values[2]);
-			rpSolarEOYearTB.setText(values[3]);
-			rpSolarEODayTB.setText(values[4]);
-			rpCapFactorTB.setText(values[5]);
-			rpSolarPVPenTB.setText(values[7]);
+			if(rpg.getName().equals(gridStrataCB.getItems().get(0).toString())){
+				rpSolarEOTB.setText(values[2]);
+				rpSolarEOYearTB.setText(values[3]);
+				rpSolarEODayTB.setText(values[4]);
+				rpCapFactorTB.setText(values[5]);
+				rpSolarPVPenTB.setText(values[7]);
+			}
 
 			dValues = new double[5];
+			try{
+				dValues[0] = Double.parseDouble(values[2]);
+				dValues[1] = Double.parseDouble(values[3]);
+				dValues[2] = Double.parseDouble(values[4]);
+				dValues[3] = Double.parseDouble(values[5]);
+				dValues[4] = Double.parseDouble(values[7]);
+			}catch(NumberFormatException e){
 
-			dValues[0] = Double.parseDouble(values[2]);
-			dValues[1] = Double.parseDouble(values[3]);
-			dValues[2] = Double.parseDouble(values[4]);
-			dValues[3] = Double.parseDouble(values[5]);
-			dValues[4] = Double.parseDouble(values[7]);
+			}
 
 			rpg.setSolarOut(dValues);
 
 			ObservableList<SolarMonthly> sm = solarTable.getItems();
 
-			file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarResource.txt");
+			file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarResource.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -3129,7 +3267,7 @@ public class SceneController extends AnchorPane{
 			s.add(new XYChart.Series<>("DNI",ss));
 			solarGraph.setData(s);
 
-			file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnection.txt");
+			file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnection.txt");
 			br = new BufferedReader(new FileReader(file));
 			count = 0;
 			while((input = br.readLine()) != null){
@@ -3143,25 +3281,27 @@ public class SceneController extends AnchorPane{
 				}
 				count++;
 			}
-
-			rpEnergyPurchasedTB.setText(values[0]);
-			rpEnergySoldTB.setText(values[1]);
-			rpNetPurchasesTB.setText(values[2]);
+			if(rpg.getName().equals(gridStrataCB.getItems().get(0).toString())){
+				rpEnergyPurchasedTB.setText(values[0]);
+				rpEnergySoldTB.setText(values[1]);
+				rpNetPurchasesTB.setText(values[2]);
+			}
 
 			dValues = new double[3];
-
-			dValues[0] = Double.parseDouble(values[0]);
-			dValues[1] = Double.parseDouble(values[1]);
-			dValues[2] = Double.parseDouble(values[2]);
-
-			rpg.setInterconOut(dValues);
-
-			if(rpgs.get(0).getName().equals(rpg.getName())){
-				gridStrataCB.getSelectionModel().select(0);
+			try{
+				dValues[0] = Double.parseDouble(values[0]);
+				dValues[1] = Double.parseDouble(values[1]);
+				dValues[2] = Double.parseDouble(values[2]);
+			}catch(NumberFormatException e){
 
 			}
 
+			rpg.setInterconOut(dValues);
+
+			gridStrataCB.getSelectionModel().select(0);
+
 		} catch (Exception e) {
+			gridStrataCB.getSelectionModel().select(0);
 			e.printStackTrace();
 		}
 	}
@@ -3170,7 +3310,7 @@ public class SceneController extends AnchorPane{
 		try{
 			RatepayerGroup rpg = session.getRpGroups().get(index);
 
-			File file = new File("." + File.separator + "data" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "time_series_simple.csv");
+			File file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "time_series_simple.csv");
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			int count = 0;
 			ArrayList<String[]> ts = new ArrayList();

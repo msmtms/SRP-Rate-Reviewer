@@ -1,9 +1,0 @@
-Object name: Battery
-Object type: Battery
-Object ID: 0
-
-Total capacity [kWh]: 10
-Energy in [kWh/period]: 581.166
-Energy out [kWh/period]: 524.725
-Losses [kWh/period]: 58.2072
-Autonomy [h]: 6.36604

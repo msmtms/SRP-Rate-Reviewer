@@ -9,11 +9,13 @@ public class RateSchedule {
 	private static final int GRID_ROWS = 24;
 	private static final int GRID_COLUMNS = 12;
 	private static final int GRID_PANES = 4;
+	private static final int GRID_INDICES = 2;
 	private String name;
 	private int meter;
 	private double credit;
 	private double charge;
 	private String[][] paneColors;
+	private int[][] schedule;
 	private ObservableList<Rate> rates;
 
 	public RateSchedule(){
@@ -21,6 +23,7 @@ public class RateSchedule {
 		this.credit = 0;
 		this.charge = 0;
 		paneColors = new String[GRID_ROWS*GRID_COLUMNS][GRID_PANES];
+		schedule = new int[GRID_ROWS*GRID_COLUMNS][GRID_INDICES];
 		for(int x = 0; x < paneColors.length; x++){
 			for(int y = 0; y < paneColors[0].length; y++){
 				paneColors[x][y] = "burlywood";
@@ -28,11 +31,14 @@ public class RateSchedule {
 					paneColors[x][y] = "gray";
 				}
 			}
+			for(int y = 0; y < schedule[0].length; y++){
+				schedule[x][y] = -1;
+			}
 		}
 		rates = FXCollections.observableArrayList();
 	}
 
-	public RateSchedule(String name, int meter, double credit, double charge, String[][] colors,
+	public RateSchedule(String name, int meter, double credit, double charge, String[][] colors, int[][] schedule,
 			ObservableList<Rate> rates) {
 		super();
 		this.name = name;
@@ -41,6 +47,7 @@ public class RateSchedule {
 		this.charge = charge;
 		this.paneColors = colors;
 		this.rates = rates;
+		this.schedule = schedule;
 	}
 
 	public String getName() {
@@ -93,4 +100,25 @@ public class RateSchedule {
 	public String getPaneColor(int paneIndex, int pane){
 		return paneColors[paneIndex][pane];
 	}
+
+	public int[][] getSchedule() {
+		return schedule;
+	}
+	public int[] getSchedule(int index) {
+		return schedule[index];
+	}
+
+	public void setSchedule(int[][] schedule) {
+		this.schedule = schedule;
+	}
+	
+	public void setSchedule(int index, int val1, int val2){
+		if(val1 >= -1){
+			schedule[index][0] = val1;
+		}
+		if(val2 >= -1){
+			schedule[index][1] = val2;
+		}
+	}
+	
 }

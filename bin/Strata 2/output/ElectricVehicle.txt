@@ -1,9 +1,0 @@
-Object name: ElectricVehicle
-Object type: Electric vehicle
-Object ID: 0
-
-Total capacity [kWh]: 23
-Energy in [kWh/day]: 12.1053
-Energy in [kWh/period]: 4418.42
-Losses [kWh/period]: 220.921
-Percentage of total load [%]: 24.3052

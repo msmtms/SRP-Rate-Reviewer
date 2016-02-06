@@ -1,2 +1,0 @@
-Capacity	5.0
-Efficiency	95.0

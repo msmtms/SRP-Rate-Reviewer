@@ -44,3 +44,6 @@
 	-fx-font-family:arial;
 	-fx-alignment:center;
 }
+.celldisable.table-cell{
+	-fx-background-color:lightgray;
+}
