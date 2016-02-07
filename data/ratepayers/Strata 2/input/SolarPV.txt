@@ -1,3 +1,0 @@
-Capacity	0.0
-Slope	0.0
-Azimuth	0.0

@@ -1,3 +1,0 @@
-Net Metering:	1
-Production Credit:	0.03
-Interconnection Charge:	20.0

@@ -1,9 +1,0 @@
-Object name: Battery
-Object type: Battery
-Object ID: 0
-
-Total capacity [kWh]: 0
-Energy in [kWh/period]: 0
-Energy out [kWh/period]: 0
-Losses [kWh/period]: nan
-Autonomy [h]: 0

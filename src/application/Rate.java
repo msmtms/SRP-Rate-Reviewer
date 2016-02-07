@@ -50,6 +50,11 @@ public class Rate {
 		this.singleFeedin = true;
 		this.singleDemand = true;
 	}
+	
+	public Rate(String rate, ObservableList<Price> prices, ObservableList<Feedin> feedin,
+			ObservableList<Demand> demands, String color, boolean singlePrice, boolean singleFeedin, boolean singleDemand){
+		
+	}
 	public boolean isSinglePrice() {
 		return singlePrice;
 	}
@@ -81,7 +86,7 @@ public class Rate {
 		this.rate = rate;
 	}
 	public String getPrice() {
-		if(isSinglePrice()){
+		if(singlePrice){
 			return prices.get(0).getValue();
 		}else{
 			return "Tiered..." + prices.get(0).getValue();
@@ -120,7 +125,11 @@ public class Rate {
 	}
 
 	public String getFeedin() {
-		return feedins.get(0).getValue();
+		if(singleFeedin){
+			return feedins.get(0).getValue();
+		}else{
+			return "Tiered..." + feedins.get(0).getValue();
+		}
 	}
 	public Feedin getFeedin(int index){
 		return feedins.get(index);
@@ -154,7 +163,11 @@ public class Rate {
 		feedins.set(index, feedin);
 	}
 	public String getDemand() {
-		return demands.get(0).getValue();
+		if(singleDemand){
+			return demands.get(0).getValue();
+		}else{
+			return "Tiered..." + demands.get(0).getValue();
+		}
 	}
 	public Demand getDemand(int index){
 		return demands.get(index);
@@ -192,5 +205,17 @@ public class Rate {
 	}
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public void setPrices(ObservableList<Price> prices) {
+		this.prices = prices;
+	}
+
+	public void setFeedins(ObservableList<Feedin> feedins) {
+		this.feedins = feedins;
+	}
+
+	public void setDemands(ObservableList<Demand> demands) {
+		this.demands = demands;
 	}
 }

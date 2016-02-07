@@ -4,6 +4,8 @@ public class RatepayerGroup {
 
 	private String name;
 	private String num;
+	private int rateSchedule;
+	private String loadFile;
 	private double[] solarPV;
 	private double[] inverter;
 	private double[] batteryStorage;
@@ -21,6 +23,8 @@ public class RatepayerGroup {
 	public RatepayerGroup(){
 		name = "";
 		num = "";
+		rateSchedule = -1;
+		loadFile = "";
 		solarPV = new double[3];
 		for(int x = 0; x < solarPV.length; x++){
 			solarPV[x] = 0;
@@ -75,11 +79,13 @@ public class RatepayerGroup {
 		}
 	}
 	
-	public RatepayerGroup(String name, String num, double[] solarPV,
+	public RatepayerGroup(String name, String num, int rateSchedule, String loadFile, double[] solarPV,
 			double[] inverter, double[] batteryStorage,
 			double[] electricVehicle, double[] demandResponse) {
 		this.name = name;
 		this.num = num;
+		this.rateSchedule = rateSchedule;
+		this.loadFile = loadFile;
 		this.solarPV = solarPV;
 		this.inverter = inverter;
 		this.batteryStorage = batteryStorage;
@@ -221,6 +227,22 @@ public class RatepayerGroup {
 
 	public void setSummaryOut(double[] summaryOut) {
 		this.summaryOut = summaryOut;
+	}
+
+	public int getRateSchedule() {
+		return rateSchedule;
+	}
+
+	public void setRateSchedule(int rateSchedule) {
+		this.rateSchedule = rateSchedule;
+	}
+
+	public String getLoadFile() {
+		return loadFile;
+	}
+
+	public void setLoadFile(String loadFile) {
+		this.loadFile = loadFile;
 	}
 
 }

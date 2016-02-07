@@ -49,7 +49,7 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 	EnergySystem energySystem(0, x[0]);
 
 	// Step 1: add objects to energy system
-	ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput(x[1]);
+	ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput("./data/" + x[0] + "/input/load.txt");
 	energySystem.AddImmediateLoad(loadData);
 
 	SolarResourceData dataSolarResource = ESDELoader::LoadSolarResourceInput(std::string("./data/Location.txt"), x[2]);

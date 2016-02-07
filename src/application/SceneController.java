@@ -3,14 +3,21 @@ package application;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -145,6 +152,12 @@ public class SceneController extends AnchorPane{
 	@FXML
 	private TextField ratesNameTB;
 	@FXML
+	private TextField ratesLoadFileTB;
+	@FXML
+	private Button ratesBrowse;
+	@FXML
+	private Button ratesLoadFileBtn;
+	@FXML
 	private RadioButton ratesNoNetRadio;
 	@FXML
 	private ToggleGroup netmetering;
@@ -180,6 +193,8 @@ public class SceneController extends AnchorPane{
 	private Tab ratepayersTab;
 	@FXML
 	private ComboBox rpStrataCB;
+	@FXML
+	private ComboBox rpRateSchedule;
 	@FXML
 	private TextField rpNameTB;
 	@FXML
@@ -420,16 +435,10 @@ public class SceneController extends AnchorPane{
 		rateSchedules = FXCollections.observableArrayList();
 		session.setRateSchedules(rateSchedules);
 		rateTitles = FXCollections.observableArrayList();
-		RateSchedule rs1 = new RateSchedule();
-		RateSchedule rs2 = new RateSchedule();
-		rs1.setName("TOU 3-6");
-		rateTitles.add("TOU 3-6");
-		rs2.setName("TOU 4-7");
-		rateTitles.add("TOU 4-7");
-		rateSchedules.addAll(rs1,rs2);
 
 		ratesScheduleIndex = -1;
 		ratesScheduleCB.setItems(rateTitles);
+		rpRateSchedule.setItems(rateTitles);
 		rateGrid.setStyle("-fx-background-color:burlywood;");
 		rateColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("rate"));
 		priceColumn.setCellValueFactory(new PropertyValueFactory<Rate, String>("price"));
@@ -513,7 +522,7 @@ public class SceneController extends AnchorPane{
 							grid.setPadding(new Insets(20, 90, 10, 10));
 
 							// Text field and label added to grid
-							TextField price = new TextField(rateTable.getSelectionModel().getSelectedItem().getPrice());
+							TextField price = new TextField(rateTable.getSelectionModel().getSelectedItem().getPrice(0).getValue());
 							priceGrid.add(new Label("Price: "), 0, 0);
 							priceGrid.add(price, 1, 0);
 
@@ -623,7 +632,7 @@ public class SceneController extends AnchorPane{
 									pane.getChildren().add(priceGrid);
 								}catch(IllegalArgumentException e){}
 								dialog.setHeight(200);
-								price.setText(rateTable.getSelectionModel().getSelectedItem().getPrice());
+								price.setText(rateTable.getSelectionModel().getSelectedItem().getPrice(0).getValue());
 							}else{
 								tiered.setSelected(true);
 								try{
@@ -667,7 +676,9 @@ public class SceneController extends AnchorPane{
 							Optional<String> result = dialog.showAndWait();
 							if (result != null){
 								try{
+									System.out.println(rateSchedules.get(ratesScheduleIndex).getRates().get(rateTable.getSelectionModel().getSelectedIndex()).getPrice());
 									c.setText(result.get());
+									System.out.println(rateSchedules.get(ratesScheduleIndex).getRates().get(rateTable.getSelectionModel().getSelectedIndex()).getPrice());
 								}catch(NoSuchElementException e){
 									e.printStackTrace();
 								}
@@ -736,7 +747,7 @@ public class SceneController extends AnchorPane{
 								grid.setPadding(new Insets(20, 90, 10, 10));
 
 								// Text field and label added to grid
-								TextField feedin = new TextField(rateTable.getSelectionModel().getSelectedItem().getFeedin());
+								TextField feedin = new TextField(rateTable.getSelectionModel().getSelectedItem().getFeedin(0).getValue());
 								feedinGrid.add(new Label("Feedin: "), 0, 0);
 								feedinGrid.add(feedin, 1, 0);
 
@@ -846,7 +857,7 @@ public class SceneController extends AnchorPane{
 										pane.getChildren().add(feedinGrid);
 									}catch(IllegalArgumentException e){}
 									dialog.setHeight(200);
-									feedin.setText(rateTable.getSelectionModel().getSelectedItem().getFeedin());
+									feedin.setText(rateTable.getSelectionModel().getSelectedItem().getFeedin(0).getValue());
 								}else{
 									tiered.setSelected(true);
 									try{
@@ -959,7 +970,7 @@ public class SceneController extends AnchorPane{
 							grid.setPadding(new Insets(20, 90, 10, 10));
 
 							// Text field and label added to grid
-							TextField demand = new TextField(rateTable.getSelectionModel().getSelectedItem().getDemand());
+							TextField demand = new TextField(rateTable.getSelectionModel().getSelectedItem().getDemand(0).getValue());
 							demandGrid.add(new Label("Demand: "), 0, 0);
 							demandGrid.add(demand, 1, 0);
 
@@ -1069,7 +1080,7 @@ public class SceneController extends AnchorPane{
 									pane.getChildren().add(demandGrid);
 								}catch(IllegalArgumentException e){}
 								dialog.setHeight(200);
-								demand.setText(rateTable.getSelectionModel().getSelectedItem().getDemand());
+								demand.setText(rateTable.getSelectionModel().getSelectedItem().getDemand(0).getValue());
 							}else{
 								tiered.setSelected(true);
 								try{
@@ -1141,20 +1152,14 @@ public class SceneController extends AnchorPane{
 		feedInColumn.setCellFactory(feedinFactory);
 		demandColumn.setCellFactory(demandFactory);
 		colorColumn.setCellFactory(cellFactory);
-
-		ObservableList<Rate> rateList = FXCollections.observableArrayList();
-		String[] arr1 = {"Non-summer", "Summer off-Peak", "Summer on-peak"};
-		String[] arr2 = {"0.12", "0.16", "0.16"};
-		String[] arr3 = {"0.3", "0.3", "0.3"};
-		String[] arr4 = {"0.0", "0.0", "0.0"};
-		for(int x = 0; x < arr1.length; x++){
-			Rate rate = new Rate(arr1[x],arr2[x],arr3[x],arr4[x],colors.get(x), true,true,true);
-			rateList.add(rate);
-		}
-
-
 		resetPanes();
-		rateSchedules.get(0).setRates(rateList);
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File srp = new File(currentDir + "srp");
+		if(srp.exists()){
+			for(final File rs : srp.listFiles()){
+				loadRate(new File(rs.getAbsolutePath() + File.separator + "rates.txt"));
+			}
+		}
 	}
 
 	private void resetPanes(){
@@ -1384,7 +1389,7 @@ public class SceneController extends AnchorPane{
 							if(x%12 >= col1 && x%12 <= col2){
 								if(ratesAllWeekBtn.isSelected()){
 									rateSchedules.get(ratesScheduleIndex).setPaneColor(x,0,r.getColor());
-									rateSchedules.get(ratesScheduleIndex).setSchedule(x, rateTable.getSelectionModel().getSelectedIndex(), -1);
+									rateSchedules.get(ratesScheduleIndex).setSchedule(x, rateTable.getSelectionModel().getSelectedIndex(), rateTable.getSelectionModel().getSelectedIndex());
 									panes[x][0].setStyle("-fx-background-color:"+r.getColor()+";-fx-border-color:black;");
 									panes[x][1].setVisible(false);
 									panes[x][2].setVisible(false);
@@ -1683,6 +1688,143 @@ public class SceneController extends AnchorPane{
 			}
 		}
 	}
+	public void onRatesBrowseClicked(ActionEvent event){
+		FileChooser fc = new FileChooser();
+		String currentDir = System.getProperty("user.dir") + File.separator;
+		File file = new File(currentDir);
+		fc.setInitialDirectory(file);
+		file = fc.showOpenDialog(app.getStage());
+		ratesLoadFileTB.setText(file.getAbsolutePath());
+	}
+	public void onRatesLoadFileClicked(ActionEvent event){
+		File file = new File(ratesLoadFileTB.getText());
+		loadRate(file);
+	}
+	private void loadRate(File file){
+		if(file.exists()){
+			try{
+				RateSchedule rs = new RateSchedule();
+				file = new File(file.getParent() + File.separator + "monthly.txt");
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				int[][] mon = new int[GRID_ROWS*GRID_COLUMNS][2];
+				int count = 0;
+				String input = "";
+				String split[][] = new String[12][24];
+				String[] vals;
+
+				rs.setName(file.getParentFile().getName());
+				try{
+					while((input = br.readLine()) != null){
+						split[count] = input.split(";");
+						count++;
+					}
+					for(int x = 0; x < split.length; x++){
+						for(int y = 0; y < split[0].length; y++){
+							vals = split[x][y].split(",");
+							int val1 = Integer.parseInt(vals[0]);
+							int val2 = Integer.parseInt(vals[1]);
+							rs.setSchedule(x+(y*12), val1, val2);
+							if(val1 >= 0 && val2 >= 0){
+								if(val1 == val2){
+									rs.setPaneColor(x+(y*12), 0, colors.get(val1));
+								}else{
+									rs.setPaneColor(x+(y*12), 1, colors.get(val1));
+									rs.setPaneColor(x+(y*12), 2, colors.get(val2));
+								}
+							}else if(val1 >=0){
+								rs.setPaneColor(x+(y*12), 1, colors.get(val1));
+							}else if(val2 >=0){
+								rs.setPaneColor(x+(y*12), 2, colors.get(val2));
+							}else{
+								rs.setPaneColor(x+(y*12), 0, "burlywood");
+							}
+						}
+					}
+				}catch(NumberFormatException ex){
+					ex.printStackTrace();
+				}
+
+				file = new File(file.getParent() + File.separator + "meter.txt");
+				br = new BufferedReader(new FileReader(file));
+				String[] met = new String[3];
+				count = 0;
+				input = "";
+
+				while((input = br.readLine()) != null){
+					met[count] = input;
+					count++;
+				}
+
+				try{
+					rs.setMeter(Integer.parseInt(met[0].split("\t")[1]));
+					rs.setCredit(Double.parseDouble(met[1].split("\t")[1]));
+					rs.setCharge(Double.parseDouble(met[2].split("\t")[1]));
+				}catch(NumberFormatException ex){
+					ex.printStackTrace();
+				}
+
+				file = new File(file.getParent() + File.separator + "rates.txt");
+				br = new BufferedReader(new FileReader(file));
+				ArrayList<String> rname = new ArrayList<String>();
+				String[] rsplit;
+				String[] tmpSplit;
+				String[] tmpSplit1;
+				ObservableList<Price> prices;
+				ObservableList<Feedin> feedins;
+				ObservableList<Demand> demands;
+				input = "";
+				Price tmpP;
+				Feedin tmpF;
+				Demand tmpD;
+				Rate rate;
+
+				while((input = br.readLine()) != null){
+					rate = new Rate();
+					prices = FXCollections.observableArrayList();
+					feedins = FXCollections.observableArrayList();
+					demands = FXCollections.observableArrayList();
+					rsplit = input.split("\t");
+					rate.setRate(rsplit[0]);
+					rsplit = rsplit[1].split("%");
+					tmpSplit = rsplit[0].split(";");
+					for(int x = 0; x < tmpSplit.length; x++){
+						tmpSplit1 = tmpSplit[x].split(",");
+						tmpP = new Price(tmpSplit1[0],tmpSplit1[1]);
+						prices.add(tmpP);
+					}
+					rate.setPrices(prices);
+					tmpSplit = rsplit[1].split(";");
+					for(int x = 0; x < tmpSplit.length; x++){
+						tmpSplit1 = tmpSplit[x].split(",");
+						tmpF = new Feedin(tmpSplit1[0],tmpSplit1[1]);
+						feedins.add(tmpF);
+					}
+					rate.setFeedins(feedins);
+					tmpSplit = rsplit[2].split(";");
+					for(int x = 0; x < tmpSplit.length; x++){
+						tmpSplit1 = tmpSplit[x].split(",");
+						tmpD = new Demand(tmpSplit1[0],tmpSplit1[1]);
+						demands.add(tmpD);
+					}
+					rate.setDemands(demands);
+					try{
+						rate.setColor(colors.get(rs.getRates().size()));
+					}catch(Exception e){
+						rate.setColor(colors.get(0));
+					}					
+					rate.setSinglePrice(prices.size() < 2);
+					rate.setSingleFeedin(feedins.size() < 2);
+					rate.setSingleDemand(demands.size() < 2);
+					rs.addRate(rate);
+				}
+				rateSchedules.add(rs);
+				rateTitles.add(file.getParentFile().getName());
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+	}
+
 	// Event Listener on Button.onAction
 	@FXML
 	public void ratesAddClicked(ActionEvent event) {
@@ -1727,7 +1869,7 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),new double[3],new double[2],new double[4],new double[8],new double[2]));
+					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),rpRateSchedule.getSelectionModel().getSelectedIndex(), "",new double[3],new double[2],new double[4],new double[8],new double[2]));
 					rpGroupList.add(text1.getText());
 				}
 				return null;
@@ -1761,7 +1903,7 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),new double[3],new double[2],new double[4],new double[8],new double[2]));
+					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),rpRateSchedule.getSelectionModel().getSelectedIndex(),"",new double[3],new double[2],new double[4],new double[8],new double[2]));
 					rpGroupList.add(text1.getText());
 				}
 				return null;
@@ -1791,6 +1933,11 @@ public class SceneController extends AnchorPane{
 			}
 		}
 	}
+	public void onRPRateChange(ActionEvent event) {
+		if(rpGroupIndex >= 0){
+			rpGroups.get(rpGroupIndex).setRateSchedule(rpRateSchedule.getSelectionModel().getSelectedIndex());
+		}
+	}
 	// Event Listener on Button.onAction
 	@FXML
 	public void rpLoadDataClicked(ActionEvent event) {
@@ -1800,6 +1947,7 @@ public class SceneController extends AnchorPane{
 		fc.setInitialDirectory(file);
 		file = fc.showOpenDialog(app.getStage());
 		rpLoadDataTB.setText(file.getAbsolutePath());
+		rpGroups.get(rpGroupIndex).setLoadFile(file.getAbsolutePath());
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
@@ -1870,9 +2018,10 @@ public class SceneController extends AnchorPane{
 	public void onRunClicked(ActionEvent event) {
 		try {
 			File file = new File("." + File.separator + "data");
-			if(!file.exists()){
-				file.mkdirs();
+			if(file.exists()){
+				deleteFilesInDirectory(file);
 			}
+			file.mkdirs();
 			String nl = System.lineSeparator();
 			file = new File("." + File.separator + "data" + File.separator + "Location.txt");
 			if(!file.exists()){
@@ -1977,79 +2126,105 @@ public class SceneController extends AnchorPane{
 			for(int x = 0; x < rpgs.size(); x++){
 				RatepayerGroup rpg = rpgs.get(x);
 
+				if(!(rpg.getRateSchedule() < 0 || rpg.getLoadFile().length() <= 0)){
 
-				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input");
-				if(!file.exists()){
-					file.mkdirs();
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input");
+					if(!file.exists()){
+						file.mkdirs();
+					}
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output");
+					if(!file.exists()){
+						file.mkdirs();
+					}
+
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "rpg.txt");
+					if(!file.exists()){
+						file.createNewFile();
+					}
+					fr = new FileWriter(file);
+					fr.write("Ratepayer Group:\t" + rpg.getName());
+					fr.write(nl);
+					fr.write("Rate Schedule:\t" + rateSchedules.get(rpg.getRateSchedule()).getName());
+					fr.write(nl);
+					fr.write("Number of Customers:\t" + rpg.getNum());
+					fr.close();
+
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
+					if(!file.exists()){
+						file.createNewFile();
+					}
+					fr = new FileWriter(file);
+					fr.write("Capacity\t" + rpg.getSolarPVItem(0));
+					fr.write(nl);
+					fr.write("Slope\t" + rpg.getSolarPVItem(2));
+					fr.write(nl);
+					fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
+					fr.close();
+
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
+					if(!file.exists()){
+						file.createNewFile();
+					}
+					fr = new FileWriter(file);
+					fr.write("Capacity\t" + rpg.getInvertItem(0));
+					fr.write(nl);
+					fr.write("Efficiency\t" + rpg.getInvertItem(1));
+					fr.close();
+
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
+					if(!file.exists()){
+						file.createNewFile();
+					}
+					fr = new FileWriter(file);
+					fr.write("Capacity\t" + rpg.getBSItem(0));
+					fr.write(nl);
+					fr.write("Efficiency\t" + rpg.getBSItem(1));
+					fr.write(nl);
+					fr.write("MinSOC\t" + rpg.getBSItem(2));
+					fr.write(nl);
+					fr.write("MaxCRate\t" + rpg.getBSItem(3));
+					fr.close();
+
+					//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
+					//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
+
+					file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
+					if(!file.exists()){
+						file.createNewFile();
+					}
+					fr = new FileWriter(file);
+					fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
+					fr.write(nl);
+					fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
+					fr.write(nl);
+					fr.write("Capacity\t" + rpg.getEVItem(0));
+					fr.write(nl);
+					fr.write("Efficiency\t" + rpg.getEVItem(2));
+					fr.write(nl);
+					fr.write("StartingSOC\t" + rpg.getEVItem(3));
+					fr.write(nl);
+					fr.write("EndingSOC\t" + rpg.getEVItem(4));
+					fr.write(nl);
+					fr.write("StartTime\t" + (int)rpg.getEVItem(5));
+					fr.write(nl);
+					fr.write("EndTime \t" + (int)rpg.getEVItem(6));
+					fr.close();
+
+					File lfile = new File(rpg.getLoadFile());
+
+					if(file.exists()){
+						try{
+							file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "load.txt");
+							copyFile(lfile, file);
+						}catch(IOException e){
+							e.printStackTrace();
+						}
+					}
+
+					// TODO ============================================= FILE STRUCTURE STUFF
+					CalcProcess cp = new CalcProcess(File.separator + "ratepayers" + File.separator + rpg.getName() + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() , this);
+					cp.run();
 				}
-				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output");
-				if(!file.exists()){
-					file.mkdirs();
-				}
-
-				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
-				if(!file.exists()){
-					file.createNewFile();
-				}
-				fr = new FileWriter(file);
-				fr.write("Capacity\t" + rpg.getSolarPVItem(0));
-				fr.write(nl);
-				fr.write("Slope\t" + rpg.getSolarPVItem(2));
-				fr.write(nl);
-				fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
-				fr.close();
-
-				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
-				if(!file.exists()){
-					file.createNewFile();
-				}
-				fr = new FileWriter(file);
-				fr.write("Capacity\t" + rpg.getInvertItem(0));
-				fr.write(nl);
-				fr.write("Efficiency\t" + rpg.getInvertItem(1));
-				fr.close();
-
-				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
-				if(!file.exists()){
-					file.createNewFile();
-				}
-				fr = new FileWriter(file);
-				fr.write("Capacity\t" + rpg.getBSItem(0));
-				fr.write(nl);
-				fr.write("Efficiency\t" + rpg.getBSItem(1));
-				fr.write(nl);
-				fr.write("MinSOC\t" + rpg.getBSItem(2));
-				fr.write(nl);
-				fr.write("MaxCRate\t" + rpg.getBSItem(3));
-				fr.close();
-
-				//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
-				//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
-
-				file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
-				if(!file.exists()){
-					file.createNewFile();
-				}
-				fr = new FileWriter(file);
-				fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
-				fr.write(nl);
-				fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
-				fr.write(nl);
-				fr.write("Capacity\t" + rpg.getEVItem(0));
-				fr.write(nl);
-				fr.write("Efficiency\t" + rpg.getEVItem(2));
-				fr.write(nl);
-				fr.write("StartingSOC\t" + rpg.getEVItem(3));
-				fr.write(nl);
-				fr.write("EndingSOC\t" + rpg.getEVItem(4));
-				fr.write(nl);
-				fr.write("StartTime\t" + (int)rpg.getEVItem(5));
-				fr.write(nl);
-				fr.write("EndTime \t" + (int)rpg.getEVItem(6));
-				fr.close();
-
-				CalcProcess cp = new CalcProcess(File.separator + "ratepayers" + File.separator + rpg.getName() + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() , this);
-				cp.run();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -2111,6 +2286,46 @@ public class SceneController extends AnchorPane{
 		 */
 		ratesOverprodTB.setText(Double.toString(rs.getCredit()));
 		ratesInterconTB.setText(Double.toString(rs.getCharge()));
+		if(rs.getMeter() == 0){
+			ratesOverprodTB.setDisable(true);
+			rateTable.getColumns().get(2).setEditable(true);
+			rateTable.getColumns().get(2).getStyleClass().remove("celldisable");
+		}else{
+			ratesOverprodTB.setDisable(false);
+			rateTable.getColumns().get(2).setEditable(false);
+			rateTable.getColumns().get(2).getStyleClass().add("celldisable");
+		}
+
+		String[][] colors = rs.getPaneColors();
+		int[][] schedule = rs.getSchedule();
+		for(int x = 0; x < panes.length; x++){
+			if(schedule[x][0] >= 0 && schedule[x][1] >= 0){
+				if(schedule[x][0] == schedule[x][1]){
+					panes[x][0].setStyle("-fx-background-color:"+colors[x][0]+";-fx-border-color:black;");
+					panes[x][1].setVisible(false);
+					panes[x][2].setVisible(false);
+				}else{
+					panes[x][1].setStyle("-fx-background-color:"+colors[x][1]+";-fx-border-color:black;");
+					panes[x][2].setStyle("-fx-background-color:"+colors[x][2]+";-fx-border-color:black;");
+					panes[x][1].setVisible(true);
+					panes[x][2].setVisible(true);
+				}
+			}else if(schedule[x][0] >=0){
+				panes[x][1].setStyle("-fx-background-color:"+colors[x][1]+";-fx-border-color:black;");
+				panes[x][2].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+				panes[x][1].setVisible(true);
+				panes[x][2].setVisible(true);
+			}else if(schedule[x][1] >=0){
+				panes[x][2].setStyle("-fx-background-color:"+colors[x][2]+";-fx-border-color:black;");
+				panes[x][1].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+				panes[x][1].setVisible(true);
+				panes[x][2].setVisible(true);
+			}else{
+				panes[x][0].setStyle("-fx-background-color:burlywood;-fx-border-color:black;");
+				panes[x][1].setVisible(false);
+				panes[x][2].setVisible(false);
+			}
+		}		
 	}
 	// Event Listener on TextField[#ratesNameTB].onKeyReleased
 	@FXML
@@ -2131,6 +2346,8 @@ public class SceneController extends AnchorPane{
 		RatepayerGroup rpg = rpGroups.get(rpStrataCB.getSelectionModel().getSelectedIndex());
 		rpNameTB.setText(rpg.getName());
 		rpNoCustTB.setText(rpg.getNum());
+		rpRateSchedule.getSelectionModel().select(rpg.getRateSchedule());
+		rpLoadDataTB.setText(rpg.getLoadFile());
 		RatepayerGroup rg = session.getRpGroups().get(rpGroupIndex);
 		rpSolarCapTB.setText(Double.toString(rg.getSolarPVItem(0)));
 		rpSolarAzTB.setText(Double.toString(rg.getSolarPVItem(1)));
@@ -2304,6 +2521,13 @@ public class SceneController extends AnchorPane{
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Invalid Input");
 		alert.setHeaderText("Your input was invalid.");
+		alert.setContentText(msg);
+		alert.show();
+	}
+	private void showErrorDialog(String msg){
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error");
+		alert.setHeaderText("An Error Occurred");
 		alert.setContentText(msg);
 		alert.show();
 	}
@@ -3311,58 +3535,91 @@ public class SceneController extends AnchorPane{
 			RatepayerGroup rpg = session.getRpGroups().get(index);
 
 			File file = new File("." + File.separator + "data" + File.separator + "ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "time_series_simple.csv");
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			int count = 0;
-			ArrayList<String[]> ts = new ArrayList();
-			String input = "";
+			if(file.exists()){
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				int count = 0;
+				ArrayList<String[]> ts = new ArrayList();
+				String input = "";
 
-			while((input = br.readLine()) != null){
-				ts.add(input.split(","));
-				count++;
-			}
+				while((input = br.readLine()) != null){
+					ts.add(input.split(","));
+					count++;
+				}
 
-			series = new String[ts.size()][ts.get(0).length];
-			gridChartCBBool = new boolean[series[0].length-1];
+				series = new String[ts.size()][ts.get(0).length];
+				gridChartCBBool = new boolean[series[0].length-1];
 
-			for(int x =0; x< gridChartCBBool.length; x++){
-				gridChartCBBool[x] = true;
-			}
+				for(int x =0; x< gridChartCBBool.length; x++){
+					gridChartCBBool[x] = true;
+				}
 
-			for(int x = 1; x < ts.size(); x++ ){
-				series[x] = ts.get(x);
-			}
-			int may1_0 = 2904;
-			int may7_24 = 3070;
+				for(int x = 1; x < ts.size(); x++ ){
+					series[x] = ts.get(x);
+				}
+				int may1_0 = 2904;
+				int may7_24 = 3070;
 
-			fillGridLineChart(may1_0, may7_24);
-			gridBeginSlider.setValue(may1_0);
-			gridEndSlider.setValue(may7_24);
+				fillGridLineChart(may1_0, may7_24);
+				gridBeginSlider.setValue(may1_0);
+				gridEndSlider.setValue(may7_24);
 
-			for(int x = 1; x < series[0].length; x++){
-				CheckBox cb = new CheckBox();
-				cb.setId(Integer.toString(x-1));
-				cb.setText(ts.get(0)[x]);
-				cb.setStyle("-fx-text-fill:"+colors.get(x-1)+";");
-				cb.setSelected(true);
-				cb.setOnAction(new OnGridCBChangeListener(){
-					@Override
-					public void handle(ActionEvent arg0) {
-						CheckBox cbNew = (CheckBox)arg0.getSource();
-						for(int x = 0; x < gridChartCBBool.length; x++){
-							if(x == Integer.parseInt(cbNew.getId())){
-								gridChartCBBool[x] = gridChartCBBool[x] ? false : true;
-								int begin = (int)gridBeginSlider.getValue();
-								int end = (int)gridEndSlider.getValue();
-								fillGridLineChart(begin, end);
+				for(int x = 1; x < series[0].length; x++){
+					CheckBox cb = new CheckBox();
+					cb.setId(Integer.toString(x-1));
+					cb.setText(ts.get(0)[x]);
+					cb.setStyle("-fx-text-fill:"+colors.get(x-1)+";");
+					cb.setSelected(true);
+					cb.setOnAction(new OnGridCBChangeListener(){
+						@Override
+						public void handle(ActionEvent arg0) {
+							CheckBox cbNew = (CheckBox)arg0.getSource();
+							for(int x = 0; x < gridChartCBBool.length; x++){
+								if(x == Integer.parseInt(cbNew.getId())){
+									gridChartCBBool[x] = gridChartCBBool[x] ? false : true;
+									int begin = (int)gridBeginSlider.getValue();
+									int end = (int)gridEndSlider.getValue();
+									fillGridLineChart(begin, end);
+								}
 							}
 						}
-					}
-				});
-				checkBoxGrid.add(cb, 0, x-1);
+					});
+					checkBoxGrid.add(cb, 0, x-1);
+				}
+			}else{
+				showErrorDialog("No Time Series Data");
 			}
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 	}
+	public static void copyFile(File sourceFile, File destFile) throws IOException {
+		if(!destFile.exists()) {
+			destFile.createNewFile();
+		}
 
+		FileChannel source = null;
+		FileChannel destination = null;
+
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		}
+		finally {
+			if(source != null) {
+				source.close();
+			}
+			if(destination != null) {
+				destination.close();
+			}
+		}
+	}
+	public void deleteFilesInDirectory(File f) throws IOException {
+		if (f.isDirectory()) {
+			for (File c : f.listFiles())
+				deleteFilesInDirectory(c);
+		}
+		if (!f.delete())
+			throw new FileNotFoundException("Failed to delete file: " + f);
+	}
 }

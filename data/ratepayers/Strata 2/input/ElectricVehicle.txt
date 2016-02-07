@@ -1,8 +1,0 @@
-ChargerType	0
-ChargingStrategy	0
-Capacity	0.0
-Efficiency	0.0
-StartingSOC	0.0
-EndingSOC	0.0
-StartTime	0
-EndTime 	0
