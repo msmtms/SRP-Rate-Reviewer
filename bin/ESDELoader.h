@@ -25,6 +25,7 @@
 #include "ElectricVehicle.h"
 #include "EnergySystem.h"
 #include "Logger.h"
+#include "RateSchedule.h"
 
 /******************************************************************************/
 struct ESDELoader {
@@ -292,13 +293,13 @@ struct ESDELoader {
             double val;
             
             fin.open( tempDir );
-            std::getline( fin, str );
+            std::getline( fin, str );            
             str.erase( 0, 17 ); // discard name, that's already set above in this function
             std::getline( fin, str );
             str.erase( 0, 15 );
             systemData.SetRateScheduleName( str );
             std::getline( fin, str );
-            str.erase( 0, 15 );
+            str.erase( 0, 21 );
             val = atof( str.c_str() );
             systemData.SetNumSystems( val );
             fin.close();
@@ -356,7 +357,173 @@ struct ESDELoader {
         
         return(systemData);
     }
+
+    static inline RateSchedule LoadRateSchedule( std::string rateDir, std::string rateScheduleName ) {
+        RateSchedule rateSchedule;
+        rateSchedule.m_name = rateScheduleName;
+        
+        std::string rateScheduleDir = rateDir + rateScheduleName + std::string( "/" );
+        
+        Logger::Instance()->writeToLogFile(std::string( "Reading in \"" ) + rateScheduleName + std::string( "\" rate schedule data from " ) + rateDir, Logger::PROCESS);
+        
+        std::string tempDir;
+        std::ifstream fin;
+        std::string str;
+        std::string tempStr;
+        std::string tempStr2;
+        size_t pos = 0;
+        size_t pos2 = 0;
+        double val;
+        int myInt;
+            
+        // read in meter.txt
+        tempDir = rateScheduleDir + std::string("meter.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+        
+            std::string delimiter = "\t";
+            
+            fin.open( tempDir );
+            
+            // net metering
+            std::getline( fin, str );   
+            pos = str.find(delimiter);
+            str.erase(0, pos + delimiter.length());
+            rateSchedule.m_netMeteringID = atoi( str.c_str() );
+            
+            // over production credit
+            std::getline( fin, str );   
+            pos = str.find(delimiter);
+            str.erase(0, pos + delimiter.length());
+            rateSchedule.m_overproductionCredit = atof( str.c_str() );
+            
+            // interconnection charge
+            std::getline( fin, str );   
+            pos = str.find(delimiter);
+            str.erase(0, pos + delimiter.length());
+            rateSchedule.m_interconnectionCharge = atof( str.c_str() );
+            
+            fin.close();
+        }
+        
+        // read in rates.txt
+        tempDir = rateScheduleDir + std::string("rates.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            
+            std::string nameDelimiter = "\t";
+            std::string chargeDelimiter = "%";
+            std::string tierDelimiter = ";";
+            std::string valueDelimiter = ",";
+            
+            fin.open( tempDir );
+            
+            pos = 0;
+            std::string token;
+            std::string tempToken;
+            
+            int id = 0;
+            
+            while( !fin.eof() ) { // until end of file
+                Rate rate;
+                
+                std::getline( fin, str ); // read in a line
+                
+                // set name of rate
+                pos = str.find(nameDelimiter);
+                rate.m_name = str.substr(0, pos);  // grab name
+                rate.m_id = id;
+                str.erase(0, pos + nameDelimiter.length()); // just take what remains
+                
+                // set energy charge
+                pos = str.find(chargeDelimiter);
+                tempStr = str.substr(0, pos);   // grab energy charge
+                str.erase(0, pos + chargeDelimiter.length()); // just take what remains
+                               
+                if( (pos = tempStr.find(tierDelimiter)) == std::string::npos ) { // not tiered
+                    pos = tempStr.find(valueDelimiter);
+                    rate.m_energyPrice.insert( std::make_pair( atof(tempStr.substr(0,pos).c_str()), atof(tempStr.substr(pos).c_str() )) );
+                }
+                else { // tiered
+                    // loop through tiers
+                    while ((pos = tempStr.find(tierDelimiter)) != std::string::npos) {
+                        pos2 = tempStr.find(valueDelimiter);
+                        rate.m_energyPrice.insert( std::make_pair( atof(tempStr.substr(0,pos2).c_str()), atof(tempStr.substr(pos2 + valueDelimiter.length(),pos-pos2).c_str() )) );
+                        
+                        tempStr.erase(0, pos + tierDelimiter.length());
+                        if( tempStr.size() > 0 ) {
+                            tempToken = tempStr;
+                        }
+                    }
+                    // add info from last tier
+                    tempStr = tempToken;
+                    pos2 = tempStr.find(valueDelimiter);
+                    rate.m_energyPrice.insert( std::make_pair( atof(tempStr.substr(0,pos2).c_str()), atof(tempStr.substr(pos2 + valueDelimiter.length()).c_str() )) );
+                }
+                
+                // set feed-in tariff
+                pos = str.find(chargeDelimiter);
+                tempStr = str.substr(0, pos);   // grab feed-in tariff charge
+                str.erase(0, pos + chargeDelimiter.length()); // just take what remains
+                
+                if( (pos = tempStr.find(tierDelimiter)) == std::string::npos ) { // not tiered
+                    pos = tempStr.find(valueDelimiter);
+                    rate.m_feedinTariff.insert( std::make_pair( atof(tempStr.substr(0,pos).c_str()), atof(tempStr.substr(pos).c_str() )) );
+                }
+                else { // tiered
+                    // loop through tiers
+                    while ((pos = tempStr.find(tierDelimiter)) != std::string::npos) {
+                        pos2 = tempStr.find(valueDelimiter);
+                        rate.m_feedinTariff.insert( std::make_pair( atof(tempStr.substr(0,pos2).c_str()), atof(tempStr.substr(pos2 + valueDelimiter.length(),pos-pos2).c_str() )) );
+                        
+                        tempStr.erase(0, pos + tierDelimiter.length());
+                        if( tempStr.size() > 0 ) {
+                            tempToken = tempStr;
+                        }
+                    }
+                    // add info from last tier
+                    tempStr = tempToken;
+                    pos2 = tempStr.find(valueDelimiter);
+                    rate.m_feedinTariff.insert( std::make_pair( atof(tempStr.substr(0,pos2).c_str()), atof(tempStr.substr(pos2 + valueDelimiter.length()).c_str() )) );
+                }
+                
+                // set demand charge
+                tempStr = str;   // last remaining section of the line is the demand charge
+                if( (pos = tempStr.find(tierDelimiter)) == std::string::npos ) { // not tiered
+                    pos = tempStr.find(valueDelimiter);
+                    rate.m_demandCharge.insert( std::make_pair( atof(tempStr.substr(0,pos).c_str()), atof(tempStr.substr(pos).c_str() )) );
+                }
+                else { // tiered
+                    // loop through tiers
+                    while ((pos = tempStr.find(tierDelimiter)) != std::string::npos) {
+                        pos2 = tempStr.find(valueDelimiter);
+                        rate.m_demandCharge.insert( std::make_pair( atof(tempStr.substr(0,pos2).c_str()), atof(tempStr.substr(pos2 + valueDelimiter.length(),pos-pos2).c_str() )) );
+                        
+                        tempStr.erase(0, pos + tierDelimiter.length());
+                        if( tempStr.size() > 0 ) {
+                            tempToken = tempStr;
+                        }
+                    }
+                    // add info from last tier
+                    tempStr = tempToken;
+                    pos2 = tempStr.find(valueDelimiter);
+                    rate.m_demandCharge.insert( std::make_pair( atof(tempStr.substr(0,pos2).c_str()), atof(tempStr.substr(pos2 + valueDelimiter.length()).c_str() )) );
+                }
+
+                ++id; // increment to next rate ID
+                
+                rateSchedule.m_rates.insert( std::make_pair( id, rate) );
+
+                
+            }
+            fin.close();
+        }
+        
+        // TODO: read in monthly.txt    
+        
+        return(rateSchedule);
+    }
+
 };
+
 
 #endif	/* ESDELOADER_H */
 

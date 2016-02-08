@@ -665,6 +665,33 @@ void EnergySystem::CalculateSummaryData() {
     for( iterElectricVehicle=m_electricVehicle.begin(); iterElectricVehicle!=m_electricVehicle.end(); ++iterElectricVehicle ) {
         iterElectricVehicle->second->CalculateLoadPortion( totalLoad );
     }
+    
+    // calculate financials
+    // TODO: this is a hack for time being, use only net load info
+    m_interconnectionCharges = m_rateSchedule.m_interconnectionCharge * 12.0;
+    
+    double avgEnergyCost = 0;
+    double avgDemandCost = 0;
+    double count = 0;
+    std::map<int,Rate>::iterator iter;
+    for( iter=m_rateSchedule.m_rates.begin(); iter!=m_rateSchedule.m_rates.end(); ++iter ) {
+        avgEnergyCost += iter->second.m_energyPrice.begin()->first;
+        avgDemandCost += iter->second.m_demandCharge.begin()->first;
+        ++count;
+    }
+    avgEnergyCost /= count;
+    avgDemandCost /= count;
+    
+    if( m_totalEnergyNet > 0 ) {
+        m_energyCharges = m_totalEnergyNet * avgEnergyCost;  // TODO: not right, just average energy cost
+    }
+    else if( m_totalEnergyNet < 0 ) { // sell back at overproduction credit
+        m_energyCharges = m_totalEnergyNet * m_rateSchedule.m_overproductionCredit;
+        
+    }
+    m_demandCharges = avgDemandCost * m_maxLoadServed * 6.0; // TODO: this just equates over 1/2 of year to get approximate value... which is not right
+
+    m_totalCharges = m_energyCharges + m_demandCharges + m_interconnectionCharges;
 }
 
 void EnergySystem::CalculateGridSummaryData() {

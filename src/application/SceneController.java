@@ -691,9 +691,7 @@ public class SceneController extends AnchorPane{
 							Optional<String> result = dialog.showAndWait();
 							if (result != null){
 								try{
-									System.out.println(rateSchedules.get(ratesScheduleIndex).getRates().get(rateTable.getSelectionModel().getSelectedIndex()).getPrice());
 									c.setText(result.get());
-									System.out.println(rateSchedules.get(ratesScheduleIndex).getRates().get(rateTable.getSelectionModel().getSelectedIndex()).getPrice());
 								}catch(NoSuchElementException e){
 									e.printStackTrace();
 								}
@@ -3496,77 +3494,6 @@ public class SceneController extends AnchorPane{
 				s.add(new XYChart.Series<>("DNI",ss));
 				solarGraph.setData(s);
 
-				values = new String[14];
-				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnection.txt");
-				br = new BufferedReader(new FileReader(file));
-				count = 0;
-				while((input = br.readLine()) != null){
-					if(count < 14){
-						tmp = input.split(" ");
-						try{
-							values[count] = tmp[tmp.length-1];
-						}catch (Exception e){
-							values[count] = "0.0";
-						}
-					}
-					count++;
-				}
-
-				dValues = new double[12];
-				try{
-					dValues[0] = Double.parseDouble(values[0]);
-					dValues[1] = Double.parseDouble(values[1]);
-					dValues[2] = Double.parseDouble(values[2]);
-					dValues[3] = Double.parseDouble(values[4]);
-					dValues[4] = Double.parseDouble(values[5]);
-					dValues[5] = Double.parseDouble(values[6]);
-					dValues[6] = Double.parseDouble(values[7]);
-					dValues[7] = Double.parseDouble(values[8]);
-					dValues[8] = Double.parseDouble(values[10]);
-					dValues[9] = Double.parseDouble(values[11]);
-					dValues[10] = Double.parseDouble(values[12]);
-					dValues[11] = Double.parseDouble(values[13]);
-				}catch(NumberFormatException e){
-
-				}
-
-				rpg.setInterconOut(dValues);
-				
-				values = new String[14];
-				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnectionTotal.txt");
-				br = new BufferedReader(new FileReader(file));
-				count = 0;
-				while((input = br.readLine()) != null){
-					if(count < 14){
-						tmp = input.split(" ");
-						try{
-							values[count] = tmp[tmp.length-1];
-						}catch (Exception e){
-							values[count] = "0.0";
-						}
-					}
-					count++;
-				}
-
-				dValues = new double[12];
-				try{
-					dValues[0] = Double.parseDouble(values[0]);
-					dValues[1] = Double.parseDouble(values[1]);
-					dValues[2] = Double.parseDouble(values[2]);
-					dValues[3] = Double.parseDouble(values[4]);
-					dValues[4] = Double.parseDouble(values[5]);
-					dValues[5] = Double.parseDouble(values[6]);
-					dValues[6] = Double.parseDouble(values[7]);
-					dValues[7] = Double.parseDouble(values[8]);
-					dValues[8] = Double.parseDouble(values[10]);
-					dValues[9] = Double.parseDouble(values[11]);
-					dValues[10] = Double.parseDouble(values[12]);
-					dValues[11] = Double.parseDouble(values[13]);
-				}catch(NumberFormatException e){
-
-				}
-
-				rpg.setGridOut(dValues);
 				if(numStrataCalc == numStrataCalcMax){
 					CalcProcess cp = new CalcProcess(File.separator + "Ratepayers" + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() + ",102", this);
 					cp.run();
@@ -3626,6 +3553,82 @@ public class SceneController extends AnchorPane{
 				list.add(session.getGrid().getName());
 				for(int x = 0; x < rpGroupList.size(); x++){
 					list.add(rpGroupList.get(x));
+					ObservableList<RatepayerGroup> rpgs = session.getRpGroups();
+					RatepayerGroup rpg = rpgs.get(x);
+					values = new String[14];
+					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnection.txt");
+					if(file.exists()){
+						br = new BufferedReader(new FileReader(file));
+						count = 0;
+						while((input = br.readLine()) != null){
+							if(count < 14){
+								tmp = input.split(" ");
+								try{
+									values[count] = tmp[tmp.length-1];
+								}catch (Exception e){
+									values[count] = "0.0";
+								}
+							}
+							count++;
+						}
+
+						dValues = new double[12];
+						try{
+							dValues[0] = Double.parseDouble(values[0]);
+							dValues[1] = Double.parseDouble(values[1]);
+							dValues[2] = Double.parseDouble(values[2]);
+							dValues[3] = Double.parseDouble(values[4]);
+							dValues[4] = Double.parseDouble(values[5]);
+							dValues[5] = Double.parseDouble(values[6]);
+							dValues[6] = Double.parseDouble(values[7]);
+							dValues[7] = Double.parseDouble(values[8]);
+							dValues[8] = Double.parseDouble(values[10]);
+							dValues[9] = Double.parseDouble(values[11]);
+							dValues[10] = Double.parseDouble(values[12]);
+							dValues[11] = Double.parseDouble(values[13]);
+						}catch(NumberFormatException e){
+							e.printStackTrace();
+						}
+						rpg.setInterconOut(dValues);
+					}
+
+					values = new String[14];
+					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "GridInterconnectionTotal.txt");
+					if(file.exists()){
+						br = new BufferedReader(new FileReader(file));
+						count = 0;
+						while((input = br.readLine()) != null){
+							if(count < 14){
+								tmp = input.split(" ");
+								try{
+									values[count] = tmp[tmp.length-1];
+								}catch (Exception e){
+									values[count] = "0.0";
+								}
+							}
+							count++;
+						}
+
+						dValues = new double[12];
+						try{
+							dValues[0] = Double.parseDouble(values[0]);
+							dValues[1] = Double.parseDouble(values[1]);
+							dValues[2] = Double.parseDouble(values[2]);
+							dValues[3] = Double.parseDouble(values[4]);
+							dValues[4] = Double.parseDouble(values[5]);
+							dValues[5] = Double.parseDouble(values[6]);
+							dValues[6] = Double.parseDouble(values[7]);
+							dValues[7] = Double.parseDouble(values[8]);
+							dValues[8] = Double.parseDouble(values[10]);
+							dValues[9] = Double.parseDouble(values[11]);
+							dValues[10] = Double.parseDouble(values[12]);
+							dValues[11] = Double.parseDouble(values[13]);
+						}catch(NumberFormatException e){
+							e.printStackTrace();
+						}
+
+						rpg.setGridOut(dValues);
+					}
 				}
 				gridStrataCB.setItems(list);
 				gridStrataCB.getSelectionModel().select(0);

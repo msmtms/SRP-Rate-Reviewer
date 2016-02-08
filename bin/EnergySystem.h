@@ -25,6 +25,7 @@
 #include "Converter.h"
 #include "Battery.h"
 #include "ElectricVehicle.h"
+#include "RateSchedule.h"
 
 /** TODO
  o converter
@@ -103,6 +104,8 @@ public: // data io
     inline std::string &GetEnergyNetName() {return(m_energyNetName);}
     inline void SetRateScheduleName( std::string name ) {m_rateScheduleName = name;}
     inline std::string &GetRateScheduleName() {return(m_rateScheduleName);}
+    inline void SetRateSchedule( RateSchedule &schedule ) {m_rateSchedule = schedule;}
+    inline RateSchedule &GetRateSchedule() {return(m_rateSchedule);}
     inline void SetNumSystems( double num ) {m_numSystems = num;}
     inline double &GetNumSystems() {return(m_numSystems);}
     
@@ -113,6 +116,16 @@ public: // data io
     
     void CalculateSummaryData();
     void CalculateGridSummaryData();
+    
+    double GetGridTotalCharges() { return( m_totalCharges * m_numSystems ); }
+    double GetGridEnergyCharges() { return( m_energyCharges * m_numSystems ); }
+    double GetGridDemandCharges() { return( m_demandCharges * m_numSystems ); }
+    double GetGridInterconnectionCharges() { return( m_interconnectionCharges * m_numSystems ); }
+    
+    void AddToGridTotalCharges( double val ) { m_totalCharges += val; }
+    void AddToGridEnergyCharges( double val ) { m_energyCharges += val; }
+    void AddToGridDemandCharges( double val ) { m_demandCharges += val; }
+    void AddToGridInerconnectionCharges( double val ) { m_interconnectionCharges += val; }
     
     bool OutputSummaryDataToFile();
     bool OutputSummaryDataToFile( std::string &fname );
@@ -158,6 +171,7 @@ private:
     std::vector<double>::iterator m_iterEnergyNet;
     std::string m_energyNetName;
     std::string m_rateScheduleName;
+    RateSchedule m_rateSchedule;
     
     double m_numSystems;
     std::vector<double> m_allSystemsTotalLoad;
