@@ -2018,6 +2018,8 @@ public class SceneController extends AnchorPane{
 			}
 			file = new File("." + File.separator + "data" + File.separator + "Grid" + File.separator + "output");
 			file.mkdirs();
+			file = new File("." + File.separator + "data" + File.separator + "logger");
+			file.mkdirs();
 			String nl = System.lineSeparator();
 			file = new File("." + File.separator + "data" + File.separator + "Location.txt");
 			if(!file.exists()){
