@@ -25,6 +25,7 @@
 #include "ElectricVehicle.h"
 #include "EnergySystem.h"
 #include "Logger.h"
+//#include "RateSchedule.h"
 
 /******************************************************************************/
 struct ESDELoader {
@@ -292,13 +293,13 @@ struct ESDELoader {
             double val;
             
             fin.open( tempDir );
-            std::getline( fin, str );
+            std::getline( fin, str );            
             str.erase( 0, 17 ); // discard name, that's already set above in this function
             std::getline( fin, str );
             str.erase( 0, 15 );
             systemData.SetRateScheduleName( str );
             std::getline( fin, str );
-            str.erase( 0, 15 );
+            str.erase( 0, 21 );
             val = atof( str.c_str() );
             systemData.SetNumSystems( val );
             fin.close();
@@ -357,6 +358,28 @@ struct ESDELoader {
         return(systemData);
     }
 };
+//
+//
+//static inline RateSchedule LoadRateSchedule( std::string ratescheduleDir, std::string rateScheduleName ) {
+//    //            
+////            std::string testStr = str;
+////            std::string delimiter = "\t";
+////            
+////            std::cout << testStr << "\n";
+////            size_t pos = 0;
+////            std::string token;
+////            std::string tempToken;
+////            while ((pos = testStr.find(delimiter)) != std::string::npos) {
+////                token = testStr.substr(0, pos);
+////                testStr.erase(0, pos + delimiter.length());
+////                if( testStr.size() > 0 ) {
+////                    tempToken = testStr;
+////                }
+////            }
+////            testStr = tempToken; // just in case there is a "/" at end of input dir, which there should be
+////            std::cout << testStr << "\n";
+//}
+
 
 #endif	/* ESDELOADER_H */
 

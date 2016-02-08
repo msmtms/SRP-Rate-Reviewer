@@ -1,0 +1,3 @@
+Ratepayer Group:	s1
+Rate Schedule:	E-26
+Number of Customers:	15000
