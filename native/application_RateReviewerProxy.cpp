@@ -174,6 +174,19 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 
 		// Step 2: add information on rates
 		// TODO -- read in rate data here?
+		std::string rateDir = dataDir + "Rates/";
+		std::map< std::string, RateSchedule > rateSchedules;
+
+		std::vector< std::string > rateScheduleNames;
+		rateScheduleNames.push_back(std::string("E-23"));
+		rateScheduleNames.push_back(std::string("E-26"));
+		rateScheduleNames.push_back(std::string("E-27"));
+		rateScheduleNames.push_back(std::string("E-29"));
+		rateScheduleNames.push_back(std::string("EZ-3 (E-21)"));
+
+		for (size_t i = 0; i<rateScheduleNames.size(); ++i) {
+			rateSchedules.insert(std::make_pair(rateScheduleNames.at(i), ESDELoader::LoadRateSchedule(rateDir, rateScheduleNames.at(i))));
+		}
 
 		// Step 3: read in ratepayer names and then read in ratepayer data
 		std::vector< std::string > ratepayerNames;
@@ -198,6 +211,10 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 			std::cout << "Compiling Strata..." << std::endl;
 			// this adds a blank solar resource, only if there is solar PV --> shows that solar PV output is zero but still also prints informatino to file
 			energySystems.insert(std::make_pair(ratepayerNames.at(i), ESDELoader::LoadEnergySystem(ratepayerDir, ratepayerNames.at(i), dataSolarResource)));
+
+			// add rate schedule
+			std::string rateScheduleName = energySystems[ratepayerNames.at(i)].GetRateScheduleName();
+			energySystems[ratepayerNames.at(i)].SetRateSchedule(rateSchedules[rateScheduleName]);
 		}
 
 		// Step 4: calculate energy systems and print to file
@@ -228,16 +245,22 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 
 		for (iterSystems = energySystems.begin(); iterSystems != energySystems.end(); ++iterSystems) {
 			// add ratepayer total load data to grid system... 1 = total load
-			gridSystem.GetImmediateLoad(1)->AddLoadToTimeseries(iterSystems->second.GetImmediateLoad()->GetLoadServed());
+			gridSystem.GetImmediateLoad(1)->AddLoadToTimeseries(iterSystems->second.GetAllSystemsTotalLoad());
 
 			// add ratepayer net load data to grid system... 2 = net load
-			gridSystem.GetImmediateLoad(2)->AddLoadToTimeseries(iterSystems->second.GetEnergyNet());
+			gridSystem.GetImmediateLoad(2)->AddLoadToTimeseries(iterSystems->second.GetAllSystemsNetLoad());
 
 			// copy ratepayer net load data
 			ImmediateLoadData loadData;
-			loadData.SetLoadServed(iterSystems->second.GetEnergyNet());
+			loadData.SetLoadServed(iterSystems->second.GetAllSystemsNetLoad());
 			loadData.m_identTimeseries.m_objectName = iterSystems->second.GetName() + std::string(" total load");
 			gridSystem.AddImmediateLoad(loadData);
+
+			// add cost data
+			gridSystem.AddToGridTotalCharges(iterSystems->second.GetGridTotalCharges());
+			gridSystem.AddToGridEnergyCharges(iterSystems->second.GetGridEnergyCharges());
+			gridSystem.AddToGridDemandCharges(iterSystems->second.GetGridDemandCharges());
+			gridSystem.AddToGridInerconnectionCharges(iterSystems->second.GetGridInterconnectionCharges());
 		}
 
 		// calculate grid summary data
