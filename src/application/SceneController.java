@@ -424,31 +424,16 @@ public class SceneController extends AnchorPane{
 		colors.add("gold");
 		colors.add("beige");
 		colors.add("brown");
-		colors.add("forestgreen");
 		colors.add("aquamarine");
 		colors.add("grey");
+		colors.add("maroon");
 		colors.add("lime");
 		colors.add("yellow");
-		colors.add("maroon");
+		colors.add("forestgreen");
 	}
 
 	@SuppressWarnings("unchecked")
 	private void initRatepayers(){
-		rpGroups = FXCollections.observableArrayList();
-		session.setRpGroups(rpGroups);
-		rpGroupList = FXCollections.observableArrayList();
-		RatepayerGroup rpg1 = new RatepayerGroup();
-		rpg1.setName("Strata 1");
-		rpg1.setNum("15000");
-		RatepayerGroup rpg2 = new RatepayerGroup();
-		rpg2.setName("Strata 2");
-		rpg2.setNum("20000");
-		rpGroups.add(rpg1);
-		rpGroups.add(rpg2);
-		rpGroupList.addAll("Strata 1", "Strata 2");
-		rpGroupIndex = -1;
-		rpStrataCB.setItems(rpGroupList);
-		gridStrataCB.setItems(rpGroupList);
 		ObservableList<String> l1 = FXCollections.observableArrayList();
 		l1.addAll("Level 1", "Level 2");
 		rpEVChargerCB.setItems(l1);
