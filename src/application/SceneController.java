@@ -1633,6 +1633,9 @@ public class SceneController extends AnchorPane{
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
 					rateTitles.add(text1.getText());
+					RateSchedule rs = new RateSchedule();
+					rs.setName(text1.getText());
+					rateSchedules.add(rs);
 				}
 				return null;
 			}
@@ -1661,6 +1664,10 @@ public class SceneController extends AnchorPane{
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
 					rateTitles.add(text1.getText());
+					// TODO : Rate Schedule Copy
+					RateSchedule rs = new RateSchedule();
+					rs.setName(text1.getText());
+					rateSchedules.add(rs);
 				}
 				return null;
 			}
@@ -2043,11 +2050,11 @@ public class SceneController extends AnchorPane{
 
 			for(int x = 0; x < rateSchedules.size(); x++){
 				RateSchedule rs = rateSchedules.get(x);
-				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName());
+				file = new File("." + File.separator + "data" + File.separator + "Rates" + File.separator + rs.getName());
 				if(!file.exists()){
 					file.mkdirs();
 				}
-				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName() + File.separator + "rates.txt");
+				file = new File("." + File.separator + "data" + File.separator + "Rates" + File.separator + rs.getName() + File.separator + "rates.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}
@@ -2090,7 +2097,7 @@ public class SceneController extends AnchorPane{
 				}
 				fr.close();
 
-				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName() + File.separator + "monthly.txt");
+				file = new File("." + File.separator + "data" + File.separator + "Rates" + File.separator + rs.getName() + File.separator + "monthly.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}
@@ -2112,7 +2119,7 @@ public class SceneController extends AnchorPane{
 
 				fr.close();
 
-				file = new File("." + File.separator + "data" + File.separator + "rates" + File.separator + rs.getName() + File.separator + "meter.txt");
+				file = new File("." + File.separator + "data" + File.separator + "Rates" + File.separator + rs.getName() + File.separator + "meter.txt");
 				if(!file.exists()){
 					file.createNewFile();
 				}

@@ -1,0 +1,3 @@
+Ratepayer Group:	Strata 1
+Rate Schedule:	EZ-3 (E-21)
+Number of Customers:	15000
