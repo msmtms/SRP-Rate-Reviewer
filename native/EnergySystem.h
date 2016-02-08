@@ -101,6 +101,11 @@ public: // data io
     inline std::string &GetName() {return(m_systemName);}
     inline void SetEnergyNetName( std::string name ) {m_energyNetName = name;}
     inline std::string &GetEnergyNetName() {return(m_energyNetName);}
+    inline void SetRateScheduleName( std::string name ) {m_rateScheduleName = name;}
+    inline std::string &GetRateScheduleName() {return(m_rateScheduleName);}
+    inline void SetNumSystems( double num ) {m_numSystems = num;}
+    inline double &GetNumSystems() {return(m_numSystems);}
+    
     inline void SetOutputDirectory( std::string dir ) {m_outputDir = dir;}
     inline std::string &GetOutputDirectory() {return(m_outputDir);}
     inline void SetInputDirectory( std::string dir ) {m_inputDir = dir;}
@@ -121,6 +126,8 @@ public: // data io
     bool OutputGridTimeseriesDataToFile( std::string &fname, bool includeHeader = true );
     
     std::vector<double>& GetEnergyNet() {return(m_energyNet);}
+    std::vector<double>& GetAllSystemsTotalLoad() {return(m_allSystemsTotalLoad);}
+    std::vector<double>& GetAllSystemsNetLoad() {return(m_allSystemsNetLoad);}
     
 private:
     
@@ -151,7 +158,10 @@ private:
     std::vector<double>::iterator m_iterEnergyNet;
     std::string m_energyNetName;
     std::string m_rateScheduleName;
+    
     double m_numSystems;
+    std::vector<double> m_allSystemsTotalLoad;
+    std::vector<double> m_allSystemsNetLoad;
     
     double m_totalEnergyIn;         /**< Total energy into the system from the grid or external source [kWh/period]. */
     double m_totalEnergyOut;        /**< Total energy out of the system from the grid or external source [kWh/period]. */

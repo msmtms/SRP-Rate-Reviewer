@@ -88,9 +88,9 @@ EnergySystem::EnergySystem( unsigned int id, std::string inputDir ) {
     }
     s = tempToken; // just in case there is a "/" at end of input dir, which there should be
 
-	m_outputDir = std::string("./data/");
-	m_outputDir.append(inputDir);
-	m_outputDir.append("/output/");
+    m_outputDir = std::string("./data/");
+    m_outputDir.append(inputDir);
+    m_outputDir.append("/output/");
     
     m_rateScheduleName = std::string( "" );
     m_numSystems = 1;
@@ -116,6 +116,8 @@ void EnergySystem::Init(unsigned int numTimesteps) {
     if( m_energyNet.size() == 0 ) {
         std::vector<double> tmp( m_numTimesteps, 0.0);
         m_energyNet = tmp;
+        m_allSystemsTotalLoad = tmp;
+        m_allSystemsNetLoad = tmp;
     }
     m_iterEnergyNet = m_energyNet.begin();
     
@@ -621,6 +623,13 @@ void EnergySystem::CalculateSummaryData() {
         }
     }
     m_totalEnergyNet = m_totalEnergyIn - m_totalEnergyOut;
+    
+    // loop through and calculate for grid information
+    std::vector< double > totalLoadServed = GetImmediateLoad()->GetLoadServed();
+    for( unsigned int i=0; i<m_numTimesteps; ++i ) {
+        m_allSystemsTotalLoad.at(i) = totalLoadServed.at(i) * m_numSystems;
+        m_allSystemsNetLoad.at(i) = m_energyNet.at(i) * m_numSystems;
+    }
     
     // other summary information
     

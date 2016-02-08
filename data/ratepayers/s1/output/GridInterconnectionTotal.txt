@@ -1,0 +1,14 @@
+Energy purchased [kWh/period]: 0
+Energy sold [kWh/period]: 0
+Net purchases [kWh/period]: 0
+
+Peak load served [kW]: 0
+Average load served [kW]: 0
+Energy use [kWh/day]: 0
+Energy use [kWh/period]: 0
+Load factor [-]: 0.115549
+
+Total charges [$/y]: 0
+Energy charges [$/y]: 0
+Demand charges [$/y]: 0
+Interconnection charges [$/y]: 0

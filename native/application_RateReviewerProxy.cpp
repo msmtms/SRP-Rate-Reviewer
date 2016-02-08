@@ -251,7 +251,6 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 		gridSystem.OutputGridSummaryDataToFile();
 		// TODO: calculate grid summary information        
 	}
-	delete in;
 	const char *out = input;
 	jstring output = env->NewStringUTF(out);
 	return output;

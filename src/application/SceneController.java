@@ -434,6 +434,10 @@ public class SceneController extends AnchorPane{
 
 	@SuppressWarnings("unchecked")
 	private void initRatepayers(){
+		rpGroups = FXCollections.observableArrayList();
+		rpGroupList = FXCollections.observableArrayList();
+		session.setRpGroups(rpGroups);
+		rpStrataCB.setItems(rpGroupList);
 		ObservableList<String> l1 = FXCollections.observableArrayList();
 		l1.addAll("Level 1", "Level 2");
 		rpEVChargerCB.setItems(l1);
@@ -3430,7 +3434,6 @@ public class SceneController extends AnchorPane{
 				}
 				rpg.setLoadOut(dValues);
 
-
 				values = new String[8];
 				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarPV.txt");
 				br = new BufferedReader(new FileReader(file));
@@ -3564,7 +3567,6 @@ public class SceneController extends AnchorPane{
 				}
 
 				rpg.setGridOut(dValues);
-
 				if(numStrataCalc == numStrataCalcMax){
 					CalcProcess cp = new CalcProcess(File.separator + "Ratepayers" + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() + ",102", this);
 					cp.run();

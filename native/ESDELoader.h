@@ -14,6 +14,7 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "SolarResourceData.h"
 #include "ImmediateLoadData.h"
@@ -280,8 +281,33 @@ struct ESDELoader {
         
         Logger::Instance()->writeToLogFile(std::string( "Reading in \"" ) + ratepayerName + std::string( "\" data from " ) + inputDir, Logger::PROCESS);
         
-        // load data
+
         std::string tempDir;
+        
+        tempDir = inputDir + std::string("rpg.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            
+            std::ifstream fin;
+            std::string str;
+            double val;
+            
+            fin.open( tempDir );
+            std::getline( fin, str );
+            str.erase( 0, 17 ); // discard name, that's already set above in this function
+            std::getline( fin, str );
+            str.erase( 0, 15 );
+            systemData.SetRateScheduleName( str );
+            std::getline( fin, str );
+            str.erase( 0, 15 );
+            val = atof( str.c_str() );
+            systemData.SetNumSystems( val );
+            fin.close();
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Energy system \"" ) + ratepayerName + std::string( "\" is missing \"rpg.txt\"" ), Logger::PROCESS);
+        }
+        
+        
         tempDir = inputDir + std::string("Load.txt");
         if( std::ifstream(tempDir.c_str()).good() ) {
             ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput( tempDir );
