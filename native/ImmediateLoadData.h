@@ -18,6 +18,7 @@
 
 #include "ESDEConstants.h"
 #include "ESDEObjectData.h"
+#include "Logger.h"
 
 struct ImmediateLoadInput : public ESDEObjectInput {
 
@@ -184,11 +185,35 @@ public:
 //        fout << m_loadCurtailed.at(time) << ",";
 //        fout << m_loadUnmet.at(time) << ",";
     }
+    inline void OutputTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_loadRequested.at(time) * numSystems << ",";
+        fout << m_loadServed.at(time) * numSystems << ",";
+//        fout << m_loadCurtailed.at(time) << ",";
+//        fout << m_loadUnmet.at(time) << ",";
+    }
     inline void OutputSimpleTimeseriesHeaderToFile( std::ofstream &fout ) {
-        fout << "Load,";
+        if( m_identTimeseries.m_objectName.size() > 0 ) {
+            fout << m_identTimeseries.m_objectName.c_str() << ",";
+        }
+        else {
+            fout << "Total load,";
+        }
     }
     inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time ) {
         fout << m_loadServed.at(time) << ",";
+    }
+    inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_loadServed.at(time) * numSystems << ",";
+    }
+    inline void AddLoadToTimeseries( std::vector<double> &load ) {
+        if( m_loadServed.size() == load.size() ) {
+            for( size_t i=0; i<m_loadServed.size(); ++i ) {
+                m_loadServed.at(i) += load.at(i);
+            }
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Load array sizes do not match and cannot be added to Grid" ), Logger::ERROR);
+        }
     }
     
 public: // accessors
@@ -292,16 +317,20 @@ public:
     inline void OutputSummaryToFile( std::string &path ) {
         // construct path name, use name if available, or object ID if not
         std::string dir = path;
-        if( m_identSummary.m_objectName.size() > 0 ) {
-            dir += "";
-            dir += m_identSummary.m_objectName;
-            dir += ".txt";
-        }
-        else {
-            dir += "";
-            dir += std::to_string( m_identSummary.m_objectID );
-            dir += ".txt";
-        }
+        
+        // TODO: this is an override for now
+        dir += "Load.txt";
+            
+//        if( m_identSummary.m_objectName.size() > 0 ) {
+//            dir += "";
+//            dir += m_identSummary.m_objectName;
+//            dir += ".txt";
+//        }
+//        else {
+//            dir += "";
+//            dir += std::to_string( m_identSummary.m_objectID );
+//            dir += ".txt";
+//        }
         
         // output to file
         std::ofstream fout;

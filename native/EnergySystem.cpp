@@ -19,6 +19,7 @@
 #include "ImmediateLoadData.h"
 #include "SolarPV.h"
 #include "SolarResource.h"
+#include "ESDEMath.h"
 
 
 /**
@@ -26,11 +27,20 @@
  */
 EnergySystem::EnergySystem() {
     SetObjectType( ID_ENERGY_SYSTEM );
-    m_currentObjectID = 1; // begin at 1, 0 means that it hasn't been assigned
+    m_currentObjectID = 0; // this will start IDs at 1, 0 means that it nothing has been assigned
+    m_energyNetName = std::string( "Net load");
     
     // default directories (works for a single system)
     m_inputDir = std::string("./data/input/");
     m_outputDir = std::string("./data/output/");
+    
+    m_rateScheduleName = std::string( "" );
+    m_numSystems = 1;
+    
+    m_totalCharges = 0;
+    m_energyCharges = 0;
+    m_demandCharges = 0;
+    m_interconnectionCharges = 0;
     
     //m_ESDEModelSettingsInput->m_identInput.m_objectID = m_currentObjectID; this is messy
 }
@@ -38,17 +48,26 @@ EnergySystem::EnergySystem( unsigned int id ) {
     SetObjectType( ID_ENERGY_SYSTEM );
     SetObjectID( id );
     m_currentObjectID = 1; // begin at 1, 0 means that it hasn't been assigned
+    m_energyNetName = std::string( "Net load");
     
     // default directories (works for a single system)
     m_inputDir = std::string("./data/input/");
     m_outputDir = std::string("./data/output/");
     
+    m_rateScheduleName = std::string( "" );
+    m_numSystems = 1;
+    
+    m_totalCharges = 0;
+    m_energyCharges = 0;
+    m_demandCharges = 0;
+    m_interconnectionCharges = 0;
     //m_ESDEModelSettingsInput->m_identInput.m_objectID = m_currentObjectID; this is messy
 }
 EnergySystem::EnergySystem( unsigned int id, std::string inputDir ) {
     SetObjectType( ID_ENERGY_SYSTEM );
     SetObjectID( id );
     m_currentObjectID = 1; // begin at 1, 0 means that it hasn't been assigned
+    m_energyNetName = std::string( "Net load");
     
     // default directories (works for a single system)
     m_inputDir = inputDir;
@@ -69,9 +88,17 @@ EnergySystem::EnergySystem( unsigned int id, std::string inputDir ) {
     }
     s = tempToken; // just in case there is a "/" at end of input dir, which there should be
 
-    m_outputDir = std::string("./data/");
-    m_outputDir.append( inputDir );
-    m_outputDir.append( "/output/" );
+	m_outputDir = std::string("./data/");
+	m_outputDir.append(inputDir);
+	m_outputDir.append("/output/");
+    
+    m_rateScheduleName = std::string( "" );
+    m_numSystems = 1;
+    
+    m_totalCharges = 0;
+    m_energyCharges = 0;
+    m_demandCharges = 0;
+    m_interconnectionCharges = 0;
 }
 
 /**
@@ -595,6 +622,18 @@ void EnergySystem::CalculateSummaryData() {
     }
     m_totalEnergyNet = m_totalEnergyIn - m_totalEnergyOut;
     
+    // other summary information
+    
+    // TODO: this is a hack, not sure why m_timestepHourlyFraction resets to 0.0
+    m_timestepHourlyFraction = 1.0;
+    
+    SummaryStatistics netSummary = CalculateSummaryStatistics( m_energyNet, true );
+    m_maxLoadServed = netSummary.max;
+    m_avgLoadServed = netSummary.mean;
+    m_totalLoadServedPeriod = netSummary.total * m_timestepHourlyFraction;
+    m_totalLoadServedDay = m_totalLoadServedPeriod / 365.0;
+    m_loadFactor = m_avgLoadServed / m_maxLoadServed;  
+    
     // only one load, this will work for now
     double avgLoad = 0.0;
     double totalLoad = 0.0;
@@ -619,6 +658,36 @@ void EnergySystem::CalculateSummaryData() {
     }
 }
 
+void EnergySystem::CalculateGridSummaryData() {
+    std::vector< double > netLoad = GetImmediateLoad( 2 )->GetLoadServed(); // 2 = grid net load
+    
+    // net load information
+    m_totalEnergyIn = 0;
+    m_totalEnergyOut = 0;
+    m_totalEnergyNet = 0;
+    for( unsigned int i=0; i<m_numTimesteps; ++i ) {
+        if( netLoad.at(i) > 0 ) {
+            m_totalEnergyIn += netLoad.at(i);
+        }
+        else {
+            m_totalEnergyOut += -1.0 * netLoad.at(i);
+        }
+    }
+    m_totalEnergyNet = m_totalEnergyIn - m_totalEnergyOut;
+    
+    // other summary information
+    
+    // TODO: this is a hack, not sure why m_timestepHourlyFraction resets to 0.0
+    m_timestepHourlyFraction = 1.0;
+    
+    SummaryStatistics netSummary = CalculateSummaryStatistics( netLoad, true );
+    m_maxLoadServed = netSummary.max;
+    m_avgLoadServed = netSummary.mean;
+    m_totalLoadServedPeriod = netSummary.total * m_timestepHourlyFraction;
+    m_totalLoadServedDay = m_totalLoadServedPeriod / 365.0;
+    m_loadFactor = m_avgLoadServed / m_maxLoadServed;  
+}
+
 // data io
 bool EnergySystem::OutputSummaryDataToFile() {
     OutputSummaryDataToFile(m_outputDir);
@@ -627,8 +696,7 @@ bool EnergySystem::OutputSummaryDataToFile() {
 
 bool EnergySystem::OutputSummaryDataToFile( std::string &fname ) {
     
-       
-    // construct path name, use name if available, or object ID if not
+    // energy system summary information (single customer)
     std::string dir = fname + "GridInterconnection.txt";
     std::ofstream fout;
     fout.open( dir.c_str() );
@@ -636,7 +704,43 @@ bool EnergySystem::OutputSummaryDataToFile( std::string &fname ) {
     fout << "Energy purchased [kWh/period]: " << m_totalEnergyIn << "\n";
     fout << "Energy sold [kWh/period]: " << m_totalEnergyOut << "\n";
     fout << "Net purchases [kWh/period]: " << m_totalEnergyNet << "\n";
+    fout << "\n";
+    
+    fout << "Peak load served [kW]: " << m_maxLoadServed << "\n";
+    fout << "Average load served [kW]: " << m_avgLoadServed << "\n";
+    fout << "Energy use [kWh/day]: " << m_totalLoadServedDay << "\n";
+    fout << "Energy use [kWh/period]: " << m_totalLoadServedPeriod << "\n";
+    fout << "Load factor [-]: " << m_loadFactor << "\n";
+    fout << "\n";
+            
+    fout << "Total charges [$/y]: " << m_totalCharges << "\n";
+    fout << "Energy charges [$/y]: " << m_energyCharges << "\n";
+    fout << "Demand charges [$/y]: " << m_demandCharges << "\n";
+    fout << "Interconnection charges [$/y]: " << m_interconnectionCharges << "\n";
+    
+    fout.close();
+    
+    // energy system summary information (total for all customers)
+    dir = fname + "GridInterconnectionTotal.txt";
+    fout.open( dir.c_str() );
 
+    fout << "Energy purchased [kWh/period]: " << m_totalEnergyIn * m_numSystems << "\n";
+    fout << "Energy sold [kWh/period]: " << m_totalEnergyOut * m_numSystems << "\n";
+    fout << "Net purchases [kWh/period]: " << m_totalEnergyNet * m_numSystems << "\n";
+    fout << "\n";
+    
+    fout << "Peak load served [kW]: " << m_maxLoadServed * m_numSystems << "\n";
+    fout << "Average load served [kW]: " << m_avgLoadServed * m_numSystems << "\n";
+    fout << "Energy use [kWh/day]: " << m_totalLoadServedDay * m_numSystems << "\n";
+    fout << "Energy use [kWh/period]: " << m_totalLoadServedPeriod * m_numSystems << "\n";
+    fout << "Load factor [-]: " << m_loadFactor << "\n";
+    fout << "\n";
+            
+    fout << "Total charges [$/y]: " << m_totalCharges * m_numSystems << "\n";
+    fout << "Energy charges [$/y]: " << m_energyCharges * m_numSystems << "\n";
+    fout << "Demand charges [$/y]: " << m_demandCharges * m_numSystems << "\n";
+    fout << "Interconnection charges [$/y]: " << m_interconnectionCharges * m_numSystems << "\n";
+    
     fout.close();
     
     std::map< unsigned int, ImmediateLoad* >::iterator iterImmediateLoad;
@@ -669,6 +773,62 @@ bool EnergySystem::OutputSummaryDataToFile( std::string &fname ) {
     }
     return(true);
 }
+
+// data io
+bool EnergySystem::OutputGridSummaryDataToFile() {
+    OutputGridSummaryDataToFile(m_outputDir);
+    return(true);
+}
+
+bool EnergySystem::OutputGridSummaryDataToFile( std::string &fname ) {
+    // energy system summary information (single customer)
+    std::string dir = fname + "GridInterconnection.txt";
+    std::ofstream fout;
+    fout.open( dir.c_str() );
+
+    fout << "Energy purchased [kWh/period]: " << m_totalEnergyIn << "\n";
+    fout << "Energy sold [kWh/period]: " << m_totalEnergyOut << "\n";
+    fout << "Net purchases [kWh/period]: " << m_totalEnergyNet << "\n";
+    fout << "\n";
+    
+    fout << "Peak load served [kW]: " << m_maxLoadServed << "\n";
+    fout << "Average load served [kW]: " << m_avgLoadServed << "\n";
+    fout << "Energy use [kWh/day]: " << m_totalLoadServedDay << "\n";
+    fout << "Energy use [kWh/period]: " << m_totalLoadServedPeriod << "\n";
+    fout << "Load factor [-]: " << m_loadFactor << "\n";
+    fout << "\n";
+            
+    fout << "Total charges [$/y]: " << m_totalCharges << "\n";
+    fout << "Energy charges [$/y]: " << m_energyCharges << "\n";
+    fout << "Demand charges [$/y]: " << m_demandCharges << "\n";
+    fout << "Interconnection charges [$/y]: " << m_interconnectionCharges << "\n";
+    
+    fout.close();
+    
+    // energy system summary information (total for all customers)
+    dir = fname + "GridInterconnectionTotal.txt";
+    fout.open( dir.c_str() );
+
+    fout << "Energy purchased [kWh/period]: " << m_totalEnergyIn * m_numSystems << "\n";
+    fout << "Energy sold [kWh/period]: " << m_totalEnergyOut * m_numSystems << "\n";
+    fout << "Net purchases [kWh/period]: " << m_totalEnergyNet * m_numSystems << "\n";
+    fout << "\n";
+    
+    fout << "Peak load served [kW]: " << m_maxLoadServed * m_numSystems << "\n";
+    fout << "Average load served [kW]: " << m_avgLoadServed * m_numSystems << "\n";
+    fout << "Energy use [kWh/day]: " << m_totalLoadServedDay * m_numSystems << "\n";
+    fout << "Energy use [kWh/period]: " << m_totalLoadServedPeriod * m_numSystems << "\n";
+    fout << "Load factor [-]: " << m_loadFactor << "\n";
+    fout << "\n";
+            
+    fout << "Total charges [$/y]: " << m_totalCharges * m_numSystems << "\n";
+    fout << "Energy charges [$/y]: " << m_energyCharges * m_numSystems << "\n";
+    fout << "Demand charges [$/y]: " << m_demandCharges * m_numSystems << "\n";
+    fout << "Interconnection charges [$/y]: " << m_interconnectionCharges * m_numSystems << "\n";
+    
+    fout.close();
+    return(true);
+}
 bool EnergySystem::OutputTimeseriesDataToFile( bool includeHeader ) {
     std::string fname = m_outputDir;
     fname.append( "time_series_detailed.csv" );
@@ -679,6 +839,13 @@ bool EnergySystem::OutputSimpleTimeseriesDataToFile( bool includeHeader ) {
     std::string fname = m_outputDir;
     fname.append( "time_series_simple.csv" );
     OutputSimpleTimeseriesDataToFile(fname);
+    return(true);
+}
+bool EnergySystem::OutputGridTimeseriesDataToFile( bool includeHeader ) {
+    // used for aggregate grid data
+    std::string fname = m_outputDir;
+    fname.append( "time_series_simple.csv" );
+    OutputGridTimeseriesDataToFile(fname);
     return(true);
 }
 bool EnergySystem::OutputTimeseriesDataToFile( std::string &fname, bool includeHeader ) {
@@ -731,22 +898,22 @@ bool EnergySystem::OutputTimeseriesDataToFile( std::string &fname, bool includeH
         fout << iTime << ",";
         
         for( iterImmediateLoad=m_immediateLoad.begin(); iterImmediateLoad!=m_immediateLoad.end(); ++iterImmediateLoad ) 
-            iterImmediateLoad->second->OutputTimeseriesDataToFile(fout, iTime);
+            iterImmediateLoad->second->OutputTimeseriesDataToFile(fout, iTime, m_numSystems);
 
         for( iterSolarResource=m_solarResource.begin(); iterSolarResource!=m_solarResource.end(); ++iterSolarResource ) 
             iterSolarResource->second->OutputTimeseriesDataToFile(fout, iTime);
         
         for( iterSolarPV=m_solarPV.begin(); iterSolarPV!=m_solarPV.end(); ++iterSolarPV ) 
-            iterSolarPV->second->OutputTimeseriesDataToFile(fout, iTime);
+            iterSolarPV->second->OutputTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterConverter=m_converter.begin(); iterConverter!=m_converter.end(); ++iterConverter ) 
-            iterConverter->second->OutputTimeseriesDataToFile(fout, iTime);
+            iterConverter->second->OutputTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterBattery=m_battery.begin(); iterBattery!=m_battery.end(); ++iterBattery ) 
-            iterBattery->second->OutputTimeseriesDataToFile(fout, iTime);
+            iterBattery->second->OutputTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterElectricVehicle=m_electricVehicle.begin(); iterElectricVehicle!=m_electricVehicle.end(); ++iterElectricVehicle ) 
-            iterElectricVehicle->second->OutputTimeseriesDataToFile(fout, iTime);
+            iterElectricVehicle->second->OutputTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterSolarField=m_solarField.begin(); iterSolarField!=m_solarField.end(); ++iterSolarField ) 
             iterSolarField->second->OutputTimeseriesDataToFile(fout, iTime);
@@ -780,11 +947,11 @@ bool EnergySystem::OutputSimpleTimeseriesDataToFile( std::string &fname, bool in
     if( includeHeader ) {
         fout << "Time step,";
         
-        fout << "Net load,";
-        
         for( iterImmediateLoad=m_immediateLoad.begin(); iterImmediateLoad!=m_immediateLoad.end(); ++iterImmediateLoad ) 
             iterImmediateLoad->second->OutputSimpleTimeseriesHeaderToFile(fout);
        
+        fout << m_energyNetName << ",";
+        
 //        for( iterSolarResource=m_solarResource.begin(); iterSolarResource!=m_solarResource.end(); ++iterSolarResource ) 
 //            iterSolarResource->second->OutputSimpleTimeseriesHeaderToFile(fout);        
         
@@ -810,29 +977,65 @@ bool EnergySystem::OutputSimpleTimeseriesDataToFile( std::string &fname, bool in
     for( iTime=0; iTime<m_numTimesteps; ++iTime ) {
         fout << iTime << ",";
         
-        fout << m_energyNet.at(iTime) << ",";
-        
         for( iterImmediateLoad=m_immediateLoad.begin(); iterImmediateLoad!=m_immediateLoad.end(); ++iterImmediateLoad ) 
-            iterImmediateLoad->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
+            iterImmediateLoad->second->OutputSimpleTimeseriesDataToFile(fout, iTime, m_numSystems);
 
+        fout << m_energyNet.at(iTime) * m_numSystems << ",";
+        
 //        for( iterSolarResource=m_solarResource.begin(); iterSolarResource!=m_solarResource.end(); ++iterSolarResource ) 
 //            iterSolarResource->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
         
         for( iterSolarPV=m_solarPV.begin(); iterSolarPV!=m_solarPV.end(); ++iterSolarPV ) 
-            iterSolarPV->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
+            iterSolarPV->second->OutputSimpleTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterConverter=m_converter.begin(); iterConverter!=m_converter.end(); ++iterConverter ) 
-            iterConverter->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
+            iterConverter->second->OutputSimpleTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterBattery=m_battery.begin(); iterBattery!=m_battery.end(); ++iterBattery ) 
-            iterBattery->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
+            iterBattery->second->OutputSimpleTimeseriesDataToFile(fout, iTime, m_numSystems);
         
         for( iterElectricVehicle=m_electricVehicle.begin(); iterElectricVehicle!=m_electricVehicle.end(); ++iterElectricVehicle ) 
-            iterElectricVehicle->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
+            iterElectricVehicle->second->OutputSimpleTimeseriesDataToFile(fout, iTime, m_numSystems);
         
 //        for( iterSolarField=m_solarField.begin(); iterSolarField!=m_solarField.end(); ++iterSolarField ) 
 //            iterSolarField->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
 
+        fout << "\n";
+    }
+    
+    fout.close();
+    
+    return(true);
+}
+
+bool EnergySystem::OutputGridTimeseriesDataToFile( std::string &fname, bool includeHeader ) {
+    
+    /* TODO
+     o Error handling if cannot open file, etc.
+     o Return false if not succeed. 
+     */
+    
+    std::ofstream fout;
+    fout.open( fname.c_str() );
+    
+    std::map< unsigned int, ImmediateLoad* >::iterator iterImmediateLoad;
+    
+    if( includeHeader ) {
+        fout << "Time step,";
+        
+        for( iterImmediateLoad=m_immediateLoad.begin(); iterImmediateLoad!=m_immediateLoad.end(); ++iterImmediateLoad ) 
+            iterImmediateLoad->second->OutputSimpleTimeseriesHeaderToFile(fout);
+       
+        fout << "\n"; 
+    }
+    
+    unsigned int iTime;
+    for( iTime=0; iTime<m_numTimesteps; ++iTime ) {
+        fout << iTime << ",";
+        
+        for( iterImmediateLoad=m_immediateLoad.begin(); iterImmediateLoad!=m_immediateLoad.end(); ++iterImmediateLoad ) 
+            iterImmediateLoad->second->OutputSimpleTimeseriesDataToFile(fout, iTime);
+        
         fout << "\n";
     }
     

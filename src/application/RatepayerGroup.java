@@ -18,7 +18,7 @@ public class RatepayerGroup {
 	private double[] evOut;
 	private double[] drOut;
 	private double[] interconOut;
-	private double[] summaryOut;
+	private double[] gridOut;
 	
 	public RatepayerGroup(){
 		name = "";
@@ -69,13 +69,13 @@ public class RatepayerGroup {
 		for(int x = 0; x < drOut.length; x++){
 			drOut[x] = 0;
 		}
-		interconOut = new double[3];
+		interconOut = new double[12];
 		for(int x = 0; x < interconOut.length; x++){
 			interconOut[x] = 0;
 		}
-		summaryOut = new double[4];
-		for(int x = 0; x < summaryOut.length; x++){
-			summaryOut[x] = 0;
+		gridOut = new double[12];
+		for(int x = 0; x < gridOut.length; x++){
+			gridOut[x] = 0;
 		}
 	}
 	
@@ -91,6 +91,38 @@ public class RatepayerGroup {
 		this.batteryStorage = batteryStorage;
 		this.electricVehicle = electricVehicle;
 		this.demandResponse = demandResponse;
+		loadOut = new double[5];
+		for(int x = 0; x < loadOut.length; x++){
+			loadOut[x] = 0;
+		}
+		solarOut = new double[5];
+		for(int x = 0; x < solarOut.length; x++){
+			solarOut[x] = 0;
+		}
+		invertOut = new double[4];
+		for(int x = 0; x < invertOut.length; x++){
+			invertOut[x] = 0;
+		}
+		bsOut = new double[4];
+		for(int x = 0; x < bsOut.length; x++){
+			bsOut[x] = 0;
+		}
+		evOut = new double[4];
+		for(int x = 0; x < evOut.length; x++){
+			evOut[x] = 0;
+		}
+		drOut = new double[2];
+		for(int x = 0; x < drOut.length; x++){
+			drOut[x] = 0;
+		}
+		interconOut = new double[12];
+		for(int x = 0; x < interconOut.length; x++){
+			interconOut[x] = 0;
+		}
+		gridOut = new double[12];
+		for(int x = 0; x < gridOut.length; x++){
+			gridOut[x] = 0;
+		}
 	}
 	public double[] getSolarPV() {
 		return solarPV;
@@ -221,14 +253,6 @@ public class RatepayerGroup {
 		this.interconOut = interconOut;
 	}
 
-	public double[] getSummaryOut() {
-		return summaryOut;
-	}
-
-	public void setSummaryOut(double[] summaryOut) {
-		this.summaryOut = summaryOut;
-	}
-
 	public int getRateSchedule() {
 		return rateSchedule;
 	}
@@ -244,5 +268,14 @@ public class RatepayerGroup {
 	public void setLoadFile(String loadFile) {
 		this.loadFile = loadFile;
 	}
+
+	public double[] getGridOut() {
+		return gridOut;
+	}
+
+	public void setGridOut(double[] gridOut) {
+		this.gridOut = gridOut;
+	}
+	
 
 }

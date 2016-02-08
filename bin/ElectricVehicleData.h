@@ -231,12 +231,19 @@ public:
         fout << m_capacityAsEnergy.at(time) << ",";
         fout << (m_capacityAsFraction.at(time) * 100.0) << ",";
     }
-    
+    inline void OutputTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_chargePower.at(time) * numSystems << ",";
+        fout << m_capacityAsEnergy.at(time) * numSystems << ",";
+        fout << (m_capacityAsFraction.at(time) * 100.0) << ",";
+    }
     inline void OutputSimpleTimeseriesHeaderToFile( std::ofstream &fout ) {
         fout << "Electric vehicle,";
     }
     inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time ) {
         fout << m_chargePower.at(time) << ",";
+    }
+    inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_chargePower.at(time) * numSystems << ",";
     }
     
     inline double GetCurrentChargePower() { return(*m_iterChargePower); }

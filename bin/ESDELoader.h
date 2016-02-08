@@ -12,6 +12,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "SolarResourceData.h"
 #include "ImmediateLoadData.h"
@@ -20,6 +22,8 @@
 #include "Converter.h"
 #include "Battery.h"
 #include "ElectricVehicle.h"
+#include "EnergySystem.h"
+#include "Logger.h"
 
 /******************************************************************************/
 struct ESDELoader {
@@ -44,15 +48,18 @@ struct ESDELoader {
         std::string str;
         double val;
         // load location data
-        fin.open( fnameLocation );
-        ESDELocation location;
+        
+        if( std::ifstream( fnameLocation.c_str() ).good() ) {
+            fin.open( fnameLocation );
+            ESDELocation location;
 
-        fin >> str; fin >> val; location.SetLatitudeAsDecimal(val);
-        fin >> str; fin >> val; location.SetLongitudeAsDecimal(val);
-        fin >> str; fin >> val; location.SetTimezone(val);
-        solarData.SetLocation( location );
+            fin >> str; fin >> val; location.SetLatitudeAsDecimal(val);
+            fin >> str; fin >> val; location.SetLongitudeAsDecimal(val);
+            fin >> str; fin >> val; location.SetTimezone(val);
+            solarData.SetLocation( location );
 
-        fin.close();
+            fin.close();
+        }
 
         // set timeseries data based on filename extention type
         // TODO: verify that data is in correct format (csv vs. tab-delimited)
@@ -60,20 +67,22 @@ struct ESDELoader {
 
         std::vector<double> G_global;
 
-        fin.open( fnameTimeseries );
-    //    fin >> str; fin >> str; // read over the headers
+        if( std::ifstream( fnameTimeseries.c_str() ).good() ) {
+            fin.open( fnameTimeseries );
+        //    fin >> str; fin >> str; // read over the headers
 
-        while( !fin.eof() ) {
-            fin >> val;
-            G_global.push_back(val);
+            while( !fin.eof() ) {
+                fin >> val;
+                G_global.push_back(val);
+            }
+
+            solarData.InitTimeseries( G_global.size() );
+            solarData.SetGlobalHorizontalRadiation( G_global );
+
+            // set identification
+            fin.close();
         }
-
-        solarData.InitTimeseries( G_global.size() );
-        solarData.SetGlobalHorizontalRadiation( G_global );
-
-        // set identification
-        fin.close();
-
+        
         ESDEIdentification ident;
         ident.m_objectType = ID_SOLAR_RESOURCE;
         ident.m_objectID = 0; // not used here, used in full system computations
@@ -169,7 +178,7 @@ struct ESDELoader {
         ESDEIdentification ident;
         ident.m_objectType = ID_IMMEDIATE_LOAD;
         ident.m_objectID = 0; // not used here, used in full system computations
-        ident.m_objectName = std::string("Load");
+        ident.m_objectName = std::string("Total load");
         loadData.m_identInput = ident;
         loadData.m_identTimeseries = ident;
         loadData.m_identSummary = ident;
@@ -258,6 +267,68 @@ struct ESDELoader {
         evData.m_identSummary = ident;
 
         return(evData);
+    }
+    static inline EnergySystem LoadEnergySystem( std::string ratepayerDir, std::string ratepayerName, SolarResourceData &solarData ) {
+        EnergySystem systemData;
+        
+        // set name, input directory,  output directory
+        systemData.SetName( ratepayerName );
+        std::string inputDir = ratepayerDir + ratepayerName + "/input/";
+        std::string outputDir = ratepayerDir + ratepayerName + "/output/";
+        systemData.SetInputDirectory( inputDir );
+        systemData.SetOutputDirectory( outputDir );
+        
+        Logger::Instance()->writeToLogFile(std::string( "Reading in \"" ) + ratepayerName + std::string( "\" data from " ) + inputDir, Logger::PROCESS);
+        
+        // load data
+        std::string tempDir;
+        tempDir = inputDir + std::string("Load.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput( tempDir );
+            systemData.AddImmediateLoad( loadData );
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Energy system \"" ) + ratepayerName + std::string( "\" is missing \"Load.txt\"" ), Logger::PROCESS);
+        }
+        
+        tempDir = inputDir + std::string("SolarPV.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            SolarPVData dataSolarPV = ESDELoader::LoadSolarPVInput( tempDir );
+            systemData.AddSolarPV( dataSolarPV );
+            systemData.AddSolarResource( solarData );
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Energy system \"" ) + ratepayerName + std::string( "\" is missing \"SolarPV.txt\"" ), Logger::PROCESS);
+        }
+        
+        tempDir = inputDir + std::string("Inverter.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            ConverterData dataConverter = ESDELoader::LoadConverterInput( tempDir );
+            systemData.AddConverter( dataConverter );
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Energy system \"" ) + ratepayerName + std::string( "\" is missing \"Inverter.txt\"" ), Logger::PROCESS);
+        }
+        
+        tempDir = inputDir + std::string("Battery.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            BatteryData dataBattery = ESDELoader::LoadBatteryInput( tempDir );
+            systemData.AddBattery( dataBattery );
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Energy system \"" ) + ratepayerName + std::string( "\" is missing \"Battery.txt\"" ), Logger::PROCESS);
+        }
+        
+        tempDir = inputDir + std::string("ElectricVehicle.txt");
+        if( std::ifstream(tempDir.c_str()).good() ) {
+            ElectricVehicleData dataElectricVehicle = ESDELoader::LoadElectricVehicleInput( tempDir );
+            systemData.AddElectricVehicle( dataElectricVehicle );
+        }
+        else {
+            Logger::Instance()->writeToLogFile(std::string( "Energy system \"" ) + ratepayerName + std::string( "\" is missing \"ElectricVehicle.txt\"" ), Logger::PROCESS);
+        }
+        
+        return(systemData);
     }
 };
 

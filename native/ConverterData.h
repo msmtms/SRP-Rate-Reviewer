@@ -171,11 +171,21 @@ public:
 //        fout << m_powerInput2To1.at(time) << ",";
 //        fout << m_powerOutput2To1.at(time) << ",";
     }
+    inline void OutputTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_powerInput1To2.at(time) * numSystems << ",";
+        fout << m_powerOutput1To2.at(time) * numSystems << ",";
+//        fout << m_powerInput2To1.at(time) << ",";
+//        fout << m_powerOutput2To1.at(time) << ",";
+    }
+    
     inline void OutputSimpleTimeseriesHeaderToFile( std::ofstream &fout ) {
         fout << "Inverter AC,";
     }
     inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time ) {
         fout << m_powerOutput1To2.at(time) << ",";
+    }
+    inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_powerOutput1To2.at(time) * numSystems << ",";
     }
     
 protected:

@@ -215,13 +215,23 @@ public:
 //        fout << m_cellTemperature.at(time) << ",";
         fout << m_powerOutput.at(time) << ",";
     }
+    inline void OutputTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+//        fout << m_slope.at(time) << ",";
+//        fout << m_azimuth.at(time) << ",";
+        fout << m_incidentRadiation.at(time) << ",";
+//        fout << m_cellTemperature.at(time) << ",";
+        fout << m_powerOutput.at(time) * numSystems << ",";
+    }
+    
     inline void OutputSimpleTimeseriesHeaderToFile( std::ofstream &fout ) {
         fout << "Solar PV,";
     }
     inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time ) {
         fout << m_powerOutput.at(time) << ",";
     }
-    
+    inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_powerOutput.at(time) * numSystems << ",";
+    }
     inline double GetCurrentPowerOutput() { return(*m_iterPowerOutput); }
     
 protected:

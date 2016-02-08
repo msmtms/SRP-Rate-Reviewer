@@ -37,7 +37,7 @@ void Logger::close_files() {
 }
 
 void Logger::setLogPath(string path) {
-    cout << "PATH " << path << endl;
+//    cout << "PATH " << path << endl;
     close_files();
     string temp1 = path, temp2 = path, temp3 = path;
     m_process_fout.open(temp1.append(PROCESS_LOG_NAME).c_str());
@@ -54,19 +54,19 @@ void Logger::setLogPath(string path) {
 void Logger::writeToLogFile(std::string message, unsigned int level) {
     string stime= "";
     getDateTime(stime);
-
-    std::cout << message.c_str() << "\n";
     
-    if(level & m_write_level) {
+//    if(level & m_write_level) {
         if(level == PROCESS) {
-            m_process_fout << stime << "-" << message << endl;
+            std::cout << "PROCESS: " << message.c_str() << "\n";
+            m_process_fout << stime << " - " << message << endl;
             m_process_fout.flush();
         }
         else if(level == ERROR) {
-            m_error_fout << stime << "-" << message << endl;
+            std::cout << "ERROR: " << message.c_str() << "\n";
+            m_error_fout << stime << " - " << message << endl;
             m_error_fout.flush();
         }
-    }
+//    }
 }
 void Logger::writeToLogFile(std::string message, unsigned int level, string location) {
     string stime= "";
@@ -74,16 +74,18 @@ void Logger::writeToLogFile(std::string message, unsigned int level, string loca
 
     std::cout << message.c_str() << "\n";
     
-    if(level & m_write_level) {
+//    if(level & m_write_level) {
         if(level == PROCESS) {
-            m_process_fout << stime << "-" << message << ":" << location << endl;
+            std::cout << "PROCESS: " << message.c_str() << ":" << location << "\n";
+            m_process_fout << stime << " - " << message << ":" << location << endl;
             m_process_fout.flush();
         }
         else if(level == ERROR) {
-            m_error_fout << stime << "-" << message << ":" << location << endl;
+            std::cout << "ERROR: " << message.c_str() << ":" << location << "\n";
+            m_error_fout << stime << " - " << message << ":" << location << endl;
             m_error_fout.flush();
         }
-    }
+//    }
 }
 void Logger::setWriteLevel(const unsigned int level) {
     m_write_level = level;
@@ -114,9 +116,9 @@ void Logger::getDateTime(string &stime) {
     //itoa(now->tm_min, buffer, 10);
     if( now->tm_min < 10 ) {
         snprintf(buffer, sizeof(buffer), "%d", 0);
+        stime.append(buffer);
     }
-    stime.append(buffer);
-    snprintf(buffer, sizeof(buffer), "%d", now->tm_min);
-    stime.append(buffer);    
+    snprintf(buffer, sizeof(buffer), "%d", (now->tm_min)); // for some reason this prints the hour after minutes reach 10
+    stime.append(buffer);  
 }
 

@@ -360,32 +360,79 @@ bool TestHandler::TestEnergySystem() {
     unsigned int numTimesteps = 8760;
     EnergySystem energySystem;
     
-    // Step 1: add objects to energy system
-    ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput( std::string("./data/input/Load.txt") );
-    energySystem.AddImmediateLoad( loadData );
-    
-    SolarResourceData dataSolarResource = ESDELoader::LoadSolarResourceInput( std::string("./data/input/Location.txt"), std::string("./data/input/SolarResource.txt") );
+    // Step 1: add solar resource to system from main data directory
+    SolarResourceData dataSolarResource = ESDELoader::LoadSolarResourceInput( std::string("./data/Location.txt"), std::string("./data/SolarResource.txt") );
     energySystem.AddSolarResource( dataSolarResource );
     
-    SolarPVData dataSolarPV = ESDELoader::LoadSolarPVInput( std::string("./data/input/SolarPV.txt") );
+    // Step 2: add objects to energy system
+    std::string systemName = "Strata 1";
+    energySystem.SetInputDirectory( std::string("./data/Ratepayers/") + systemName + std::string("/input/"));
+    energySystem.SetOutputDirectory( std::string("./data/Ratepayers/") + systemName + std::string("/output/"));
+    
+    ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput( std::string("./data/Ratepayers/") + systemName + std::string("/input/Load.txt") );
+    energySystem.AddImmediateLoad( loadData );
+
+    SolarPVData dataSolarPV = ESDELoader::LoadSolarPVInput( std::string("./data/Ratepayers/") + systemName + std::string("/input/SolarPV.txt") );
     energySystem.AddSolarPV( dataSolarPV );
     
-    ConverterData dataConverter = ESDELoader::LoadConverterInput( std::string("./data/input/Inverter.txt") );
+    ConverterData dataConverter = ESDELoader::LoadConverterInput( std::string("./data/Ratepayers/") + systemName + std::string("input/Inverter.txt") );
     energySystem.AddConverter( dataConverter );
     
-    BatteryData dataBattery = ESDELoader::LoadBatteryInput( std::string("./data/input/Battery.txt") );
+    BatteryData dataBattery = ESDELoader::LoadBatteryInput( std::string("./data/Ratepayers/") + systemName + std::string("input/Battery.txt") );
     energySystem.AddBattery( dataBattery );
     
-    ElectricVehicleData dataElectricVehicle = ESDELoader::LoadElectricVehicleInput( std::string("./data/input/ElectricVehicle.txt") );
+    ElectricVehicleData dataElectricVehicle = ESDELoader::LoadElectricVehicleInput( std::string("./data/Ratepayers/") + systemName + std::string("input/ElectricVehicle.txt") );
     energySystem.AddElectricVehicle( dataElectricVehicle );
     
-    // Step 2: init energy system and all objects
+    // Step 3: init energy system and all objects
     energySystem.Init(numTimesteps);
     
-    // Step 3: run simulation
+    // Step 4: run simulation
     energySystem.RunSimulation();
+
+    // Step 5: output data
+    energySystem.OutputTimeseriesDataToFile();
+    energySystem.OutputSimpleTimeseriesDataToFile();
+    energySystem.CalculateSummaryData();
+    energySystem.OutputSummaryDataToFile();
     
-    // Step 4: output data
+    return(true);
+}  
+bool TestHandler::TestEnergySystem( std::string systemName ) {
+    
+    unsigned int numTimesteps = 8760;
+    EnergySystem energySystem;
+    
+    // Step 1: add solar resource to system from main data directory
+    SolarResourceData dataSolarResource = ESDELoader::LoadSolarResourceInput( std::string("./data/Location.txt"), std::string("./data/SolarResource.txt") );
+    energySystem.AddSolarResource( dataSolarResource );
+    
+    // Step 2: add objects to energy system
+    energySystem.SetInputDirectory( std::string("./data/Ratepayers/") + systemName + std::string("/input/"));
+    energySystem.SetOutputDirectory( std::string("./data/Ratepayers/") + systemName + std::string("/output/"));
+    
+    ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput( std::string("./data/Ratepayers/") + systemName + std::string("/input/Load.txt") );
+    energySystem.AddImmediateLoad( loadData );
+
+    SolarPVData dataSolarPV = ESDELoader::LoadSolarPVInput( std::string("./data/Ratepayers/") + systemName + std::string("/input/SolarPV.txt") );
+    energySystem.AddSolarPV( dataSolarPV );
+    
+    ConverterData dataConverter = ESDELoader::LoadConverterInput( std::string("./data/Ratepayers/") + systemName + std::string("input/Inverter.txt") );
+    energySystem.AddConverter( dataConverter );
+    
+    BatteryData dataBattery = ESDELoader::LoadBatteryInput( std::string("./data/Ratepayers/") + systemName + std::string("input/Battery.txt") );
+    energySystem.AddBattery( dataBattery );
+    
+    ElectricVehicleData dataElectricVehicle = ESDELoader::LoadElectricVehicleInput( std::string("./data/Ratepayers/") + systemName + std::string("input/ElectricVehicle.txt") );
+    energySystem.AddElectricVehicle( dataElectricVehicle );
+    
+    // Step 3: init energy system and all objects
+    energySystem.Init(numTimesteps);
+    
+    // Step 4: run simulation
+    energySystem.RunSimulation();
+
+    // Step 5: output data
     energySystem.OutputTimeseriesDataToFile();
     energySystem.OutputSimpleTimeseriesDataToFile();
     energySystem.CalculateSummaryData();

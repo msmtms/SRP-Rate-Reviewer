@@ -685,46 +685,26 @@
                                           </GridPane>
                                        </children>
                                     </Pane>
-                                    <Pane layoutX="717.0" layoutY="732.0" prefHeight="183.0" prefWidth="336.0" styleClass="subpanes">
+                                    <Pane layoutX="608.0" layoutY="732.0" prefHeight="134.0" prefWidth="564.0" styleClass="subpanes">
                                        <children>
                                           <Label layoutX="14.0" layoutY="14.0" styleClass="subsubs" text="Financial Summary" />
-                                          <GridPane layoutX="30.0" layoutY="51.0" prefHeight="123.0" prefWidth="276.0">
+                                          <GridPane layoutX="14.0" layoutY="44.0" prefHeight="74.0" prefWidth="249.0">
                                             <columnConstraints>
                                               <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="107.0" minWidth="10.0" prefWidth="106.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="135.0" minWidth="10.0" prefWidth="122.0" />
-                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="51.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="138.0" minWidth="10.0" prefWidth="121.0" />
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="39.0" />
                                             </columnConstraints>
                                             <rowConstraints>
                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                              <children>
-                                                <Label prefHeight="39.0" prefWidth="88.0" text="Interconnection Charges:" wrapText="true">
+                                                <Label prefHeight="39.0" prefWidth="88.0" text="Interconnection Charges:" wrapText="true" GridPane.rowIndex="1">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="Energy Charges:" GridPane.rowIndex="1">
-                                                   <font>
-                                                      <Font name="Arial" size="12.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label text="Demand Charges:" GridPane.rowIndex="2">
-                                                   <font>
-                                                      <Font name="Arial" size="12.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label text="Total Charges:" GridPane.rowIndex="3">
-                                                   <font>
-                                                      <Font name="Arial" size="12.0" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="rpInterconChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
-                                                <TextField fx:id="rpEnergyChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <TextField fx:id="rpDemandChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <TextField fx:id="rpTotalChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpInterconChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <Label text="\$/y" GridPane.columnIndex="2">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
@@ -735,28 +715,59 @@
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="\$/y" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                <Label text="Total Charges:">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
-                                                <Label text="\$/y" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                <TextField fx:id="rpTotalChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                             </children>
+                                          </GridPane>
+                                          <GridPane layoutX="296.0" layoutY="44.0" prefHeight="74.0" prefWidth="249.0">
+                                             <children>
+                                                <Label text="Demand Charges:" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <TextField fx:id="rpDemandChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="\$/y" GridPane.columnIndex="2">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="\$/y" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <TextField fx:id="rpEnergyChargesTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <Label text="Energy Charges:">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
                                                 </Label>
                                              </children>
+                                             <columnConstraints>
+                                                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="107.0" minWidth="10.0" prefWidth="106.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="135.0" minWidth="10.0" prefWidth="121.0" />
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="39.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
                                           </GridPane>
                                        </children>
                                     </Pane>
-                                    <Pane layoutX="717.0" layoutY="928.0" prefHeight="144.0" prefWidth="336.0" styleClass="subpanes">
+                                    <Pane layoutX="610.0" layoutY="883.0" prefHeight="189.0" prefWidth="564.0" styleClass="subpanes">
                                        <children>
                                           <Label layoutX="14.0" layoutY="14.0" styleClass="subsubs" text="Grid Interconnection" />
-                                          <GridPane layoutX="30.0" layoutY="42.0" prefHeight="97.0" prefWidth="291.0">
+                                          <GridPane layoutX="14.0" layoutY="55.0" prefHeight="97.0" prefWidth="249.0">
                                             <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="113.0" minWidth="10.0" prefWidth="104.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="10.0" prefWidth="124.0" />
-                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="92.0" minWidth="10.0" prefWidth="64.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="111.0" minWidth="10.0" prefWidth="109.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="138.0" minWidth="10.0" prefWidth="98.0" />
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="92.0" minWidth="10.0" prefWidth="52.0" />
                                             </columnConstraints>
                                             <rowConstraints>
                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -793,6 +804,72 @@
                                                    </font>
                                                 </Label>
                                                 <Label text="kWh/y" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </GridPane>
+                                          <GridPane layoutX="282.0" layoutY="25.0" prefWidth="249.0">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.0" minWidth="10.0" prefWidth="108.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="122.0" minWidth="10.0" prefWidth="99.0" />
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="78.0" minWidth="10.0" prefWidth="47.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="Energy use (day):" GridPane.rowIndex="2">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="Average Load:" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="Peak Load:">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="Energy use (year):" GridPane.rowIndex="3">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="Load Factor:" GridPane.rowIndex="4">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <TextField fx:id="rpPeakGridTB" editable="false" focusTraversable="false" prefHeight="23.0" prefWidth="105.0" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                                <TextField fx:id="rpAvgGridTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="rpEUDGridTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="rpEUYGridTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="rpLoadGridTB" editable="false" focusTraversable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <Label text="kW" GridPane.columnIndex="2">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="kW" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="kWh/d" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                   <font>
+                                                      <Font name="Arial" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label text="kWh/y" GridPane.columnIndex="2" GridPane.rowIndex="3">
                                                    <font>
                                                       <Font name="Arial" size="12.0" />
                                                    </font>
@@ -1113,68 +1190,190 @@
                         </Pane>
                         <Pane layoutX="354.0" layoutY="33.0" prefHeight="147.0" prefWidth="877.0" styleClass="solarbg">
                            <children>
-                              <ComboBox fx:id="gridStrataCB" layoutX="38.0" layoutY="50.0" onAction="#onGridSummaryCBChange" prefWidth="150.0" promptText="Select A Group" />
-                              <TextField fx:id="gridPeakLoadTB" editable="false" layoutX="323.0" layoutY="38.0" styleClass="textoutput" text="0.0" />
-                              <TextField fx:id="gridAvgLoadTB" editable="false" layoutX="323.0" layoutY="84.0" styleClass="textoutput" text="0.0" />
-                              <Label layoutX="22.0" layoutY="103.0" text="No. of Customers:">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="232.0" layoutY="89.0" text="Average Load:">
+                              <ComboBox fx:id="gridStrataCB" layoutX="10.0" layoutY="50.0" onAction="#onGridSummaryCBChange" prefWidth="150.0" promptText="Select A Group" />
+                              <Label layoutX="14.0" layoutY="95.0" text="No. of Customers:">
                                  <font>
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </Label>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Summary" />
-                              <Label fx:id="noCustLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="123.0" layoutY="102.0" prefHeight="17.0" prefWidth="80.0" text="1" textAlignment="RIGHT">
+                              <Label fx:id="noCustLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="71.0" layoutY="115.0" prefHeight="17.0" prefWidth="80.0" textAlignment="RIGHT">
                                  <font>
                                     <Font name="Arial Bold" size="15.0" />
                                  </font>
                               </Label>
-                              <Label layoutX="241.0" layoutY="43.0" text="Peak Load:">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="525.0" layoutY="25.0" text="Energy Use (Day):">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="523.0" layoutY="67.0" text="Energy Use (Year):">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <TextField fx:id="gridEUseYearTB" editable="false" layoutX="626.0" layoutY="62.0" styleClass="textoutput" text="0.0" />
-                              <TextField fx:id="gridEUseDayTB" editable="false" layoutX="626.0" layoutY="20.0" styleClass="textoutput" text="0.0" />
-                              <TextField fx:id="gridLoadFactorTB" editable="false" layoutX="626.0" layoutY="104.0" styleClass="textoutput" text="0.0" />
-                              <Label layoutX="540.0" layoutY="109.0" text="Load Factor:">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="780.0" layoutY="66.0" text="kWh/y">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="780.0" layoutY="24.0" text="kWh/d">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="481.0" layoutY="43.0" text="kW">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="481.0" layoutY="89.0" text="kW">
-                                 <font>
-                                    <Font name="Arial" size="12.0" />
-                                 </font>
-                              </Label>
+                              <GridPane layoutX="641.0" layoutY="7.0" prefHeight="137.0" prefWidth="230.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="74.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="45.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Peak Load:">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Average Load:" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="gridPeakLoadTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                    <TextField fx:id="gridAvgLoadTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="kW" GridPane.columnIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="kW" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Energy Use (Day):" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Energy Use (Year):" GridPane.rowIndex="3">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Load Factor:" GridPane.rowIndex="4">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="gridEUseDayTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="gridEUseYearTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <TextField fx:id="gridLoadFactorTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Label text="kWh/d" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="kWh/y" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </GridPane>
+                              <GridPane layoutX="178.0" layoutY="7.0" prefHeight="137.0" prefWidth="230.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="71.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="41.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Total Charges:">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Interconnection Charges:" wrapText="true" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Energy Charges:" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Demand Charges:" GridPane.rowIndex="3">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="gridTotalChargesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                    <TextField fx:id="gridInterconTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="gridEChargeTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="gridDChargeTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label text="\$/y" GridPane.columnIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="\$/y" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="\$/y" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="\$/y" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </GridPane>
+                              <GridPane layoutX="419.0" layoutY="18.0" prefHeight="115.0" prefWidth="206.0">
+                                 <children>
+                                    <Label text="Energy Purchased:" wrapText="true">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Energy Sold:" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="Net Purchases:" wrapText="true" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="gridEPurchasedTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" />
+                                    <TextField fx:id="gridESoldTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="gridNetPurchasesTB" editable="false" styleClass="textoutput" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="kWh/y" GridPane.columnIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="kWh/y" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <Label text="kWh/y" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="Arial" size="12.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="81.0" minWidth="10.0" prefWidth="79.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="109.0" minWidth="10.0" prefWidth="71.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="54.0" minWidth="10.0" prefWidth="40.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
+                              </GridPane>
                            </children>
                         </Pane>
                         <Pane layoutX="46.0" layoutY="193.0" prefHeight="508.0" prefWidth="1185.0" styleClass="solarbg">
@@ -1219,7 +1418,7 @@
                                     <Font name="Arial" size="12.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="gridChartLabel" alignment="CENTER" layoutX="428.0" layoutY="27.0" text="Mar. 29, 2015 - Mar. 30, 2015">
+                              <Label fx:id="gridChartLabel" alignment="CENTER" layoutX="428.0" layoutY="27.0">
                                  <font>
                                     <Font name="Arial Bold" size="14.0" />
                                  </font>

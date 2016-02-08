@@ -19,6 +19,7 @@ public class Session {
 	private long solarEnd;
 	private ObservableList<RateSchedule> rateSchedules;
 	private ObservableList<RatepayerGroup> rpGroups;
+	private Grid grid;
 	
 	
 	public Session() {
@@ -35,12 +36,13 @@ public class Session {
 		this.solarEnd = System.currentTimeMillis();
 		this.rateSchedules = FXCollections.observableArrayList();
 		this.rpGroups = FXCollections.observableArrayList();
+		this.grid = new Grid();
 	}
 	public Session(String author, String notes, String[] gHI, String lat,
 			String lon, boolean north, boolean east, int timezone,
 			boolean daySave, long solarStart, long solarEnd,
 			ObservableList<RateSchedule> rateSchedules,
-			ObservableList<RatepayerGroup> rpGroups) {
+			ObservableList<RatepayerGroup> rpGroups, Grid grid) {
 		this.author = author;
 		this.notes = notes;
 		GHI = gHI;
@@ -54,6 +56,7 @@ public class Session {
 		this.solarEnd = solarEnd;
 		this.rateSchedules = rateSchedules;
 		this.rpGroups = rpGroups;
+		this.grid = grid;
 	}
 	public String getAuthor() {
 		return author;
@@ -132,6 +135,12 @@ public class Session {
 	}
 	public void setRpGroups(ObservableList<RatepayerGroup> rpGroups) {
 		this.rpGroups = rpGroups;
+	}
+	public Grid getGrid() {
+		return grid;
+	}
+	public void setGrid(Grid grid) {
+		this.grid = grid;
 	}
 
 }

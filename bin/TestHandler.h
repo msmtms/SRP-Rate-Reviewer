@@ -71,6 +71,7 @@ private:
     bool TestConverter();
     bool TestSolarResource();
     bool TestEnergySystem();
+    bool TestEnergySystem( std::string systemName );
 };
    
 

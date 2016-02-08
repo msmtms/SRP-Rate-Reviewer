@@ -276,11 +276,23 @@ public:
         fout << m_capacityAsEnergy.at(time) << ",";
         fout << (m_capacityAsFraction.at(time) * 100.0) << ",";
     }
+    inline void OutputTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_outputPower.at(time) * numSystems << ",";
+        fout << m_maxChargePower.at(time) * numSystems << ",";
+        fout << m_chargePower.at(time) * numSystems << ",";
+        fout << m_maxDischargePower.at(time) * numSystems << ",";
+        fout << m_dischargePower.at(time) * numSystems << ",";
+        fout << m_capacityAsEnergy.at(time) * numSystems << ",";
+        fout << (m_capacityAsFraction.at(time) * 100.0) << ",";
+    }
     inline void OutputSimpleTimeseriesHeaderToFile( std::ofstream &fout ) {
         fout << "Battery,";
     }
     inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time ) {
         fout << m_outputPower.at(time) << ",";
+    }
+    inline void OutputSimpleTimeseriesDataToFile( std::ofstream &fout, unsigned int time, double numSystems ) {
+        fout << m_outputPower.at(time) * numSystems << ",";
     }
     
 protected:

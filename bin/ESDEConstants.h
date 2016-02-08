@@ -31,6 +31,7 @@
 // simulation types
 #define ID_ESDE_CALCULATE_SOLAR 100
 #define ID_ESDE_CALCULATE_ENERGY_SYSTEMS 101
+#define ID_ESDE_CALCULATE_GRID 102
 
 // system type
 #define ID_ENERGY_SYSTEM 1000

@@ -64,6 +64,7 @@ public: // add components
     unsigned int AddImmediateLoad( ImmediateLoad *immediateLoad, bool replaceObjectID = true );
     unsigned int AddImmediateLoad( ImmediateLoadData &data, bool replaceObjectID = true );
     ImmediateLoad* GetImmediateLoad( unsigned int id ) { return(m_immediateLoad[id]);}
+    ImmediateLoad* GetImmediateLoad() { return(m_immediateLoad.begin()->second);}
     
     unsigned int AddSolarPV();
     unsigned int AddSolarPV( SolarPV *solarPV, bool replaceObjectID = true );
@@ -96,19 +97,30 @@ public: // add components
     SolarResource* GetSolarResource( unsigned int id ) { return(m_solarResource[id]);}
     
 public: // data io
+    inline void SetName( std::string name ) {m_systemName = name;}
+    inline std::string &GetName() {return(m_systemName);}
+    inline void SetEnergyNetName( std::string name ) {m_energyNetName = name;}
+    inline std::string &GetEnergyNetName() {return(m_energyNetName);}
     inline void SetOutputDirectory( std::string dir ) {m_outputDir = dir;}
     inline std::string &GetOutputDirectory() {return(m_outputDir);}
     inline void SetInputDirectory( std::string dir ) {m_inputDir = dir;}
     inline std::string &GetInputDirectory() {return(m_inputDir);}
     
     void CalculateSummaryData();
+    void CalculateGridSummaryData();
     
     bool OutputSummaryDataToFile();
     bool OutputSummaryDataToFile( std::string &fname );
+    bool OutputGridSummaryDataToFile();
+    bool OutputGridSummaryDataToFile( std::string &fname );
     bool OutputTimeseriesDataToFile( bool includeHeader = true );
-    bool OutputSimpleTimeseriesDataToFile( bool includeHeader = true);
     bool OutputTimeseriesDataToFile( std::string &fname, bool includeHeader = true );
+    bool OutputSimpleTimeseriesDataToFile( bool includeHeader = true);
     bool OutputSimpleTimeseriesDataToFile( std::string &fname, bool includeHeader = true );
+    bool OutputGridTimeseriesDataToFile( bool includeHeader = true);
+    bool OutputGridTimeseriesDataToFile( std::string &fname, bool includeHeader = true );
+    
+    std::vector<double>& GetEnergyNet() {return(m_energyNet);}
     
 private:
     
@@ -116,6 +128,7 @@ private:
     
     std::string m_outputDir;
     std::string m_inputDir;
+    std::string m_systemName;
     std::map< unsigned int, ESDEObject* > m_ESDEObjectList;         /**< List of all ESDE objects in this system. */
     unsigned int m_currentObjectID;                                 /**< Unique ID of current ESDE Object in the system */
     
@@ -136,10 +149,26 @@ private:
     // net load information
     std::vector<double> m_energyNet;                /**< Net energy into or out of the system. Negative if production exceeds use [kW]. */   
     std::vector<double>::iterator m_iterEnergyNet;
+    std::string m_energyNetName;
+    std::string m_rateScheduleName;
+    double m_numSystems;
     
     double m_totalEnergyIn;         /**< Total energy into the system from the grid or external source [kWh/period]. */
     double m_totalEnergyOut;        /**< Total energy out of the system from the grid or external source [kWh/period]. */
     double m_totalEnergyNet;        /**< Total energy net in/out of the system. Negative if production exceeds use [kWh/period]. */
+    
+    // all computed from net load
+    double m_maxLoadServed;         /**< Maximum (peak) load served [kW]. */
+    double m_avgLoadServed;         /**< Average load served [kW]. */
+    double m_totalLoadServedPeriod; /**< Total load served during the simulation period [kWh/period]. */
+    double m_totalLoadServedDay;    /**< Total load served during the simulation period [kWh/day]. */
+    double m_loadFactor;            /**< Load factor [-]. */
+    
+    // financial summary
+    double m_totalCharges;              /**< Total energy charges [$/y]. */
+    double m_energyCharges;             /**< Energy charges from $/kWh [$/y]. */
+    double m_demandCharges;             /**< Demand charges from $/kW [$/y]. */
+    double m_interconnectionCharges;    /**< Interconnection  charges from $/mo [$/y]. */
 };
 
 #endif	/* ENERGYSYSTEM_H */
