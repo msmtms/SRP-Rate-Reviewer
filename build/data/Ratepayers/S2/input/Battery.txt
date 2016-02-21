@@ -1,4 +1,0 @@
-Capacity	11.0
-Efficiency	91.0
-MinSOC	21.0
-MaxCRate	1.0

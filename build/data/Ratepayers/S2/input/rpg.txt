@@ -1,3 +1,0 @@
-Ratepayer Group:	S2
-Rate Schedule:	E-29
-Number of Customers:	20000

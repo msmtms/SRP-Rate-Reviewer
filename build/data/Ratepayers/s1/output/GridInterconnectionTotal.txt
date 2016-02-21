@@ -8,7 +8,7 @@ Energy use [kWh/day]: 329868
 Energy use [kWh/period]: 1.20402e+008
 Load factor [-]: 0.115549
 
-Total charges [$/y]: 1.83914e+007
-Energy charges [$/y]: 1.47914e+007
+Total charges [$/y]: 1.60964e+007
+Energy charges [$/y]: 1.24964e+007
 Demand charges [$/y]: 0
 Interconnection charges [$/y]: 3.6e+006

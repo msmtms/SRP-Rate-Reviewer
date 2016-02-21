@@ -1862,7 +1862,11 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),rpRateSchedule.getSelectionModel().getSelectedIndex(), "",new double[3],new double[2],new double[4],new double[8],new double[2]));
+					RatepayerGroup rpg = new RatepayerGroup();
+					rpg.setName(text1.getText());
+					rpg.setNum(text2.getText());
+					rpg.setRateSchedule(0);
+					rpGroups.add(rpg);
 					rpGroupList.add(text1.getText());
 				}
 				return null;
@@ -1896,7 +1900,11 @@ public class SceneController extends AnchorPane{
 			@Override
 			public String call(ButtonType b) {
 				if (b == ButtonType.OK) {
-					rpGroups.add(new RatepayerGroup(text1.getText(),text2.getText(),rpRateSchedule.getSelectionModel().getSelectedIndex(),"",new double[3],new double[2],new double[4],new double[8],new double[2]));
+					RatepayerGroup rpg = new RatepayerGroup();
+					rpg.setName(text1.getText());
+					rpg.setNum(text2.getText());
+					rpg.setRateSchedule(0);
+					rpGroups.add(rpg);
 					rpGroupList.add(text1.getText());
 				}
 				return null;
@@ -1944,66 +1952,92 @@ public class SceneController extends AnchorPane{
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
-	public void rpDRDeferClicked(ActionEvent event) {
-		if(rpDRDeferCB.isSelected()){
-			session.getRpGroups().get(rpGroupIndex).setDRItem(0, 0);
-		}else{
-			session.getRpGroups().get(rpGroupIndex).setDRItem(0, 1);
-		}
-	}
-	// Event Listener on CheckBox.onAction
-	@FXML
-	public void rpDemandResponseClicked(ActionEvent event) {
-		if(rpDRToggle){
-			rpDemandRespPane.setDisable(true);
-			rpDRToggle = false;
-		}else{
-			rpDemandRespPane.setDisable(false);
-			rpDRToggle = true;
-		}
-	}
-	// Event Listener on CheckBox.onAction
-	@FXML
 	public void rpBatteryStorageClicked(ActionEvent event) {
-		if(rpBSToggle){
+		if(rpGroups.get(rpGroupIndex).isBatteryChecked()){
 			rpBatteryStoragePane.setDisable(true);
-			rpBSToggle = false;
+			RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+			rpg.setBatteryChecked(false);
+			rpg.setBSItem(0, -1);
+			rpg.setBSItem(1, -1);
+			rpg.setBSItem(2, -1);
+			rpg.setBSItem(3, -1);
+			rpBSCapTB.setText("");
+			rpBSRoundEffTB.setText("");
+			rpBSMinSOCTB.setText("");
+			rpBSMaxCTB.setText("");
 		}else{
 			rpBatteryStoragePane.setDisable(false);
-			rpBSToggle = true;
+			rpGroups.get(rpGroupIndex).setBatteryChecked(true);
 		}
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
 	public void rpElectricVehicleClicked(ActionEvent event) {
-		if(rpEVToggle){
+		if(rpGroups.get(rpGroupIndex).isEvChecked()){
 			rpElecVehiclePane.setDisable(true);
-			rpEVToggle = false;
+			RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+			rpg.setEvChecked(false);
+			rpg.setEVItem(0, -1);
+			rpg.setEVItem(1, 0);
+			rpg.setEVItem(2, -1);
+			rpg.setEVItem(3, -1);
+			rpg.setEVItem(4, -1);
+			rpg.setEVItem(5, -1);
+			rpg.setEVItem(6, -1);
+			rpg.setEVItem(7, 0);
+			rpEVBatteryCapTB.setText("");
+			rpEVChargerCB.getSelectionModel().select(0);
+			rpEVChargeEffTB.setText("");
+			rpEVStartSOCTB.setText("");
+			rpEVEndSOCTB.setText("");
+			rpEVStartTimeTB.setText("");
+			rpEVEndTimeTB.setText("");
+			rpEVChargeStratCB.getSelectionModel().select(0);
 		}else{
 			rpElecVehiclePane.setDisable(false);
-			rpEVToggle = true;
+			rpGroups.get(rpGroupIndex).setEvChecked(true);
 		}
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
 	public void rpInvertCBClicked(ActionEvent event) {
-		if(rpInvertToggle){
+		if(rpGroups.get(rpGroupIndex).isInverterChecked()){
 			rpInverterPane.setDisable(true);
-			rpInvertToggle = false;
+			rpGroups.get(rpGroupIndex).setInverterChecked(false);
+			RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+			rpg.setInverterChecked(false);
+			rpg.setInvertItem(0, -1);
+			rpg.setInvertItem(1, -1);
+			rpInvertCapTB.setText("");
+			rpInvertEfficiencyTB.setText("");
 		}else{
 			rpInverterPane.setDisable(false);
-			rpInvertToggle = true;
+			rpGroups.get(rpGroupIndex).setInverterChecked(true);
 		}
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
 	public void rpSolarCBClicked(ActionEvent event) {
-		if(rpSolarToggle){
+		if(rpGroups.get(rpGroupIndex).isSolarChecked()){
 			rpSolarPane.setDisable(true);
-			rpSolarToggle = false;
+			rpGroups.get(rpGroupIndex).setSolarChecked(false);
+			rpGroups.get(rpGroupIndex).setInverterChecked(false);
+			RatepayerGroup rpg = rpGroups.get(rpGroupIndex);
+			rpg.setInverterChecked(false);
+			rpg.setSolarChecked(false);
+			rpg.setInvertItem(0, -1);
+			rpg.setInvertItem(1, -1);
+			rpg.setSolarPVItem(0, -1);
+			rpg.setSolarPVItem(1, -181);
+			rpg.setSolarPVItem(2, -1);
+			rpSolarCapTB.setText("");
+			rpSolarAzTB.setText("");
+			rpSolarSlopeTB.setText("");
+			rpInvertCapTB.setText("");
+			rpInvertEfficiencyTB.setText("");
 		}else{
 			rpSolarPane.setDisable(false);
-			rpSolarToggle = true;
+			rpGroups.get(rpGroupIndex).setSolarChecked(true);
 		}
 	}
 	// Event Listener on Button.onAction
@@ -2157,66 +2191,74 @@ public class SceneController extends AnchorPane{
 					fr.write("Number of Customers:\t" + rpg.getNum());
 					fr.close();
 
-					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
-					if(!file.exists()){
-						file.createNewFile();
+					if(rpg.isSolarChecked()){
+						file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "SolarPV.txt");
+						if(!file.exists()){
+							file.createNewFile();
+						}
+						fr = new FileWriter(file);
+						fr.write("Capacity\t" + rpg.getSolarPVItem(0));
+						fr.write(nl);
+						fr.write("Slope\t" + rpg.getSolarPVItem(2));
+						fr.write(nl);
+						fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
+						fr.close();
 					}
-					fr = new FileWriter(file);
-					fr.write("Capacity\t" + rpg.getSolarPVItem(0));
-					fr.write(nl);
-					fr.write("Slope\t" + rpg.getSolarPVItem(2));
-					fr.write(nl);
-					fr.write("Azimuth\t" + rpg.getSolarPVItem(1));
-					fr.close();
 
-					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
-					if(!file.exists()){
-						file.createNewFile();
+					if(rpg.isInverterChecked()){
+						file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Inverter.txt");
+						if(!file.exists()){
+							file.createNewFile();
+						}
+						fr = new FileWriter(file);
+						fr.write("Capacity\t" + rpg.getInvertItem(0));
+						fr.write(nl);
+						fr.write("Efficiency\t" + rpg.getInvertItem(1));
+						fr.close();
 					}
-					fr = new FileWriter(file);
-					fr.write("Capacity\t" + rpg.getInvertItem(0));
-					fr.write(nl);
-					fr.write("Efficiency\t" + rpg.getInvertItem(1));
-					fr.close();
 
-					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
-					if(!file.exists()){
-						file.createNewFile();
+					if(rpg.isBatteryChecked()){
+						file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "Battery.txt");
+						if(!file.exists()){
+							file.createNewFile();
+						}
+						fr = new FileWriter(file);
+						fr.write("Capacity\t" + rpg.getBSItem(0));
+						fr.write(nl);
+						fr.write("Efficiency\t" + rpg.getBSItem(1));
+						fr.write(nl);
+						fr.write("MinSOC\t" + rpg.getBSItem(2));
+						fr.write(nl);
+						fr.write("MaxCRate\t" + rpg.getBSItem(3));
+						fr.close();
 					}
-					fr = new FileWriter(file);
-					fr.write("Capacity\t" + rpg.getBSItem(0));
-					fr.write(nl);
-					fr.write("Efficiency\t" + rpg.getBSItem(1));
-					fr.write(nl);
-					fr.write("MinSOC\t" + rpg.getBSItem(2));
-					fr.write(nl);
-					fr.write("MaxCRate\t" + rpg.getBSItem(3));
-					fr.close();
 
 					//String[] start = Double.toString(rpg.getEVItem(5)).split(".");
 					//String[] end = Double.toString(rpg.getEVItem(6)).split(".");
 
-					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
-					if(!file.exists()){
-						file.createNewFile();
+					if(rpg.isEvChecked()){
+						file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "input" + File.separator + "ElectricVehicle.txt");
+						if(!file.exists()){
+							file.createNewFile();
+						}
+						fr = new FileWriter(file);
+						fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
+						fr.write(nl);
+						fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
+						fr.write(nl);
+						fr.write("Capacity\t" + rpg.getEVItem(0));
+						fr.write(nl);
+						fr.write("Efficiency\t" + rpg.getEVItem(2));
+						fr.write(nl);
+						fr.write("StartingSOC\t" + rpg.getEVItem(3));
+						fr.write(nl);
+						fr.write("EndingSOC\t" + rpg.getEVItem(4));
+						fr.write(nl);
+						fr.write("StartTime\t" + (int)rpg.getEVItem(5));
+						fr.write(nl);
+						fr.write("EndTime \t" + (int)rpg.getEVItem(6));
+						fr.close();
 					}
-					fr = new FileWriter(file);
-					fr.write("ChargerType\t" + ((int)rpg.getEVItem(1)));
-					fr.write(nl);
-					fr.write("ChargingStrategy\t" + ((int)rpg.getEVItem(7)));
-					fr.write(nl);
-					fr.write("Capacity\t" + rpg.getEVItem(0));
-					fr.write(nl);
-					fr.write("Efficiency\t" + rpg.getEVItem(2));
-					fr.write(nl);
-					fr.write("StartingSOC\t" + rpg.getEVItem(3));
-					fr.write(nl);
-					fr.write("EndingSOC\t" + rpg.getEVItem(4));
-					fr.write(nl);
-					fr.write("StartTime\t" + (int)rpg.getEVItem(5));
-					fr.write(nl);
-					fr.write("EndTime \t" + (int)rpg.getEVItem(6));
-					fr.close();
 
 					File lfile = new File(rpg.getLoadFile());
 
@@ -2229,7 +2271,14 @@ public class SceneController extends AnchorPane{
 						}
 					}
 					// TODO ============================================= FILE STRUCTURE STUFF
-					CalcProcess cp = new CalcProcess(File.separator + "Ratepayers" + File.separator + rpg.getName() + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() + ",101", this);
+					CalcProcess cp = new CalcProcess(File.separator + "Ratepayers" + File.separator + rpg.getName() + "," 
+							+ rpLoadDataTB.getText() + "," 
+							+ hourlyDataFileTB.getText() 
+							+ ",101," 
+							+ (rpg.isSolarChecked() ? 1 : 0) + "," 
+							+ (rpg.isInverterChecked() ? 1 : 0) + "," 
+							+ (rpg.isBatteryChecked() ? 1 : 0) + "," 
+							+ (rpg.isEvChecked() ? 1 : 0), this);
 					cp.run();
 				}
 			}
@@ -2356,45 +2405,145 @@ public class SceneController extends AnchorPane{
 		rpRateSchedule.getSelectionModel().select(rpg.getRateSchedule());
 		rpLoadDataTB.setText(rpg.getLoadFile());
 		RatepayerGroup rg = session.getRpGroups().get(rpGroupIndex);
-		rpSolarCapTB.setText(Double.toString(rg.getSolarPVItem(0)));
-		rpSolarAzTB.setText(Double.toString(rg.getSolarPVItem(1)));
-		rpSolarSlopeTB.setText(Double.toString(rg.getSolarPVItem(2)));
-		rpInvertCapTB.setText(Double.toString(rg.getInvertItem(0)));
-		rpInvertEfficiencyTB.setText(Double.toString(rg.getInvertItem(1)));
-		rpBSCapTB.setText(Double.toString(rg.getBSItem(0)));
-		rpBSRoundEffTB.setText(Double.toString(rg.getBSItem(1)));
-		rpBSMinSOCTB.setText(Double.toString(rg.getBSItem(2)));
-		rpBSMaxCTB.setText(Double.toString(rg.getBSItem(3)));
-		rpEVBatteryCapTB.setText(Double.toString(rg.getEVItem(0)));
-		rpEVChargerCB.getSelectionModel().select((int)rg.getEVItem(1));
-		rpEVChargeEffTB.setText(Double.toString(rg.getEVItem(2)));
-		rpEVStartSOCTB.setText(Double.toString(rg.getEVItem(3)));
-		rpEVEndSOCTB.setText(Double.toString(rg.getEVItem(4)));
-		if(rg.getEVItem(5)>0){
-			String[] s = Double.toString(rg.getEVItem(5)).split("\\.");
-			if(s[0].length() == 1){
-				s[0] = "0" + s[0];
+
+		if(rg.isSolarChecked()){
+			if(rg.getSolarPVItem(0) < 0){
+				rpSolarCapTB.setText("");
+			}else{
+				rpSolarCapTB.setText(Double.toString(rg.getSolarPVItem(0)));
 			}
-			if(s[1].length() == 1){
-				s[1] += "0";
+			if(rg.getSolarPVItem(1) < -180){
+				rpSolarAzTB.setText("");
+			}else{
+				rpSolarAzTB.setText(Double.toString(rg.getSolarPVItem(1)));
 			}
-			rpEVStartTimeTB.setText(s[0] + ":" + s[1]);
+			if(rg.getSolarPVItem(2) < 0){
+				rpSolarSlopeTB.setText("");
+			}else{
+				rpSolarSlopeTB.setText(Double.toString(rg.getSolarPVItem(2)));
+			}
 		}else{
-			rpEVStartTimeTB.setText("00:00");
+			rpSolarCB.setSelected(false);
+			rpSolarCapTB.setText("");
+			rpSolarAzTB.setText("");
+			rpSolarSlopeTB.setText("");
+			rpInvertCapTB.setText("");
+			rpInvertEfficiencyTB.setText("");
 		}
-		if(rg.getEVItem(6)>0){
-			String[] e = Double.toString(rg.getEVItem(6)).split("\\.");
-			if(e[0].length() == 1){
-				e[0] = "0" + e[0];
+
+		if(rg.isInverterChecked()){
+			if(rg.getInvertItem(0) < 0){
+				rpInvertCapTB.setText("");
+			}else{
+				rpInvertCapTB.setText(Double.toString(rg.getInvertItem(0)));
 			}
-			if(e[1].length() == 1){
-				e[1] += "0";
+			if(rg.getInvertItem(1) < 0){
+				rpInvertEfficiencyTB.setText("");
+			}else{
+				rpInvertEfficiencyTB.setText(Double.toString(rg.getInvertItem(1)));
 			}
-			rpEVEndTimeTB.setText(e[0] + ":" + e[1]);
 		}else{
-			rpEVEndTimeTB.setText("00:00");
+			rpInvertCB.setSelected(false);
+			rpInvertCapTB.setText("");
+			rpInvertEfficiencyTB.setText("");
 		}
-		rpEVChargeStratCB.getSelectionModel().select((int)rg.getEVItem(7));
+
+		if(rg.isBatteryChecked()){
+			if(rg.getBSItem(0) < 0){
+				rpBSCapTB.setText("");
+			}else{
+				rpBSCapTB.setText(Double.toString(rg.getBSItem(0)));
+			}
+			if(rg.getBSItem(1) < 0){
+				rpBSRoundEffTB.setText("");
+			}else{
+				rpBSRoundEffTB.setText(Double.toString(rg.getBSItem(1)));
+			}
+			if(rg.getBSItem(2) < 0){
+				rpBSMinSOCTB.setText("");
+			}else{
+				rpBSMinSOCTB.setText(Double.toString(rg.getBSItem(2)));
+			}
+			if(rg.getBSItem(3) < 0){
+				rpBSMaxCTB.setText("");
+			}else{
+				rpBSMaxCTB.setText(Double.toString(rg.getBSItem(3)));
+			}
+		}else{
+			rpBSCB.setSelected(false);
+			rpBSCapTB.setText("");
+			rpBSRoundEffTB.setText("");
+			rpBSMinSOCTB.setText("");
+			rpBSMaxCTB.setText("");
+		}
+
+		if(rg.isBatteryChecked()){
+			if(rg.getEVItem(0) < 0){
+				rpEVBatteryCapTB.setText("");
+			}else{
+				rpEVBatteryCapTB.setText(Double.toString(rg.getEVItem(0)));
+			}
+			if(rg.getEVItem(1) < 0){
+				rpEVChargerCB.getSelectionModel().select(0);
+			}else{
+				rpEVChargerCB.getSelectionModel().select((int)rg.getEVItem(1));
+			}
+			if(rg.getEVItem(2) < 0){
+				rpEVChargeEffTB.setText("");
+			}else{
+				rpEVChargeEffTB.setText(Double.toString(rg.getEVItem(2)));
+			}
+			if(rg.getEVItem(3) < 0){
+				rpEVStartSOCTB.setText("");
+			}else{
+				rpEVStartSOCTB.setText(Double.toString(rg.getEVItem(3)));
+			}
+			if(rg.getEVItem(4) < 0){
+				rpEVEndSOCTB.setText("");
+			}else{
+				rpEVEndSOCTB.setText(Double.toString(rg.getEVItem(4)));
+			}
+			if(rg.getEVItem(5)>0){
+				String[] s = Double.toString(rg.getEVItem(5)).split("\\.");
+				if(s[0].length() == 1){
+					s[0] = "0" + s[0];
+				}
+				if(s[1].length() == 1){
+					s[1] += "0";
+				}
+				rpEVStartTimeTB.setText(s[0] + ":" + s[1]);
+			}else{
+				rpEVStartTimeTB.setText("");
+			}
+			if(rg.getEVItem(6)>0){
+				String[] e = Double.toString(rg.getEVItem(6)).split("\\.");
+				if(e[0].length() == 1){
+					e[0] = "0" + e[0];
+				}
+				if(e[1].length() == 1){
+					e[1] += "0";
+				}
+				rpEVEndTimeTB.setText(e[0] + ":" + e[1]);
+			}else{
+				rpEVEndTimeTB.setText("");
+			}
+			if(rg.getEVItem(7) < 0){
+				rpEVChargeStratCB.getSelectionModel().select(0);
+			}else{
+				rpEVChargeStratCB.getSelectionModel().select((int)rg.getEVItem(7));
+			}
+		}else{
+			rpEVCB.setSelected(false);
+			rpEVBatteryCapTB.setText("");
+			rpEVChargerCB.getSelectionModel().select(0);
+			rpEVChargeEffTB.setText("");
+			rpEVStartSOCTB.setText("");
+			rpEVEndSOCTB.setText("");
+			rpEVStartTimeTB.setText("");
+			rpEVEndTimeTB.setText("");
+			rpEVChargeStratCB.getSelectionModel().select(0);
+		}
+
 		// Outputs
 		double[] loadOut = rpg.getLoadOut();
 		rpPeakLoadTB.setText(Double.toString(loadOut[0]));
@@ -3303,7 +3452,7 @@ public class SceneController extends AnchorPane{
 	public void populateOutput(String ret){
 		try {
 			String[] type = ret.split(",");
-			if(type[type.length-1].equals("101")){
+			if(type[3].equals("101")){
 				numStrataCalc++;
 				String[] split = ret.split(",")[0].split("\\" + File.separator);
 				String fileName = split[split.length-1];
@@ -3316,93 +3465,114 @@ public class SceneController extends AnchorPane{
 						index = x;
 					}
 				}
-				File file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Battery.txt");
-				if(!file.exists()){
-					System.out.println("Output error");
-				}
-				BufferedReader br = new BufferedReader(new FileReader(file));
+				File file;
+				BufferedReader br;
 				String input;
 				int count = 0;
 				String[] tmp;
-				String[] values = new String[4];
-				while((input = br.readLine()) != null){
-					if(count > 4 && count < 9){
-						tmp = input.split(" ");
+				String[] values;
+				double[] dValues;
+
+				if(rpg.isBatteryChecked()){
+					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Battery.txt");
+					if(!file.exists()){
+						System.out.println("Output error");
+					}
+					br = new BufferedReader(new FileReader(file));
+
+
+					values = new String[4];
+					while((input = br.readLine()) != null){
+						if(count > 4 && count < 9){
+							tmp = input.split(" ");
+							try{
+								values[count - 5] = tmp[tmp.length-1];
+							}catch (Exception e){
+								e.printStackTrace();
+								values[count - 5] = "0.0";
+							}
+						}
+						count++;
+					}
+
+					dValues = new double[4];
+
+					for(int x = 0; x < dValues.length; x++){
 						try{
-							values[count - 5] = tmp[tmp.length-1];
-						}catch (Exception e){
-							e.printStackTrace();
-							values[count - 5] = "0.0";
+							dValues[x] = Double.parseDouble(values[x]);
+						}catch(NumberFormatException e){
+
 						}
 					}
-					count++;
+
+					rpg.setBsOut(dValues);
+				}else{
+					rpg.setBsOut(zeros(new double[4]));
 				}
 
-				double[] dValues = new double[4];
-
-				for(int x = 0; x < dValues.length; x++){
-					try{
-						dValues[x] = Double.parseDouble(values[x]);
-					}catch(NumberFormatException e){
-
+				if(rpg.isInverterChecked()){
+					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Converter.txt");
+					br = new BufferedReader(new FileReader(file));
+					count = 0;
+					values = new String[4];
+					while((input = br.readLine()) != null){
+						if(count > 4 && count < 9){
+							tmp = input.split(" ");
+							try{
+								values[count - 5] = tmp[tmp.length-1];
+							}catch (Exception e){
+								values[count - 5] = "0.0";
+							}
+						}
+						count++;
 					}
-				}
 
-				rpg.setBsOut(dValues);
+					dValues = new double[4];
 
-				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Converter.txt");
-				br = new BufferedReader(new FileReader(file));
-				count = 0;
-				while((input = br.readLine()) != null){
-					if(count > 4 && count < 9){
-						tmp = input.split(" ");
+					for(int x = 0; x < dValues.length; x++){
 						try{
-							values[count - 5] = tmp[tmp.length-1];
-						}catch (Exception e){
-							values[count - 5] = "0.0";
+							dValues[x] = Double.parseDouble(values[x]);
+						}catch(NumberFormatException e){
+
 						}
 					}
-					count++;
+
+					rpg.setInvertOut(dValues);
+				}else{
+					rpg.setInvertOut(zeros(new double[4]));
 				}
 
-				dValues = new double[4];
-
-				for(int x = 0; x < dValues.length; x++){
-					try{
-						dValues[x] = Double.parseDouble(values[x]);
-					}catch(NumberFormatException e){
-
+				if(rpg.isEvChecked()){
+					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "ElectricVehicle.txt");
+					br = new BufferedReader(new FileReader(file));
+					count = 0;
+					values = new String[4];
+					while((input = br.readLine()) != null){
+						if(count > 4 && count < 9){
+							tmp = input.split(" ");
+							try{
+								values[count - 5] = tmp[tmp.length-1];
+							}catch (Exception e){
+								values[count - 5] = "0.0";
+							}
+						}
+						count++;
 					}
-				}
 
-				rpg.setInvertOut(dValues);
+					dValues = new double[4];
 
-				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "ElectricVehicle.txt");
-				br = new BufferedReader(new FileReader(file));
-				count = 0;
-				while((input = br.readLine()) != null){
-					if(count > 4 && count < 9){
-						tmp = input.split(" ");
+					for(int x = 0; x < dValues.length; x++){
 						try{
-							values[count - 5] = tmp[tmp.length-1];
-						}catch (Exception e){
-							values[count - 5] = "0.0";
+							dValues[x] = Double.parseDouble(values[x]);
+						}catch(NumberFormatException e){
+
 						}
 					}
-					count++;
+
+					rpg.setEvOut(dValues);
+				}else{
+					rpg.setEvOut(zeros(new double[4]));
 				}
-
-				dValues = new double[4];
-
-				for(int x = 0; x < dValues.length; x++){
-					try{
-						dValues[x] = Double.parseDouble(values[x]);
-					}catch(NumberFormatException e){
-
-					}
-				}
-
-				rpg.setEvOut(dValues);
 
 				values = new String[6];
 				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "Load.txt");
@@ -3432,34 +3602,38 @@ public class SceneController extends AnchorPane{
 				}
 				rpg.setLoadOut(dValues);
 
-				values = new String[8];
-				file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarPV.txt");
-				br = new BufferedReader(new FileReader(file));
-				count = 0;
-				while((input = br.readLine()) != null){
-					if(count > 4 && count < 13){
-						tmp = input.split(" ");
-						try{
-							values[count - 5] = tmp[tmp.length-1];
-						}catch (Exception e){
-							values[count - 5] = "0.0";
+				if(rpg.isSolarChecked()){
+					values = new String[8];
+					file = new File("." + File.separator + "data" + File.separator + "Ratepayers" + File.separator + rpg.getName() + File.separator + "output" + File.separator + "SolarPV.txt");
+					br = new BufferedReader(new FileReader(file));
+					count = 0;
+					while((input = br.readLine()) != null){
+						if(count > 4 && count < 13){
+							tmp = input.split(" ");
+							try{
+								values[count - 5] = tmp[tmp.length-1];
+							}catch (Exception e){
+								values[count - 5] = "0.0";
+							}
 						}
+						count++;
 					}
-					count++;
+
+					dValues = new double[5];
+					try{
+						dValues[0] = Double.parseDouble(values[2]);
+						dValues[1] = Double.parseDouble(values[3]);
+						dValues[2] = Double.parseDouble(values[4]);
+						dValues[3] = Double.parseDouble(values[5]);
+						dValues[4] = Double.parseDouble(values[7]);
+					}catch(NumberFormatException e){
+
+					}
+
+					rpg.setSolarOut(dValues);
+				}else{
+					rpg.setSolarOut(zeros(new double[5]));
 				}
-
-				dValues = new double[5];
-				try{
-					dValues[0] = Double.parseDouble(values[2]);
-					dValues[1] = Double.parseDouble(values[3]);
-					dValues[2] = Double.parseDouble(values[4]);
-					dValues[3] = Double.parseDouble(values[5]);
-					dValues[4] = Double.parseDouble(values[7]);
-				}catch(NumberFormatException e){
-
-				}
-
-				rpg.setSolarOut(dValues);
 
 				ObservableList<SolarMonthly> sm = solarTable.getItems();
 
@@ -3495,7 +3669,7 @@ public class SceneController extends AnchorPane{
 				solarGraph.setData(s);
 
 				if(numStrataCalc == numStrataCalcMax){
-					CalcProcess cp = new CalcProcess(File.separator + "Ratepayers" + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() + ",102", this);
+					CalcProcess cp = new CalcProcess(File.separator + "Ratepayers" + "," + rpLoadDataTB.getText() + "," + hourlyDataFileTB.getText() + ",102,0,0,0,0", this);
 					cp.run();
 				}
 			}else{
@@ -3632,7 +3806,9 @@ public class SceneController extends AnchorPane{
 				}
 				gridStrataCB.setItems(list);
 				gridStrataCB.getSelectionModel().select(0);
-				rpStrataCB.getSelectionModel().select(-1);
+				try{
+					rpStrataCB.getSelectionModel().select(-1);
+				}catch (Exception ex){}
 				rpStrataCB.getSelectionModel().select(0);
 			}
 
@@ -3793,5 +3969,11 @@ public class SceneController extends AnchorPane{
 		}
 		if (!f.delete())
 			throw new FileNotFoundException("Failed to delete file: " + f);
+	}
+	public double[] zeros(double[] array){
+		for(int x = 0; x < array.length; x++){
+			array[x] = 0.0d;
+		}
+		return array;
 	}
 }

@@ -1,3 +1,3 @@
 Ratepayer Group:	s1
 Rate Schedule:	E-23
-Number of Customers:	15000
+Number of Customers:	124
