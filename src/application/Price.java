@@ -31,6 +31,8 @@ public class Price {
 		this.threshold = threshold;
 	}
 	
-	
+	public String toString(){
+		return value + "," + threshold;
+	}
 
 }

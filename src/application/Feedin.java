@@ -30,5 +30,8 @@ public class Feedin {
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
 	}
+	public String toString(){
+		return value + "," + threshold;
+	}
 
 }

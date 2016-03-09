@@ -23,6 +23,9 @@ public class RatepayerGroup {
 	private double[] drOut;
 	private double[] interconOut;
 	private double[] gridOut;
+	public static int NAME = 0, NUMBER_CUST = 1, RATE_SCHEDULE = 2, 
+			LOAD_FILE =3, SOLAR_CHECKED = 4, INVERTER_CHECKED = 5, 
+			BATTERY_CHECKED = 6, EV_CHECKED = 7;
 	
 	public RatepayerGroup(){
 		name = "";
@@ -324,6 +327,33 @@ public class RatepayerGroup {
 		this.evChecked = evChecked;
 	}
 	
+	public String toString(){
+		String ret = name + "," + num + "," + rateSchedule + "," 
+				   + loadFile + "," + (solarChecked?1:0) + "," 
+				   + (inverterChecked?1:0) + "," 
+				   + (batteryChecked?1:0) + "," 
+				   + (evChecked?1:0) + "\n";
+		for(int x = 0; x < solarPV.length; x++){
+			ret += solarPV[x] + ",";
+		}
+		ret = ret.substring(0, ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < inverter.length; x++){
+			ret += inverter[x] + ",";
+		}
+		ret = ret.substring(0, ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < batteryStorage.length; x++){
+			ret += batteryStorage[x] + ",";
+		}
+		ret = ret.substring(0, ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < electricVehicle.length; x++){
+			ret += electricVehicle[x] + ",";
+		}
+		ret = ret.substring(0, ret.length()-1);
+		return ret;
+	}
 	
 
 }

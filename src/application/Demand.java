@@ -31,4 +31,7 @@ public class Demand {
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
 	}
+	public String toString(){
+		return value + "," + threshold;
+	}
 }

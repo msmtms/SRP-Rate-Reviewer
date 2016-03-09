@@ -85,6 +85,8 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 
 	// Derek: one call for solar information, do after the solar resource file is loaded
 	int argc = std::atoi(x[3].c_str());
+	unsigned int numTimesteps = std::atoi(x[8].c_str());
+
 	if (argc == ID_ESDE_CALCULATE_SOLAR) {
 		std::cout << "Calculating solar" << std::endl;
 		// Derek --> replace these with your own data from the GUI
@@ -105,7 +107,6 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 	// Derek: one call for all other information
 	if (argc == ID_ESDE_CALCULATE_ENERGY_SYSTEMS) {
 		std::cout << "Calculating Energy" << std::endl;
-		unsigned int numTimesteps = 8760;
 		EnergySystem energySystem(0, x[0]);
 
 		int solar = std::atoi(x[4].c_str());
@@ -140,6 +141,7 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 			energySystem.AddElectricVehicle(dataElectricVehicle);
 		}
 
+		std::cout << "time steps: " << numTimesteps << std::endl;
 		// Step 2: init energy system and all objects
 		energySystem.Init(numTimesteps);
 
@@ -160,7 +162,6 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 
 	if (argc == ID_ESDE_CALCULATE_GRID) {
 		std::cout << "Calculating Grid" << std::endl;
-		unsigned int numTimesteps = 8760;
 		std::string tempString;
 
 		std::map< std::string, EnergySystem > energySystems;
@@ -193,11 +194,20 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 		std::map< std::string, RateSchedule > rateSchedules;
 
 		std::vector< std::string > rateScheduleNames;
-		rateScheduleNames.push_back(std::string("E-23"));
-		rateScheduleNames.push_back(std::string("E-26"));
-		rateScheduleNames.push_back(std::string("E-27"));
-		rateScheduleNames.push_back(std::string("E-29"));
-		rateScheduleNames.push_back(std::string("EZ-3 (E-21)"));
+		DIR *dir;
+		struct dirent *ent;
+		int count = 0;
+		if ((dir = opendir(rateDir.c_str())) != NULL) {
+			while ((ent = readdir(dir)) != NULL) {
+				std::cout << "Processing Strata..." << std::endl;
+				if (count >= 2) {
+					rateScheduleNames.push_back(std::string(ent->d_name));
+					std::cout << "Rate " << (count-1) << ": " << ent->d_name << std::endl;
+				}
+				count++;
+			}
+			closedir(dir);
+		}
 
 		for (size_t i = 0; i<rateScheduleNames.size(); ++i) {
 			rateSchedules.insert(std::make_pair(rateScheduleNames.at(i), ESDELoader::LoadRateSchedule(rateDir, rateScheduleNames.at(i))));
@@ -207,15 +217,13 @@ JNIEXPORT jstring JNICALL Java_application_RateReviewerProxy_initInterface (JNIE
 		std::vector< std::string > ratepayerNames;
 
 		std::cout << "Grabbing Strata" << std::endl;
-		DIR *dir;
-		struct dirent *ent;
-		int count = 0;
+		count = 0;
 		if ((dir = opendir(ratepayerDir.c_str())) != NULL) {
 			while ((ent = readdir(dir)) != NULL) {
 				std::cout << "Processing Strata..." << std::endl;
 				if (count >= 2){
 					ratepayerNames.push_back(std::string(ent->d_name));
-					std::cout << "Strata names: " << ent->d_name << std::endl;
+					std::cout << "Strata " << (count -1) << ": " << ent->d_name << std::endl;
 				}
 				count++;
 			}

@@ -1,0 +1,9 @@
+Summer on-peak	0.1957,0%0,0%0,0
+Summer off-peak	0.0776,0%0,0%0,0
+Summer super off	0.0627,0%0,0%0,0
+Summer Peak on-peak	0.2226,0%0,0%0,0
+Summer Peak off-peak	0.0781,0%0,0%0,0
+Summer Peak super off	0.0630,0%0,0%0,0
+Winter on-peak	0.1009,0%0,0%0,0
+Winter off-peak	0.0746,0%0,0%0,0
+Winter super off	0.0589,0%0,0%0,0

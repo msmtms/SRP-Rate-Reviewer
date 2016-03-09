@@ -15,6 +15,9 @@ public class Rate {
 	private boolean singlePrice;
 	private boolean singleFeedin;
 	private boolean singleDemand;
+	public static int RATE = 0, COLOR = 1, PRICE = 2, 
+			FEEDIN = 3, DEMAND = 4, SINGLE_PRICE = 5, 
+			SINGLE_FEEDIN = 6, SINGLE_DEMAND = 7;
 
 	public Rate() {
 		this.rate = "";
@@ -121,7 +124,15 @@ public class Rate {
 		}
 	}
 	public void setPrice(int index, Price price){
-		prices.set(index, price);
+		if(index >= prices.size()){
+			prices.add(price);
+		}else{
+			prices.set(index, price);
+		}
+	}
+	
+	public void addPrice(Price p){
+		prices.add(p);
 	}
 
 	public String getFeedin() {
@@ -160,7 +171,15 @@ public class Rate {
 		}
 	}
 	public void setFeedin(int index, Feedin feedin){
-		feedins.set(index, feedin);
+		if(index >= feedins.size()){
+			feedins.add(feedin);
+		}else{
+			feedins.set(index, feedin);
+		}
+	}
+	
+	public void addFeedin(Feedin f){
+		feedins.add(f);
 	}
 	public String getDemand() {
 		if(singleDemand){
@@ -197,8 +216,15 @@ public class Rate {
 			}
 		}
 	}
-	public void setDemand(int index, Feedin demand){
-		feedins.set(index, demand);
+	public void setDemand(int index, Demand demand){
+		if(index >= demands.size()){
+			demands.add(demand);
+		}else{
+			demands.set(index, demand);
+		}
+	}
+	public void addDemand(Demand d){
+		demands.add(d);
 	}
 	public String getColor() {
 		return color;
@@ -217,5 +243,28 @@ public class Rate {
 
 	public void setDemands(ObservableList<Demand> demands) {
 		this.demands = demands;
+	}
+	
+	public String toString(){
+		String ret = rate + "," + color + "," + price + "," 
+				   + feedin + "," + demand + "," 
+				   + (singlePrice ? 1 : 0) + "," 
+				   + (singleFeedin ? 1 : 0) + "," 
+				   + (singleDemand ? 1 : 0) + "\n";
+		for(int x = 0; x < prices.size(); x++){
+			ret += prices.get(x).toString() + "\t";
+		}
+		ret = ret.substring(0,ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < feedins.size(); x++){
+			ret += feedins.get(x).toString() + "\t";
+		}
+		ret = ret.substring(0,ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < demands.size(); x++){
+			ret += demands.get(x).toString() + "\t";
+		}
+		ret = ret.substring(0,ret.length()-1);
+		return ret;
 	}
 }

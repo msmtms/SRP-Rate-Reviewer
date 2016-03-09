@@ -8,6 +8,8 @@ import javafx.collections.ObservableList;
 public class Session {
 	private String author;
 	private String notes;
+	private boolean solarFileChecked;
+	private String hourlyFile;
 	private String[] GHI;
 	private String lat;
 	private String lon;
@@ -20,12 +22,20 @@ public class Session {
 	private ObservableList<RateSchedule> rateSchedules;
 	private ObservableList<RatepayerGroup> rpGroups;
 	private Grid grid;
+	public static int AUTHOR = 0, NOTES = 1, INPUT_FILE = 2, INPUT_FILE_CHECK = 3, LAT = 16, LON = 17, 
+			NORTH_SOUTH = 18, EAST_WEST = 19, TIMEZONE = 20, 
+			DAYLIGHT_SAVINGS = 21, SOLAR_START = 22, SOLAR_END = 23;
 	
 	
 	public Session() {
 		this.author = "";
 		this.notes = "";
+		this.solarFileChecked = false;
+		this.hourlyFile = "";
 		GHI = new String[12];
+		for(int x = 0; x < GHI.length; x++){
+			GHI[x] = "";
+		}
 		this.lat = "";
 		this.lon = "";
 		this.north = true;
@@ -45,6 +55,8 @@ public class Session {
 			ObservableList<RatepayerGroup> rpGroups, Grid grid) {
 		this.author = author;
 		this.notes = notes;
+		this.solarFileChecked = false;
+		this.hourlyFile = "";
 		GHI = gHI;
 		this.lat = lat;
 		this.lon = lon;
@@ -142,5 +154,35 @@ public class Session {
 	public void setGrid(Grid grid) {
 		this.grid = grid;
 	}
-
+	public boolean isSolarFileChecked() {
+		return solarFileChecked;
+	}
+	public void setSolarFileChecked(boolean solarFileChecked) {
+		this.solarFileChecked = solarFileChecked;
+	}
+	
+	public String getHourlyFile() {
+		return hourlyFile;
+	}
+	public void setHourlyFile(String hourlyFile) {
+		this.hourlyFile = hourlyFile;
+	}
+	public String toString(){
+		String ret = author + "," 
+				   + notes + "," 
+				   + hourlyFile + "," 
+				   + (solarFileChecked ? 1 : 0) + ",";
+		for(int x = 0; x < GHI.length; x++){
+			ret += GHI[x] + ",";
+		}
+		ret += lat + "," 
+			 + lon + "," 
+			 + (north ? 1 : 0) + "," 
+			 + (east ? 1 : 0) + "," 
+			 + timezone + "," 
+			 + (daySave ? 1 : 0) + "," 
+			 + solarStart + "," 
+			 + solarEnd;
+		return ret;
+	}
 }

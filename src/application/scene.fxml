@@ -19,8 +19,8 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="authorTB" layoutX="124.0" layoutY="77.0" />
-                        <TextArea fx:id="notesTB" layoutX="61.0" layoutY="158.0" prefHeight="469.0" prefWidth="984.0" wrapText="true" />
+                        <TextField fx:id="authorTB" layoutX="124.0" layoutY="77.0" onKeyReleased="#onAuthorChanged" />
+                        <TextArea fx:id="notesTB" layoutX="61.0" layoutY="158.0" onKeyReleased="#onNotesChanged" prefHeight="469.0" prefWidth="984.0" wrapText="true" />
                      </children>
                   </AnchorPane>
                </content>
@@ -1181,11 +1181,17 @@
                         <Pane layoutX="46.0" layoutY="33.0" prefHeight="147.0" prefWidth="281.0" styleClass="solarbg">
                            <children>
                               <Label layoutX="38.0" layoutY="14.0" styleClass="panesubs" text="Simulate" />
-                              <Button layoutX="38.0" layoutY="54.0" mnemonicParsing="false" onAction="#onRunClicked" prefHeight="57.0" prefWidth="207.0" text="Run Simulation">
+                              <Button layoutX="37.0" layoutY="53.0" mnemonicParsing="false" onAction="#onRunClicked" prefHeight="32.0" prefWidth="207.0" text="Run Simulation">
                                  <font>
                                     <Font name="Arial" size="22.0" />
                                  </font>
                               </Button>
+                              <ComboBox fx:id="timeStepCB" layoutX="77.0" layoutY="108.0" prefHeight="25.0" prefWidth="167.0" />
+                              <Label layoutX="14.0" layoutY="113.0" prefHeight="15.0" prefWidth="67.0" text="Time Step:">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
                            </children>
                         </Pane>
                         <Pane layoutX="354.0" layoutY="33.0" prefHeight="147.0" prefWidth="877.0" styleClass="solarbg">
@@ -1400,11 +1406,6 @@
                                     </GridPane>
                                  </children>
                               </Pane>
-                              <Button layoutX="982.0" layoutY="380.0" mnemonicParsing="false" onAction="#onExportClicked" prefHeight="57.0" prefWidth="154.0" text="Export">
-                                 <font>
-                                    <Font name="Arial" size="22.0" />
-                                 </font>
-                              </Button>
                               <Pane fx:id="gridGraphPane" layoutX="31.0" layoutY="50.0" prefHeight="392.0" prefWidth="908.0" />
                               <Slider fx:id="gridBeginSlider" blockIncrement="100.0" layoutX="116.0" layoutY="450.0" max="8761.0" onMouseReleased="#onBeginDrag" prefHeight="14.0" prefWidth="811.0" />
                               <Slider fx:id="gridEndSlider" blockIncrement="100.0" layoutX="116.0" layoutY="474.0" max="8761.0" onMouseReleased="#onEndDrag" prefHeight="14.0" prefWidth="811.0" value="8761.0" />

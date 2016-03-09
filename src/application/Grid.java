@@ -155,4 +155,19 @@ public class Grid {
 	public void setLoadFactor(double loadFactor) {
 		this.loadFactor = loadFactor;
 	}
+	public String toString(){
+		return name + "," 
+			 + totalCharges + "," 
+			 + interconCharges + "," 
+			 + energyCharges + "," 
+			 + demandCharges + "," 
+			 + energyPurchased + "," 
+			 + energySold + "," 
+			 + netPurchases + "," 
+			 + peakLoad + "," 
+			 + averageLoad + "," 
+			 + energyUseDay + "," 
+			 + energyUseYear + "," 
+			 + loadFactor;
+	}
 }

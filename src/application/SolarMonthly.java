@@ -59,5 +59,8 @@ public class SolarMonthly {
 	public void setMonth(String month) {
 		this.month = month;
 	}
+	public String toString(){
+		return month + "," + GHI + "," + DNI + "," + clearness;
+	}
 
 }

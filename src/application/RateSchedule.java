@@ -6,10 +6,11 @@ import javafx.scene.layout.Pane;
 
 public class RateSchedule {
 
-	private static final int GRID_ROWS = 24;
-	private static final int GRID_COLUMNS = 12;
-	private static final int GRID_PANES = 4;
-	private static final int GRID_INDICES = 2;
+	public static final int GRID_ROWS = 24;
+	public static final int GRID_COLUMNS = 12;
+	public static final int GRID_PANES = 4;
+	public static final int GRID_INDICES = 2;
+	public static int NAME = 0, METER = 1, CREDIT = 2, CHARGE =3;
 	private String name;
 	private int meter;
 	private double credit;
@@ -120,5 +121,30 @@ public class RateSchedule {
 			schedule[index][1] = val2;
 		}
 	}
-	
+	public String toString(){
+		String ret = name + "," + meter + "," + credit + "," + charge + "\n";
+		for(int x = 0; x < paneColors.length; x++){
+			for(int y = 0; y < paneColors[0].length; y++){
+				ret += paneColors[x][y] + ",";
+			}
+			ret = ret.substring(0, ret.length()-1);
+			ret += "\t";
+		}
+		ret = ret.substring(0, ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < schedule.length; x++){
+			for(int y = 0; y < schedule[0].length; y++){
+				ret += schedule[x][y] + ",";
+			}
+			ret = ret.substring(0, ret.length()-1);
+			ret += "\t";
+		}
+		ret = ret.substring(0, ret.length()-1);
+		ret += "\n";
+		for(int x = 0; x < rates.size(); x++){
+			ret += rates.get(x).toString() + "\n";
+		}
+		ret = ret.substring(0,ret.length()-1);
+		return ret;
+	}
 }
