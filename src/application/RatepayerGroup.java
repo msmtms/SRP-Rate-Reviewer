@@ -10,6 +10,7 @@ public class RatepayerGroup {
 	private boolean inverterChecked;
 	private boolean batteryChecked;
 	private boolean evChecked;
+	private int loadLines;
 	private double[] solarPV;
 	private double[] inverter;
 	private double[] batteryStorage;
@@ -37,6 +38,7 @@ public class RatepayerGroup {
 		inverterChecked = true;
 		batteryChecked = true;
 		evChecked = true;
+		this.loadLines = -1;
 		for(int x = 0; x < solarPV.length; x++){
 			solarPV[x] = -1;
 		}
@@ -109,6 +111,7 @@ public class RatepayerGroup {
 		this.inverterChecked = inverterChecked;
 		this.batteryChecked = batteryChecked;
 		this.evChecked = evChecked;
+		this.loadLines = -1;
 		loadOut = new double[5];
 		for(int x = 0; x < loadOut.length; x++){
 			loadOut[x] = 0;
@@ -326,7 +329,14 @@ public class RatepayerGroup {
 	public void setEvChecked(boolean evChecked) {
 		this.evChecked = evChecked;
 	}
-	
+
+	public int getLoadLines() {
+		return loadLines;
+	}
+
+	public void setLoadLines(int loadLines) {
+		this.loadLines = loadLines;
+	}
 	public String toString(){
 		String ret = name + "," + num + "," + rateSchedule + "," 
 				   + loadFile + "," + (solarChecked?1:0) + "," 
@@ -354,6 +364,7 @@ public class RatepayerGroup {
 		ret = ret.substring(0, ret.length()-1);
 		return ret;
 	}
+
 	
 
 }

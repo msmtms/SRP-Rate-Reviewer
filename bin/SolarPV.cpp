@@ -56,7 +56,9 @@ SolarPV::~SolarPV() {
 /** 
  * Initialization. 
  */ 
-void SolarPV::Init() {
+void SolarPV::Init(unsigned int numTimesteps) {
+    m_numTimesteps = numTimesteps;
+    m_timestepHourlyFraction = 8760 / numTimesteps;
     InitTimeseries(m_numTimesteps);
     timestepInDays = 8760.0 / m_numTimesteps / 24.0;
     dayOfYear = timestepInDays / 2.0;

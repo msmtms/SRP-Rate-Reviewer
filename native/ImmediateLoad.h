@@ -40,7 +40,7 @@ public:
     ImmediateLoad(const ImmediateLoad &orig, bool all);
     virtual ~ImmediateLoad();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     
     void SetData( ImmediateLoadData &data );
     

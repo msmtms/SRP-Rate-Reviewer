@@ -22,6 +22,7 @@ public class Session {
 	private ObservableList<RateSchedule> rateSchedules;
 	private ObservableList<RatepayerGroup> rpGroups;
 	private Grid grid;
+	private int solarLines;
 	public static int AUTHOR = 0, NOTES = 1, INPUT_FILE = 2, INPUT_FILE_CHECK = 3, LAT = 16, LON = 17, 
 			NORTH_SOUTH = 18, EAST_WEST = 19, TIMEZONE = 20, 
 			DAYLIGHT_SAVINGS = 21, SOLAR_START = 22, SOLAR_END = 23;
@@ -42,6 +43,7 @@ public class Session {
 		this.east = false;
 		this.timezone = 0;
 		this.daySave = true;
+		this.solarLines = -1;
 		this.solarStart = System.currentTimeMillis();
 		this.solarEnd = System.currentTimeMillis();
 		this.rateSchedules = FXCollections.observableArrayList();
@@ -69,6 +71,7 @@ public class Session {
 		this.rateSchedules = rateSchedules;
 		this.rpGroups = rpGroups;
 		this.grid = grid;
+		this.solarLines = -1;
 	}
 	public String getAuthor() {
 		return author;
@@ -167,6 +170,13 @@ public class Session {
 	public void setHourlyFile(String hourlyFile) {
 		this.hourlyFile = hourlyFile;
 	}
+	
+	public int getSolarLines() {
+		return solarLines;
+	}
+	public void setSolarLines(int solarLines) {
+		this.solarLines = solarLines;
+	}
 	public String toString(){
 		String ret = author + "," 
 				   + notes + "," 
@@ -185,4 +195,5 @@ public class Session {
 			 + solarEnd;
 		return ret;
 	}
+	
 }

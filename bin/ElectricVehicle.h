@@ -46,7 +46,7 @@ public:
     ElectricVehicle(const ElectricVehicle &orig, bool all);
     virtual ~ElectricVehicle();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     void UpdateToNextTimestep();
     void SetData( ElectricVehicleData &data );
     

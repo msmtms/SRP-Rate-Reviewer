@@ -50,7 +50,7 @@ public:
     SolarPV(const SolarPV &orig, bool all);
     virtual ~SolarPV();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     void UpdateToNextTimestep();
     
     void SetData( SolarPVData &data );

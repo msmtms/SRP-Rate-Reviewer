@@ -52,9 +52,9 @@ SolarField::~SolarField() {
 /** 
  * Initialization. 
  */ 
-void SolarField::Init() {
-    // TODO: possibly pass in numTimesteps into this function
-    
+void SolarField::Init(unsigned int numTimesteps) {
+    m_numTimesteps = numTimesteps;
+    m_timestepHourlyFraction = 8760 / numTimesteps;
     InitTimeseries(m_numTimesteps);
 }
 /**

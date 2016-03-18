@@ -42,7 +42,7 @@ public:
     SolarResource(const SolarResource &orig, bool all);
     virtual ~SolarResource();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     void UpdateToNextTimestep();
     void SetData( SolarResourceData &data );
     void SetIdentification( ESDEIdentification &ident );

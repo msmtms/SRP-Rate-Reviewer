@@ -100,9 +100,11 @@ bool TestHandler::TestImmediateLoad() {
     
     ImmediateLoadData loadData = ESDELoader::LoadImmediateLoadInput( std::string("./data/input/Load.txt") );
     
+    unsigned int numTimesteps = 8760;
+    
     // calculate load statistics
     ImmediateLoad *immediateLoad = new ImmediateLoad();
-    immediateLoad->Init(); // need to initialize time series
+    immediateLoad->Init(numTimesteps); // need to initialize time series
     immediateLoad->SetData( loadData );
     
     // read-in and output summary data
@@ -166,7 +168,7 @@ bool TestHandler::TestSolarPV() {
     // simulate solar PV
     SolarPV *solarPV = new SolarPV();
     solarPV->SetData( dataPV );
-    solarPV->Init(); // need to initialize time series
+    solarPV->Init(numTimesteps); // need to initialize time series
     solarPV->SetSolarResource( solarResource );
     
     // simulate solar field
@@ -213,7 +215,7 @@ bool TestHandler::TestSolarField() {
     
     SolarField *solarField = new SolarField();
     solarField->SetData( dataField );
-    solarField->Init(); // need to initialize time series
+    solarField->Init(numTimesteps); // need to initialize time series
     solarField->SetSolarResource( solarResource );
     
     // simulate solar field
@@ -249,13 +251,6 @@ bool TestHandler::TestPowerTower() {
  */
 bool TestHandler::TestConverter() {
     
-    // read data
-    ConverterData dataConverter = ESDELoader::LoadConverterInput( std::string("./data/input/Inverter.txt") );
-    
-    Converter *converter = new Converter();
-    converter->SetData( dataConverter );
-    converter->Init();
-    
     // solar resource
     SolarResourceData dataSolar = ESDELoader::LoadSolarResourceInput( std::string("./data/input/Location.txt"), std::string("./data/input/SolarResource.txt") );
     unsigned int numTimesteps = dataSolar.GetGlobalHorizontalRadiation().size();
@@ -266,12 +261,19 @@ bool TestHandler::TestConverter() {
     // simulate (what is missing)
     solarResource->SimulateSun();
     
+    // read data
+    ConverterData dataConverter = ESDELoader::LoadConverterInput( std::string("./data/input/Inverter.txt") );
+    
+    Converter *converter = new Converter();
+    converter->SetData( dataConverter );
+    converter->Init(numTimesteps);
+    
     // solar PV
     SolarPVData dataPV = ESDELoader::LoadSolarPVInput( std::string("./data/input/SolarPV.txt") );
     
     SolarPV *solarPV = new SolarPV();
     solarPV->SetData( dataPV );
-    solarPV->Init(); // need to initialize time series
+    solarPV->Init(numTimesteps); // need to initialize time series
     solarPV->SetSolarResource( solarResource );
     
     // simulate 
@@ -307,7 +309,7 @@ bool TestHandler::TestBattery() {
     
     Battery *battery = new Battery();
     battery->SetData( dataBattery );
-    battery->Init();
+    battery->Init(numTimesteps);
     
     // simulate 
     double load = 0.1;
@@ -340,7 +342,7 @@ bool TestHandler::TestElectricVehicle() {
  
     ElectricVehicle *electricVehicle = new ElectricVehicle();
     electricVehicle->SetData( dataElectricVehicle );
-    electricVehicle->Init();
+    electricVehicle->Init(numTimesteps);
     electricVehicle->CreateChargerLoadProfile(); // this creates the load profile for the entire year
 
     // don't need simulate, CreateChargerLoadProfile handles this

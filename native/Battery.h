@@ -46,7 +46,7 @@ public:
     Battery(const Battery &orig, bool all);
     virtual ~Battery();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     void UpdateToNextTimestep();
     void SetData( BatteryData &data );
     

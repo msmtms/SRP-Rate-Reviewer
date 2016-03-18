@@ -1,0 +1,14 @@
+Energy purchased [kWh/period]: 1.98654e+007
+Energy sold [kWh/period]: 5.0359e+006
+Net purchases [kWh/period]: 1.48295e+007
+
+Peak load served [kW]: 12077.4
+Average load served [kW]: 1692.86
+Energy use [kWh/day]: 40628.7
+Energy use [kWh/period]: 1.48295e+007
+Load factor [-]: 0.140168
+
+Total charges [$/y]: 1.87911e+006
+Energy charges [$/y]: 1.51359e+006
+Demand charges [$/y]: 0
+Interconnection charges [$/y]: 365520

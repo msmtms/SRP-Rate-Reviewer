@@ -58,7 +58,9 @@ SolarResource::~SolarResource() {
 /** 
  * Initialization. 
  */ 
-void SolarResource::Init() {
+void SolarResource::Init(unsigned int numTimesteps) {
+    m_numTimesteps = numTimesteps;
+    m_timestepHourlyFraction = 8760 / numTimesteps;
     InitTimeseries(m_numTimesteps);
 }
 /**

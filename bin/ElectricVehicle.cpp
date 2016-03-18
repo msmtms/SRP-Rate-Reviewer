@@ -48,7 +48,9 @@ ElectricVehicle::~ElectricVehicle() {
 /** 
  * Initialization. 
  */ 
-void ElectricVehicle::Init() {
+void ElectricVehicle::Init(unsigned int numTimesteps) {
+    m_numTimesteps = numTimesteps;
+    m_timestepHourlyFraction = 8760 / numTimesteps;
     InitTimeseries(m_numTimesteps);
     
     // initialize electric vehicle to zero (when it is not at the house)

@@ -27,7 +27,7 @@ public:
     Converter(const Converter &orig, bool all);
     virtual ~Converter();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     void UpdateToNextTimestep();
     
     double CalculateOutputPossible( double input );

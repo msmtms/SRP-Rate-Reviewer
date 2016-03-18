@@ -84,6 +84,38 @@ struct ESDELoader {
             // set identification
             fin.close();
         }
+//        
+//        std::ofstream fout30;
+//        fout30.open( "SolarResource30.txt" );
+//        std::ofstream fout15;
+//        fout15.open( "SolarResource15.txt" );
+//        
+//        if( std::ifstream( fnameTimeseries.c_str() ).good() ) {
+//            fin.open( fnameTimeseries );
+//        //    fin >> str; fin >> str; // read over the headers
+//
+//            while( !fin.eof() ) {
+//                fin >> val;
+//                G_global.push_back(val);
+//                
+//                fout30 << val << "\n";
+//                fout30 << val << "\n";
+//                
+//                fout15 << val << "\n";
+//                fout15 << val << "\n";
+//                fout15 << val << "\n";
+//                fout15 << val << "\n";
+//            }
+//
+//            solarData.InitTimeseries( G_global.size() );
+//            solarData.SetGlobalHorizontalRadiation( G_global );
+//
+//            // set identification
+//            fin.close();
+//            
+//            fout15.close();
+//            fout30.close();
+//        }
         
         ESDEIdentification ident;
         ident.m_objectType = ID_SOLAR_RESOURCE;

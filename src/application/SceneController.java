@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -1232,8 +1233,8 @@ public class SceneController extends AnchorPane{
 	private void initGrid(){
 		ObservableList<String> timeSteps = FXCollections.observableArrayList();
 		timeSteps.add("Hourly/Year (8760)");
-		timeSteps.add("30 Min/Year (17,520)");
-		timeSteps.add("15 Min/Year (35,040)");
+		//timeSteps.add("30 Min/Year (17,520)");
+		//timeSteps.add("15 Min/Year (35,040)");
 		timeStepCB.setItems(timeSteps);
 		timeStepCB.getSelectionModel().select(0);
 	}
@@ -1651,8 +1652,39 @@ public class SceneController extends AnchorPane{
 		File file = new File(currentDir);
 		fc.setInitialDirectory(file);
 		file = fc.showOpenDialog(app.getStage());
-		hourlyDataFileTB.setText(file.getAbsolutePath());
-		session.setHourlyFile(file.getAbsolutePath());
+		try{
+			int multiplier = 0;
+			switch(timeStepCB.getSelectionModel().getSelectedIndex()){
+				case 0:{
+					multiplier = 1;
+					break;
+				}
+				case 1:{
+					multiplier = 2;
+					break;
+				}
+				case 2:{
+					multiplier = 4;
+					break;
+				}
+				default:{
+					multiplier = 1;
+					break;
+				}
+			}
+			int lines = countFileLines(file);
+			System.out.println(lines);
+			if(lines/8760 == multiplier){
+				hourlyDataFileTB.setText(file.getAbsolutePath());
+				session.setHourlyFile(file.getAbsolutePath());
+				session.setSolarLines(lines);
+			}else{
+				showErrorDialog("Solar Resource time step does not match time step on Grid tab");
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 	}
 	// Event Listener on Button.onAction
 	@FXML
@@ -2002,8 +2034,37 @@ public class SceneController extends AnchorPane{
 		File file = new File(currentDir);
 		fc.setInitialDirectory(file);
 		file = fc.showOpenDialog(app.getStage());
-		rpLoadDataTB.setText(file.getAbsolutePath());
-		rpGroups.get(rpGroupIndex).setLoadFile(file.getAbsolutePath());
+		try{
+			int multiplier = 0;
+			switch(timeStepCB.getSelectionModel().getSelectedIndex()){
+				case 0:{
+					multiplier = 1;
+					break;
+				}
+				case 1:{
+					multiplier = 2;
+					break;
+				}
+				case 2:{
+					multiplier = 4;
+					break;
+				}
+				default:{
+					multiplier = 1;
+					break;
+				}
+			}
+			int lines = countFileLines(file);
+			if(lines/8760 == multiplier){
+				rpLoadDataTB.setText(file.getAbsolutePath());
+				rpGroups.get(rpGroupIndex).setLoadFile(file.getAbsolutePath());
+				rpGroups.get(rpGroupIndex).setLoadLines(lines);
+			}else{
+				showErrorDialog("Load time step does not match time step on Grid tab");
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	// Event Listener on CheckBox.onAction
 	@FXML
@@ -2347,7 +2408,7 @@ public class SceneController extends AnchorPane{
 							break;
 						}
 						case 2:{
-							timestepMultiplier = 3;
+							timestepMultiplier = 4;
 							break;
 						}
 						default:{
@@ -4000,4 +4061,11 @@ public class SceneController extends AnchorPane{
 		}
 		return array;
 	}
+	
+	public int countFileLines(File file) throws IOException{
+		LineNumberReader  lnr = new LineNumberReader(new FileReader(file));
+		lnr.skip(Long.MAX_VALUE);
+		return(lnr.getLineNumber() + 1); 
+	}
 }
+

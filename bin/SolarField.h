@@ -36,7 +36,7 @@ public:
     SolarField(const SolarField &orig, bool all);
     virtual ~SolarField();
     
-    void Init();
+    void Init(unsigned int numTimesteps);
     void UpdateToNextTimestep();
     void SetData( SolarFieldData &data );
     

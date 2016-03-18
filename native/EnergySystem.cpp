@@ -111,6 +111,7 @@ EnergySystem::~EnergySystem() {
 void EnergySystem::Init(unsigned int numTimesteps) {
     
     m_numTimesteps = numTimesteps;
+    m_timestepHourlyFraction = 8760 / numTimesteps;
     
     // init EnergySystem members
     if( m_energyNet.size() == 0 ) {
@@ -124,31 +125,31 @@ void EnergySystem::Init(unsigned int numTimesteps) {
     // init rest of system
     std::map< unsigned int, ImmediateLoad* >::iterator iterImmediateLoad;
     for( iterImmediateLoad=m_immediateLoad.begin(); iterImmediateLoad!=m_immediateLoad.end(); ++iterImmediateLoad ) {
-        iterImmediateLoad->second->Init();
+        iterImmediateLoad->second->Init(numTimesteps);
     }
     std::map< unsigned int, SolarResource* >::iterator iterSolar;
     for( iterSolar=m_solarResource.begin(); iterSolar!=m_solarResource.end(); ++iterSolar ) {
-        iterSolar->second->Init();
+        iterSolar->second->Init(numTimesteps);
     }
     std::map< unsigned int, SolarPV* >::iterator iterSolarPV;
     for( iterSolarPV=m_solarPV.begin(); iterSolarPV!=m_solarPV.end(); ++iterSolarPV ) {
-        iterSolarPV->second->Init();
+        iterSolarPV->second->Init(numTimesteps);
     }
     std::map< unsigned int, Converter* >::iterator iterConverter;
     for( iterConverter=m_converter.begin(); iterConverter!=m_converter.end(); ++iterConverter ) {
-        iterConverter->second->Init();
+        iterConverter->second->Init(numTimesteps);
     }
     std::map< unsigned int, Battery* >::iterator iterBattery;
     for( iterBattery=m_battery.begin(); iterBattery!=m_battery.end(); ++iterBattery ) {
-        iterBattery->second->Init();
+        iterBattery->second->Init(numTimesteps);
     }
     std::map< unsigned int, ElectricVehicle* >::iterator iterElectricVehicle;
     for( iterElectricVehicle=m_electricVehicle.begin(); iterElectricVehicle!=m_electricVehicle.end(); ++iterElectricVehicle ) {
-        iterElectricVehicle->second->Init();
+        iterElectricVehicle->second->Init(numTimesteps);
     }
     std::map< unsigned int, SolarField* >::iterator iterSolarField;
     for( iterSolarField=m_solarField.begin(); iterSolarField!=m_solarField.end(); ++iterSolarField ) {
-        iterSolarField->second->Init();
+        iterSolarField->second->Init(numTimesteps);
     }
     
     // assign solar resource to solar generators

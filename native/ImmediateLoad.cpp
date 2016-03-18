@@ -53,7 +53,9 @@ ImmediateLoad::~ImmediateLoad() {
 /** 
  * Initialization. 
  */ 
-void ImmediateLoad::Init() {
+void ImmediateLoad::Init(unsigned int numTimesteps) {
+    m_numTimesteps = numTimesteps;
+    m_timestepHourlyFraction = 8760 / numTimesteps;
     InitTimeseries(m_numTimesteps);
 }
 /**
