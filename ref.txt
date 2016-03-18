@@ -1,6 +1,6 @@
 g++ -m64 -std=c++14 -static -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" -shared -o rrp64.dll application_RateReviewerProxy.cpp Battery.cpp Converter.cpp ElectricVehicle.cpp EnergySystem.cpp ESDEObject.cpp ImmediateLoad.cpp Logger.cpp SolarField.cpp SolarFunctions.cpp SolarPV.cpp SolarResource.cpp TestHandler.cpp
 
-g++ -m32 -std=c++14 -static -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" -shared -o hp.dll application_HydrogenProxy.cpp SolarHydrogen.cpp
+g++ -m32 -std=c++14 -static -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias -I"%JAVA_HOME%\include" -I"%JAVA_HOME%\include\win32" -shared -o rrp.dll application_RateReviewerProxy.cpp Battery.cpp Converter.cpp ElectricVehicle.cpp EnergySystem.cpp ESDEObject.cpp ImmediateLoad.cpp Logger.cpp SolarField.cpp SolarFunctions.cpp SolarPV.cpp SolarResource.cpp TestHandler.cpp
 
 des:
 E:\Program Files\mingw-w64\x86_64-5.2.0-posix-seh-rt_v4-rev0\mingw64\bin
